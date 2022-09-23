@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="使用 xcconfig 进行环境分离">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Xcode Concepts">
+<meta property="og:url" content="http://example.com/2016/09/24/Xcode-Concepts/index.html">
+<meta property="og:site_name" content="牛易疯先森的开发记录">
+<meta property="og:description" content="使用 xcconfig 进行环境分离">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://ww2.sinaimg.cn/mw690/005IevIrjw1fbauszjdwyj307b0bv0tq.jpg">
+<meta property="og:image" content="http://ww2.sinaimg.cn/mw690/005IevIrjw1fbausvyvudj30vf0hpwgx.jpg">
+<meta property="og:image" content="http://ww1.sinaimg.cn/mw690/005IevIrjw1fbauswgqnhj30p30e2abj.jpg">
+<meta property="og:image" content="http://ww2.sinaimg.cn/mw690/005IevIrjw1fbausylc7sj30at03mwew.jpg">
+<meta property="og:image" content="http://ww4.sinaimg.cn/mw690/005IevIrjw1fbausy4lquj30p20e0dhf.jpg">
+<meta property="og:image" content="http://ww1.sinaimg.cn/small/005IevIrjw1fbausz1mltj30lf0c1dgi.jpg">
+<meta property="og:image" content="http://ww4.sinaimg.cn/small/005IevIrjw1fbauswsbc7j30fn0fjdgn.jpg">
+<meta property="og:image" content="http://ww3.sinaimg.cn/mw690/005IevIrjw1fbausxhi4xj312f084mym.jpg">
+<meta property="og:image" content="http://ww4.sinaimg.cn/mw690/005IevIrjw1fbaut019a0j320e0ootdc.jpg">
+<meta property="og:image" content="http://ww2.sinaimg.cn/small/005IevIrjw1fbaut0pn0lj31560t644e.jpg">
+<meta property="og:image" content="http://ww3.sinaimg.cn/mw690/005IevIrjw1fbaut19oncj31tu0kydka.jpg">
+<meta property="og:image" content="http://ww4.sinaimg.cn/mw690/005IevIrjw1fbaut2m6bvj31s80hmn4x.jpg">
+<meta property="og:image" content="http://ww2.sinaimg.cn/mw690/005IevIrjw1fbaut1t57vj327o0l60wp.jpg">
+<meta property="og:image" content="http://ww4.sinaimg.cn/mw690/005IevIrjw1fbaut357csj32bi0kqq7i.jpg">
+<meta property="og:image" content="http://ww1.sinaimg.cn/mw690/005IevIrjw1fbaut3qzfkj324m0eudk4.jpg">
+<meta property="og:image" content="http://ww1.sinaimg.cn/mw690/005IevIrjw1fbaut4bslej30r008ujuo.jpg">
+<meta property="og:image" content="http://ww2.sinaimg.cn/mw690/005IevIrjw1fbaut5k9kwj31dw0s8tdb.jpg">
+<meta property="og:image" content="http://ww4.sinaimg.cn/mw690/005IevIrjw1fbaut6a0v0j328q0uk7fl.jpg">
+<meta property="og:image" content="http://ww4.sinaimg.cn/mw690/005IevIrjw1fbaut70rdhj32bi0v0qae.jpg">
+<meta property="og:image" content="http://ww3.sinaimg.cn/mw690/005IevIrjw1fbaut7m0scj32bk0gm0ww.jpg">
+<meta property="og:image" content="http://ww3.sinaimg.cn/mw690/005IevIrjw1fbaut8c7zkj32980tk102.jpg">
+<meta property="og:image" content="http://ww3.sinaimg.cn/mw690/005IevIrjw1fbaut8vctqj30ku112go1.jpg">
+<meta property="og:image" content="http://ww1.sinaimg.cn/mw690/005IevIrjw1fbaut9gk8jj312s0gkdnm.jpg">
+<meta property="og:image" content="http://ww2.sinaimg.cn/mw690/005IevIrjw1fbaut9ydsgj31m40i441h.jpg">
+<meta property="og:image" content="http://ww2.sinaimg.cn/mw690/005IevIrjw1fbautaspzwj32120b0gne.jpg">
+<meta property="og:image" content="http://ww2.sinaimg.cn/mw690/005IevIrjw1fbautbt2ylj327q0my456.jpg">
+<meta property="og:image" content="http://ww3.sinaimg.cn/mw690/005IevIrjw1fbautaxo6mj30ku112tb5.jpg">
+<meta property="article:published_time" content="2016-09-24T14:59:55.000Z">
+<meta property="article:modified_time" content="2021-01-22T14:55:23.850Z">
+<meta property="article:author" content="joakim.liu">
+<meta property="article:tag" content="Xcode Build">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://ww2.sinaimg.cn/mw690/005IevIrjw1fbauszjdwyj307b0bv0tq.jpg">
+
+<link rel="canonical" href="http://example.com/2016/09/24/Xcode-Concepts/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Xcode Concepts | 牛易疯先森的开发记录</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">牛易疯先森的开发记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2016/09/24/Xcode-Concepts/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Xcode Concepts
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2016-09-24 22:59:55" itemprop="dateCreated datePublished" datetime="2016-09-24T22:59:55+08:00">2016-09-24</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index"><span itemprop="name">经验分享</span></a>
+                </span>
+            </span>
+
+          
+            <div class="post-description">使用 xcconfig 进行环境分离</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Xcode-相关概念"><a href="#Xcode-相关概念" class="headerlink" title="Xcode 相关概念"></a>Xcode 相关概念</h1><p>去年的时候有翻译过一篇关于同时在手机上面安装几个版本(Debug,Release,AppStore等)的<a href="http://joakimliu.github.io/2015/07/01/Translate-The-Blog-Post-Concurrent-Debug-Beta-and-App-Store-Builds/">文章</a>，后面一直都没有实际操作过项目配置相关的东西，最近同事在搞自动化打包相关的东西，又增加了几个版本。所以想巩固下 Xcode 中的相关概念，所以把官方文档<a href="https://developer.apple.com/library/content/featuredarticles/XcodeConcepts/Concept-Targets.html">Xcode Concepts</a>看了一篇，顺便翻译总结一下。先总结下概念性的东西， 后面再弄个实例。</p>
+<a id="more"></a>
+<h2 id="Xcode-Target"><a href="#Xcode-Target" class="headerlink" title="Xcode Target"></a>Xcode Target</h2><p><code>A target specifies a product to build and contains the instructions for building the product from a set of files in a project or workspace. A target defines a single product; it organizes the inputs into the build system—the source files and instructions for processing those source files—required to build that product. Projects can contain one or more targets, each of which produces one product.</code></p>
+<p>一个 target 就代表构建一个产品所需要的相关指令，构建产品所需的一套文件资源来自于 project 或者 workspace(下面会提到)。简单来说，一个 target 就定义了一个产品，它组织源文件以及构建产品所需要的进程指令到构建系统中。 Projects 可以包含一个或者多个 target，它们代表不同的产品(例如：如果你的产品需要做企业版和 AppStore 版本，那么你可以考虑采取两个 target 来处理)。</p>
+<p>构建产品的指令采取构建设置(build settings)和构建参数(build phases)的形式来设置，这些都可以在Xcode的 project editor 中调整。一个 target 继承 project 构建设置，但是你可以通过在不同的 target 层级指定不同的设置来重载任何的 project 设置。同时间内只能有一个 active target，Xcode scheme 能够指定 active target。</p>
+<p>一个 target 可以跟其他 target 相关联。如果一个 target 在构建的时候需要另外一个 target 的输出，我们说前者依赖于后者。如果两个 target 在相同的 workspace 里，Xcode 能够发现它们的从属关系，它能够以需要的顺序构建产品(即首先构建后者，再构建前者)。这样的关系可以被称为隐形从属依赖(implicit dependency)。当然你也可以在 build settings<br>中指定它们的显性从属依赖(explicit dependency)，当你需要连接到不在同个 workspace 的 library 时，因为这个时候 Xcode 没法发现它们的依赖关系。</p>
+<h2 id="Xcode-Project"><a href="#Xcode-Project" class="headerlink" title="Xcode Project"></a>Xcode Project</h2><p><code>An Xcode project is a repository for all the files, resources, and information required to build one or more software products. A project contains all the elements used to build your products and maintains the relationships between those elements. It contains one or more targets, which specify how to build products. A project defines default build settings for all the targets in the project (each target can also specify its own build settings, which override the project build settings).</code></p>
+<p>Xcode project 是个构建一个或者多个产品所需要的文件，资源，信息等的仓库。project 包含用于构建你产品的所有元素，并且管理这些元素间的关系。它包含一个或多个 target，指定怎样去构建产品。A project 在工程里面默认的为所有的 target 指定 build settings（每个 target 可以覆盖 project build settings，去指定自己特有的 build settings）。</p>
+<p>一个 Xcode project 包含下面的信息：</p>
+<ul>
+<li>源文件的引用：<ul>
+<li>源码，包括头文件和实现文件</li>
+<li>Libraries and frameworks, internal and external</li>
+<li>资源文件(plist等)</li>
+<li>图片文件</li>
+<li>nib 文件(xib,故事版等)</li>
+</ul>
+</li>
+<li>采取分组的形式在工程结构导航中组织源文件(这里又分物理文件和引用文件)</li>
+<li>Project-level build configurations. 你可以为 project 指定多个 build configuration，例如，Xcode 就默认为我们指定了 debug 和 release 的 build settings，当然你也可以自定义个 AppStore build setting。</li>
+<li>Targets，每个 target 指定(前面 Xcode Target 已有提到)：<ul>
+<li>project 构建的一个 product 的引用</li>
+<li>构建 product 所需的资源文件的引用</li>
+<li>build configuration 可以用于构建 product，包括和其他 targets 的附属依赖关系以及其他设置；project-level build settings 当 target’s build configurations 没有覆盖它们的时候是可用的。</li>
+</ul>
+</li>
+<li>执行环境(executable environment)，debug 还是 test，每个执行环境指定：<ul>
+<li>当你运行或者调试的时候，哪个可执行文件启动</li>
+<li>如果有的话，Command-line 参数传递给可执行文件</li>
+<li>如果有的话，当运行程序的时候，每一个环境变量都会被设置</li>
+</ul>
+</li>
+</ul>
+<p>A project 可以单独存在，也可以被包含在 workspace 里面(cocoapods 就是被包含在 workspace 里面)。</p>
+<p><code>You use Xcode schemes to specify which target, build configuration, and executable configuration is active at a given time.</code><br>你用 Xcode scheme 去指定哪个 target，编译配置，可执行配置 在规定的时间(即运行的时候)是有效的。</p>
+<h2 id="Build-Settings"><a href="#Build-Settings" class="headerlink" title="Build Settings"></a>Build Settings</h2><p><code>A build setting is a variable that contains information about how a particular aspect of a product’s build process should be performed. For example, the information in a build setting can specify which options Xcode passes to the compiler.</code></p>
+<p>A build setting 是一个包含产品构建过程中指定某个特定方面需要被执行等相关信息的变量。例如，这个信息在传递给编译器的时候能够在 Xcode build setting 被指定。</p>
+<p>你能够在 project 或者 target 层级指定 build settings。每个 project-level 的 build setting 都添加到 project 中的所有 target 里面，除非被某个特定 target 的 build setting 重载。（意思是，如果 target 中已经指定了相同的设置，那么 project 层级的就不会被添加，有点子类父类继承的概念。）</p>
+<p>在 Xcode 中的 build setting 有两部分：title 和 definition。title 能够定义 build setting，能被其他设置使用。definition 是一个 Xcode 的常量或准则去决定在构建的时候使用哪个值。A build setting 可能会有一个 display name，用于在 Xcode 用户界面展示。</p>
+<p>除了使用 project template 创建新工程被 Xcode 提供的默认构建设置以外，你可以为你的 project 或者特定的一个 target 创建 user-defined build setting。你还可以指定条件构建设置，条件构建设置的值取决于哪个先决条件是满足的。这种机制允许你，例如，指定 SDK 在一个特定的架构上面构建一个产品。</p>
+<h2 id="Xcode-Workspace"><a href="#Xcode-Workspace" class="headerlink" title="Xcode Workspace"></a>Xcode Workspace</h2><p><code>A workspace is an Xcode document that groups projects and other documents so you can work on them together. A workspace can contain any number of Xcode projects, plus any other files you want to include. In addition to organizing all the files in each Xcode project, a workspace provides implicit and explicit relationships among the included projects and their targets.</code></p>
+<p>workspace 是一种 Xcode 文档，它组织 projects 和其他文档，这样你就可以在它们上面一起工作。一个 workspace 可以包含任何数量的 Xcode projects，添加其他你想要添加的其他文件。除了组织每个 Xcode project 中的所有文件外，workplace 还提供了包括 project 和它们的 targets 之间隐性和显性的关系。</p>
+<h3 id="Workspaces-Extend-the-Scope-of-Your-Workflow"><a href="#Workspaces-Extend-the-Scope-of-Your-Workflow" class="headerlink" title="Workspaces Extend the Scope of Your Workflow"></a>Workspaces Extend the Scope of Your Workflow</h3><p>一个 project 文件包含指向工程中的所有文件，以及构建配置和其他工程信息。在 Xcode4 及以后，你可以选择创建一个 workspace 去管理一个或者多个 project ，添加其他你想要添加的文件。一个 project 可以属于多个 workspace。</p>
+<p><img src="http://ww2.sinaimg.cn/mw690/005IevIrjw1fbauszjdwyj307b0bv0tq.jpg" alt="apple workspace_hierarchy"></p>
+<h3 id="Projects-in-a-Workspace-Share-a-Build-Directory"><a href="#Projects-in-a-Workspace-Share-a-Build-Directory" class="headerlink" title="Projects in a Workspace Share a Build Directory"></a>Projects in a Workspace Share a Build Directory</h3><p>默认情况下，workspace 下面的 projects 都是在同一个目录下构建的，也就是 workspace 的编译目录(workspace build directory)。由于是在同一个目录下面，project 的资源文件都彼此都是可见的，可互相引用的。所以，如果你有多个 projects 使用相同库的时候，不需要将它分别拷贝到各个 project 中。</p>
+<p>Xcode 会在编译目录下检查文件发现它们的隐形从属依赖。例如，如果 workspace 中的一个 project 编译的时候需要链接到相同 workspace 的其他 project 某个库，Xcode 会自动帮你先编译那个库，即使构建配置没有显式的指定从属依赖关系。如果需要的话，你可以指定显式从属依赖，但是你必须创建 project 引用。</p>
+<p>workspace 中的每个 project 仍然有属于它们自己的独立的标识。你也可以单独打开某个 project 而没有必要打开 workspace，或者你也可以添加某个 project 到其他的 workspace。因为，一个 project 可以属于多个 workspace，你可以任意组合 projects，而无需重新配置 projects 或者 workspaces。</p>
+<h2 id="Xcode-Scheme"><a href="#Xcode-Scheme" class="headerlink" title="Xcode Scheme"></a>Xcode Scheme</h2><p><code>An Xcode scheme defines a collection of targets to build, a configuration to use when building, and a collection of tests to execute.</code></p>
+<p>Xcode scheme 定义了构建的很多 targets，构建时的配置，以及需要执行的测试等。</p>
+<p>你可以有多个你想要的 scheme，但是只有一个是有效的。我们可以指定一个 scheme 保存在 project(在 project 所属的 workspace 中也是有效的) 还是 workspace(只有当前 workspace 是有效的) 中。当你选择了 scheme 以后，也就意味着你选择了运行的目的（即哪个产品去构建）。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>一个 target 代表一个产品</li>
+<li>project 包含了构建产品所需的源文件，一个 project 可以有多个 target</li>
+<li>build settings 就是构建产品时的一些设置，target 可以覆盖 project 一些相同的设置</li>
+<li>workspace 是一种 Xcode文档，用来组织管理 project 和其他文档的，workspace 可以包含多个 project，project 可以属于多个 workspace</li>
+<li>scheme 决定了哪个 target 去运行，它可以针对编译，运行，测试，打包等进行配置</li>
+</ul>
+<h3 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h3><p><a href="http://stackoverflow.com/questions/20637435/xcode-what-is-a-target-and-scheme-in-plain-language">Xcode workspace project target scheme</a></p>
+<h1 id="实践-环境分离"><a href="#实践-环境分离" class="headerlink" title="实践 环境分离"></a>实践 环境分离</h1><h2 id="使用多-target-进行环境分离"><a href="#使用多-target-进行环境分离" class="headerlink" title="使用多 target 进行环境分离"></a>使用多 target 进行环境分离</h2><p>首先创建一个 XcodeConcepts 的工程，其实 Xcode 已经默认为我们做了 Debug 和 Release 的配置。</p>
+<p><img src="http://ww2.sinaimg.cn/mw690/005IevIrjw1fbausvyvudj30vf0hpwgx.jpg" alt="default configurations"></p>
+<p>打开 scheme，在 run 选项中，我们可以选择 Build Configuration，Executable 等设置(在 Edit Scheme -&gt; Run)。</p>
+<p><img src="http://ww1.sinaimg.cn/mw690/005IevIrjw1fbauswgqnhj30p30e2abj.jpg" alt="default scheme"></p>
+<p>嗯，现在来创建一个 target，</p>
+<p><img src="http://ww2.sinaimg.cn/mw690/005IevIrjw1fbausylc7sj30at03mwew.jpg" alt="duplicate target"></p>
+<p>在弹出来的选择框中选择 “Duplicate Only”，这样就创建好了，现在在 scheme manage 里面我们就能看的可以选择哪个 target 去运行了。</p>
+<p><img src="http://ww4.sinaimg.cn/mw690/005IevIrjw1fbausy4lquj30p20e0dhf.jpg" alt="duplicate scheme1"></p>
+<p>当然，你可以觉得 Xcode 默认为我们生成 copy 名字不好听，你也可以改名字，在 scheme manage 里面，选择要改的 Scheme，按回车输入新名字，当然你也可以在 Targets 里面、相关 plist 文件也修改成相应的名字。注意，plist 文件改名成功后，我们还得改变它的物理路径，改完以后，再添加进入工程中，这时你选中 XcodeConceptsTest -&gt; Info 时，它报<code>Information from info.plist not available.File may not exist at specfiied path.</code> 这时，你应该在该 target 中的 Build Settings -&gt; Packaging -&gt; Info.plist File 设置中设置值为 <code>$(SRCROOT)/XcodeConcepts/XcodeConceptsTest.plist</code>。 $(SRCROOT) 就是代表你当前工程目录的根目录，即 xxxx/XcodeConcepts。</p>
+<p>问题：为什么创建的 Xcode 工程中 Info.plist 文件中的右侧的 Target Membership 是没有勾选的，所以我加入 XcodeConceptsTest.plist 的时候也没有选择任何 target，只要在 Packaging -&gt; Info.plist File 指定路径后，Xcode 会自动帮我们处理的。但是，我们创建文件的时候，就得需要勾选两个 target 的了，不然编译没有添加的那个时会报错的，找不到该资源文件。</p>
+<p><img src="http://ww1.sinaimg.cn/small/005IevIrjw1fbausz1mltj30lf0c1dgi.jpg" alt="rename target"></p>
+<p>如果想要在手机上面同时展示这两个 App 的话，我们得设置它们为不同的 Bundle Identifier，Targets -&gt; General -&gt; Bundle Identifier 中调整。</p>
+<p>为了方便展示，我将 target 的名字($(PRODUCT_NAME))改成 one 和 two，在各个 Targets -&gt; Info -&gt; Bundle name。但是会运行失败，Xcode 报错：</p>
+<p><code>The operation couldn’t be completed. (LaunchServicesError error 0.)</code></p>
+<p>我们将 Xcode clean 一下，再重新运行就好了。</p>
+<p><img src="http://ww4.sinaimg.cn/small/005IevIrjw1fbauswsbc7j30fn0fjdgn.jpg" alt="display simulation"></p>
+<p>那么如何在代码里面辨别是哪个 target 呢，我们可以用 <code>[[NSBundle mainBundle] bundleIdentifier]</code> bundleIdentifier 字符串来判断，我们也可以用预处理宏来处理，选择 target -&gt; Build Settings -&gt; Preprocessor Macros，将宏改成 TEST。</p>
+<p><img src="http://ww3.sinaimg.cn/mw690/005IevIrjw1fbausxhi4xj312f084mym.jpg" alt="distinguish two target"></p>
+<p>这样，就可以用宏来判断了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">    NSString *identifier &#x3D; [[NSBundle mainBundle] bundleIdentifier];</span><br><span class="line">    NSDictionary *dict &#x3D; [[NSProcessInfo processInfo] environment];</span><br><span class="line">    NSLog(@&quot;environment :%@&quot;,dict);</span><br><span class="line">#ifdef TEST</span><br><span class="line">    NSLog(@&quot;test environment:%@&quot;,identifier);</span><br><span class="line">#else</span><br><span class="line">    NSLog(@&quot;normal environment:%@&quot;,identifier);</span><br><span class="line">#endif</span><br></pre></td></tr></table></figure>
+<p>其实还可以分环境来指定，例如，在 XcodeConcepts target 里面的 Preprocessor Macros 中 Debug 加入 TEST=0，在 XcodeConceptsTest 相应位置加入 TEST=1，当然这个只是在 Debug 环境下有用咯。</p>
+<p>当然你还可以在不同的 target 里面指定启动图片以及 icon 等。</p>
+<h3 id="参考链接-1"><a href="#参考链接-1" class="headerlink" title="参考链接"></a>参考链接</h3><ul>
+<li><a href="http://www.appcoda.com/using-xcode-targets/">using-xcode-targets</a></li>
+<li><a href="http://stackoverflow.com/questions/6964630/xcode-project-how-to-detect-target-programatically-or-how-to-use-env-vars">how to detect targets in project</a></li>
+<li><a href="http://stackoverflow.com/questions/3095612/warning-the-copy-bundle-resources-build-phase-contains-this-targets-info-plist">why plist.file Target Membership is not check</a></li>
+</ul>
+<h2 id="使用多-xcconfig-进行环境分离"><a href="#使用多-xcconfig-进行环境分离" class="headerlink" title="使用多 xcconfig 进行环境分离"></a>使用多 xcconfig 进行环境分离</h2><p>简单来说，就是在 Project -&gt; Info -&gt; Configurations，duplicate XXX build configuration，针对不同的 configuration 配置不同的 xcconfig 文件，然后在不同的 xcconfig 里面，配置 Product Bundle Identifier、SeverURL、xxxKey等等。然后 New Scheme，创建相对的 xcconfig scheme，根据不同的 scheme 配置不同的 Build Configuration，依次选中 scheme，在 Edit scheme -&gt; Run 中，配置 Build Configuration 即可。</p>
+<p>下面来一波图~</p>
+<p>工程创建好后，Xcode 默认会为我们创建 Debug、Release 两个 Configurations.<br><img src="http://ww4.sinaimg.cn/mw690/005IevIrjw1fbaut019a0j320e0ootdc.jpg" alt="xcconfig1"></p>
+<p>我们自己也可以创建 xxconfig 文件，New file -&gt; Other -&gt; Configuration Settings File.<br><img src="http://ww2.sinaimg.cn/small/005IevIrjw1fbaut0pn0lj31560t644e.jpg" alt="xcconfig2"></p>
+<p>命名为 Debug.xcconfig。这时，你就能在 Configurations 看到 Debug 选项了。注意，Xcode 默认创建后是没有选项的，只有 None。<br><img src="http://ww3.sinaimg.cn/mw690/005IevIrjw1fbaut19oncj31tu0kydka.jpg" alt="xcconfig3"></p>
+<p>然后我们再创建 Release.xcconfig(预发布版本配置文件)，UAT_α.xcconfig(UAT 测试版本配置文件)，Generator.xcconfig(这个文件没有对应版本，后面再说)，然后在各个版本对应的配置文件里面写相对应的值，这里我们只举例服务端请求地址。<br><img src="http://ww4.sinaimg.cn/mw690/005IevIrjw1fbaut2m6bvj31s80hmn4x.jpg" alt="xcconfig4"></p>
+<p>再到 Configurations 里面，创建 UAT_α 对应的 Configuration，并且选择好各个 Configuration 的值。<br><img src="http://ww2.sinaimg.cn/mw690/005IevIrjw1fbaut1t57vj327o0l60wp.jpg" alt="xcconfig4-1"></p>
+<p><img src="http://ww4.sinaimg.cn/mw690/005IevIrjw1fbaut357csj32bi0kqq7i.jpg" alt="xcconfig5"></p>
+<p>然后为 UAT_α,Release 分别创建一个 scheme，New Scheme，命名为 UAT_α,Release。<br><img src="http://ww1.sinaimg.cn/mw690/005IevIrjw1fbaut3qzfkj324m0eudk4.jpg" alt="xcconfig6"></p>
+<p>然后为每个 scheme 配置好相应的 Configuration，Edit Scheme。</p>
+<table>
+<thead>
+<tr>
+<th>Scheme</th>
+<th>Configuration</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Testxcconfig</td>
+<td>Debug</td>
+</tr>
+<tr>
+<td>UAT_α</td>
+<td>UAT_α</td>
+</tr>
+<tr>
+<td>Release</td>
+<td>Release</td>
+</tr>
+</tbody></table>
+<p><img src="http://ww1.sinaimg.cn/mw690/005IevIrjw1fbaut4bslej30r008ujuo.jpg" alt="xcconfig7"></p>
+<p><img src="http://ww2.sinaimg.cn/mw690/005IevIrjw1fbaut5k9kwj31dw0s8tdb.jpg" alt="xcconfig8"></p>
+<p><img src="http://ww4.sinaimg.cn/mw690/005IevIrjw1fbaut6a0v0j328q0uk7fl.jpg" alt="xcconfig9"></p>
+<p>好了，分环境的变量已经设置好了，现在让它在手机上面同时存在，那么我们就得改变它的 Bundle identifier。默认的就是 $(PRODUCT_BUNDLE_IDENTIFIER)。<br><img src="http://ww4.sinaimg.cn/mw690/005IevIrjw1fbaut70rdhj32bi0v0qae.jpg" alt="xcconfig10"></p>
+<p>在 Targets -&gt; Build Settings -&gt; Product Bundle Identifier，为不同的 scheme 设置不同的 Bundle identifier。<br><img src="http://ww3.sinaimg.cn/mw690/005IevIrjw1fbaut7m0scj32bk0gm0ww.jpg" alt="xcconfig11"></p>
+<p>再来改变它的显示名字 Bundle display name，这个 key 在 plist 文件里面是没有的，我们可以创建一个。命名为<code>测试$&#123;BUNDLE_DISPLAY_NAME_SUFFIX&#125;</code>。在刚刚创建的那三个 xxconfig 文件里面，定义它们的值。例如，在 Debug.xxconfig 里面为 <code>BUNDLE_DISPLAY_NAME_SUFFIX = @&quot;1&quot;</code>。<br><img src="http://ww3.sinaimg.cn/mw690/005IevIrjw1fbaut8c7zkj32980tk102.jpg" alt="xcconfig12"></p>
+<p>选择每个 scheme，依次运行在模拟器上。<br><img src="http://ww3.sinaimg.cn/mw690/005IevIrjw1fbaut8vctqj30ku112go1.jpg" alt="xcconfig13"></p>
+<p>当然也可以手动创建 Editor -&gt; Add Build Setting -&gt; Add User-Defined Setting。命名为<code>BUNDLE_DISPLAY_NAME_SUFFIX2</code>。<br><img src="http://ww1.sinaimg.cn/mw690/005IevIrjw1fbaut9gk8jj312s0gkdnm.jpg" alt="xcconfig14"><br><img src="http://ww2.sinaimg.cn/mw690/005IevIrjw1fbaut9ydsgj31m40i441h.jpg" alt="xcconfig15"></p>
+<p>展开它，就会有三个选项让你填写，我们分别填写为简单的值，a,b,c。<br><img src="http://ww2.sinaimg.cn/mw690/005IevIrjw1fbautaspzwj32120b0gne.jpg" alt="xcconfig16"></p>
+<p>我们将名字重新命名一下 <code>测试$&#123;BUNDLE_DISPLAY_NAME_SUFFIX&#125;$&#123;BUNDLE_DISPLAY_NAME_SUFFIX2&#125;</code>。<br><img src="http://ww2.sinaimg.cn/mw690/005IevIrjw1fbautbt2ylj327q0my456.jpg" alt="xcconfig18"></p>
+<p>每个 scheme 再次运行到模拟器上<br><img src="http://ww3.sinaimg.cn/mw690/005IevIrjw1fbautaxo6mj30ku112tb5.jpg" alt="xcconfig17"></p>
+<p>其实，我们也可以设置不同的 Icon，在 Targets -&gt; Build Setting -&gt; Asset Catalog App Icon Set Name，这里就不举例一一验证了。</p>
+<p>上面提到的 Generator.xcconfig 只是一个普通的文件，你也可以命名为 Generator1.xcconfig。它的作用就是将每个 xcconfig 文件都用到的东西提取出来，我们可以将 <code>#include &quot;Generator.xcconfig&quot;</code> 注释掉，然后将 <code>GCC_PREPROCESSOR_DEFINITIONS = $(inherited) SeverURL=&#39;$(SeverURL)&#39;</code> 在每个 xcconfig 文件里面都写一次。 那现在问题来了，为什么 xcconfig 文件里面的 BUNDLE_DISPLAY_NAME_SUFFIX 没有 GCC_PREPROCESSOR_DEFINITIONS。因为 GCC_PREPROCESSOR_DEFINITIONS(预编译头参数) 的作用就是将配置文件里面的常量预编译成宏，以便在代码里面用到。在 Build Settings -&gt; Preprocessor Macros 可以看到。</p>
+<p>那么 $(inherited) 又是什么呢？ inherited 是继承的意思嘛，而 $(),${} 都是预处理的语法，所以就可以理解为 target-level 继承 project-level 的一些配置。上面有提到过，target-level 可以重载 project-level 的一些配置。</p>
+<p>还有很多的，我们可能见过，但是具体是什么却不是很懂，例如，$(SRCROOT)、$(PROJECT)等(ps，参考链接9有提到)。</p>
+<h1 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h1><p>其实，就是用 xcconfig 去修改 Build Settings 里面的相关值，它能根据不同的 Configuration 配置不同文件。我们要做的就是将 Build Settings 里面的一些选项在 xcconfig 里面用代码去调整设置。例如，直接用代码设置 SDKROOT、ONLY_ACTIVE_ARCH、GCC_SYMBOLS_PRIVATE_EXTERN、GCC_OPTIMIZATION_LEVEL等的值。(ps,参考链接12,13有提到)。</p>
+<p>这里只是提到了 xcconfig 文件的冰山一角，如跟 cocoapods、SDK、xcodebuild 相关的东西，还是不懂。另外，pewpewthespells <a href="https://twitter.com/queersorceress">twitter</a> 、<a href="http://pewpewthespells.com/">blog</a>、<a href="https://github.com/samdmarshall/managing-xcode-example">github</a> 有篇博文是讲 Xcode xcconfig(ps,参考链接14) 的，很全面，另外他还有写到相关管理 Xcode 的东西。</p>
+<p><a href="https://github.com/JoakimLiu/BlogDemo/tree/master/Testxcconfig">xcconfig demo</a></p>
+<h3 id="参考链接-2"><a href="#参考链接-2" class="headerlink" title="参考链接"></a>参考链接</h3><ul>
+<li><a href="http://nilsou.com/blog/2013/07/29/how-to-have-two-versions-of-the-same-app-on-your-device/">How to Have Two Versions of the Same App on Your Device</a></li>
+<li><a href="http://liumh.com/2016/05/22/use-xcconfig-config-specific-variable/">Xcode使用xcconfig文件配置环境</a></li>
+<li><a href="https://speakerdeck.com/hasseg/xcode-configuration-files">xcode-configuration-files</a></li>
+<li><a href="http://opensource.apple.com/source/xnu/xnu-2422.1.72/libsyscall/Libsyscall.xcconfig">Libsyscall.xcconfig</a></li>
+<li><a href="https://developer.apple.com/library/content/technotes/tn2339/_index.html">Building from the Command Line with Xcode FAQ</a></li>
+<li><a href="http://www.jianshu.com/p/0f1e8dc0812a">iOS多环境配置</a></li>
+<li><a href="http://stackoverflow.com/questions/15343122/what-is-inherited-in-xcodes-search-path-settings">What is $(inherited) in Xcode’s search path settings?</a></li>
+<li><a href="http://www.cnblogs.com/xiaodao/archive/2012/03/28/2422091.html">xcode4的环境变量，Build Settings参数，workspace及联编设置</a></li>
+<li><a href="ftp://ftp.informatimago.com/pub/mirrors/developer.apple.com/documentation/DeveloperTools/Reference/XcodeBuildSettingRef/XcodeBuildSettingRef.pdf">Xcode Build Setting Reference</a></li>
+<li><a href="http://blog.startry.com/2015/07/24/iOS_EnvWithXcconfig/">iOS开发必备 - 环境变量配置(Debug &amp; Release)</a></li>
+<li><a href="https://github.com/jspahrsummers/xcconfigs">xcconfigs</a></li>
+<li><a href="http://jamesdempsey.net/2015/01/31/generating-xcode-build-configuration-files-with-buildsettingextractor-xcodeproj-to-xcconfig/">Generating Xcode Build Configuration Files with BuildSettingExtractor (xcodeproj → xcconfig)</a></li>
+<li><a href="http://www.jontolof.com/cocoa/using-xcconfig-files-for-you-xcode-project/">Using xcconfig files for your XCode Project</a></li>
+<li><a href="http://pewpewthespells.com/blog/xcconfig_guide.html">The Unofficial Guide to xcconfig files</a></li>
+<li><a href="http://robnapier.net/build-system-1-build-panel">Building the Build System - Part 1 - Abandoning the Build Panel</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Xcode-Build/" rel="tag"># Xcode Build</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2016/06/26/NSURLProtocol%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-UIWebView-%E8%AE%BE%E7%BD%AE%E8%AF%B7%E6%B1%82%E5%A4%B4/" rel="prev" title="NSURLProtocol学习笔记-UIWebView 设置请求头">
+      <i class="fa fa-chevron-left"></i> NSURLProtocol学习笔记-UIWebView 设置请求头
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2016/11/20/SCLAlertView/" rel="next" title="SCLAlertView 源码解析">
+      SCLAlertView 源码解析 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Xcode-%E7%9B%B8%E5%85%B3%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">Xcode 相关概念</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Xcode-Target"><span class="nav-number">1.1.</span> <span class="nav-text">Xcode Target</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Xcode-Project"><span class="nav-number">1.2.</span> <span class="nav-text">Xcode Project</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Build-Settings"><span class="nav-number">1.3.</span> <span class="nav-text">Build Settings</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Xcode-Workspace"><span class="nav-number">1.4.</span> <span class="nav-text">Xcode Workspace</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Workspaces-Extend-the-Scope-of-Your-Workflow"><span class="nav-number">1.4.1.</span> <span class="nav-text">Workspaces Extend the Scope of Your Workflow</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Projects-in-a-Workspace-Share-a-Build-Directory"><span class="nav-number">1.4.2.</span> <span class="nav-text">Projects in a Workspace Share a Build Directory</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Xcode-Scheme"><span class="nav-number">1.5.</span> <span class="nav-text">Xcode Scheme</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">1.6.</span> <span class="nav-text">总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5"><span class="nav-number">1.6.1.</span> <span class="nav-text">参考链接</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9E%E8%B7%B5-%E7%8E%AF%E5%A2%83%E5%88%86%E7%A6%BB"><span class="nav-number">2.</span> <span class="nav-text">实践 环境分离</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%A4%9A-target-%E8%BF%9B%E8%A1%8C%E7%8E%AF%E5%A2%83%E5%88%86%E7%A6%BB"><span class="nav-number">2.1.</span> <span class="nav-text">使用多 target 进行环境分离</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5-1"><span class="nav-number">2.1.1.</span> <span class="nav-text">参考链接</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E5%A4%9A-xcconfig-%E8%BF%9B%E8%A1%8C%E7%8E%AF%E5%A2%83%E5%88%86%E7%A6%BB"><span class="nav-number">2.2.</span> <span class="nav-text">使用多 xcconfig 进行环境分离</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93-1"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E9%93%BE%E6%8E%A5-2"><span class="nav-number">3.0.1.</span> <span class="nav-text">参考链接</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">joakim.liu</p>
+  <div class="site-description" itemprop="description">你不解决问题，就会成为问题。iOS菜逗一枚。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/JoakimLiu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/JoakimLiu" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">joakim.liu</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://example.com/2016/09/24/Xcode-Concepts/";
+    this.page.identifier = "2016/09/24/Xcode-Concepts/";
+    this.page.title = "Xcode Concepts";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://http-joakimliu-github-io.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

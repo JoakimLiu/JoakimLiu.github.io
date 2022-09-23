@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Core Animation Essentials，主要讲了 Core Animation 的一些基础知识。 讲了一个点击图片 item 有各种效果的 demo 。   点击动画变大 (change bound) shrink and grow (UIKit 定时器改变 bound ， CA 可以用 CAMedia timing protocol and repeated animation)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Core Animation Essentials(Core Animation Programming Guide)">
+<meta property="og:url" content="http://example.com/2019/02/24/wwdc-2011-421/index.html">
+<meta property="og:site_name" content="牛易疯先森的开发记录">
+<meta property="og:description" content="Core Animation Essentials，主要讲了 Core Animation 的一些基础知识。 讲了一个点击图片 item 有各种效果的 demo 。   点击动画变大 (change bound) shrink and grow (UIKit 定时器改变 bound ， CA 可以用 CAMedia timing protocol and repeated animation)">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4mdiXRM-Ek8YeyYoOs02P8EGghahbcWIZ0SeHatXlJkIIMcSv7i5OThV8FgSquFPjsEnd6yIvlse3rY1p_4j-q5wTYkM-5fH7PS2tr8oENc6Iio4m_WO-LVDLMk_5oifmegqZxTmEV3Tyi3T5ZjzQ8efJJwvflhDybl2mZsR3Q-Hp4d-vJDE5nqQMFzseLWCgo?width=1467&height=456&cropmode=none">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4mH2HRXYqZnb1WstVwwbp3IHrwmJH1o0FxCGm2UJ-9Dxm45hUKeleD7u1XLJAm6iFIdvgX_vNFaoXP92D3FV-q0oTTSHP0eaLWgBFARKtzzpHB2vTb72BU5Xp-mLYXPzrGuaVhEdUcgE6O6YXIjG-3lUQ82jUwT6CbAGoBlShGuj6jw_s8sYPan09xz_xkVOO-?width=1133&height=445&cropmode=none">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4mYLCD3EJkaogucfbQr6TlfRGikIl99lGZvI1ARL8n-ehy8xerqghM8fO-Ujr7L5Z_rkS5Kids2wuWNC2QkJjZZEVPANL4Tlz5okdnRIKWd0ZsBicSiB43oKrXF1BeKB7o5aCg9RlJx9nnFDupKm-Q2-vYg_dZQJP-L6JamQZtG1XB2CigxzXJfx2eURnWACss?width=947&height=400&cropmode=none">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4mnUnXVApXrufKbOgcwwIn6Y2DoQPzAvIRDVjOu3IRGfU0uTIL_DuEDd58luXBet5tgOVdeP8NUtoGth_NVqHoOAcPUHWmrlfQqt03JwsuXvUu0vdueu9hGy-SbCJM9HdHtbaxaQNV2h9Ym70BmhszLAyUd15JP7fCeZlebGS8lEsgK-m44VfrygvHt5MoKiTw?width=1338&height=1485&cropmode=none">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4mLQFZ7UN3pLuqRozSXgGpSGtmSLA81bHPoa57EWPFQFqCjkNPDFSZLvR0h4ZmhigSIsQVodwo3DurVbACqQ3qXmioNy6DkVKYKH2u0un7K1fBcvmI0bj_dKxAEzKZS58mXe9RXYxjiw_7E6lklL9qMJWIlHyMHTttU87Msy1DXnw20blPB-UmyMJ-50-WlpPd?width=1338&height=1302&cropmode=none">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4m8gZTdmc4e0StYmp8Z4MIA19bTmY1MSeRhF0i8SHwXlGfevS3QJl0qE5zNPFXKGEeUxAg_8a2DtjhXO2u3HgLtVJBrFt03QzkU2FbciJNMH0aj7lQEfwWX8bZrGUmfQkm1d57sf1Z0lYmNcQty1h86rQoLh_Mgf2EynNVH44P61KFxqcJ0O5PTkFUf9uWSRX7?width=617&height=219&cropmode=none">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4mvvO9GI0Fhpsay0VFTkZCBQZg3KTH-g9b3dr8d40GHH03w6b-xripjBLR4bhadmiYuZisP2RMBBBQL4q79yPMhzrF4v5Gxx2qocdXNVFRR0Cu6M6lzyR_SQEFI-s6P_x1T0MiuapzyAZC6O_ogvUKutWb6h2FoulismmnfKpXZwFeg2Kscy15iqJmQzFMGV0d?width=543&height=595&cropmode=none">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4mc1ojWJzj7ZimFJvSkvwxC3eTdG7F-k0nD8EcaE3mBd3fBUguaBW_DhEg8C_E9HCvnkG8uek0TMavoPeSEOeu-YfaDX-7lnzQZXuBVy903QDipT7SAkoQPX-AbfOiht8TBr4POqwUPp4aMwmDdzJ0XUGaHv_QFwRlH64Neiu6Na38V6U2RrS4yt_kdgxcEcig?width=1095&height=679&cropmode=none">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4m5fJbUyvK3LzZdW7Z6RyWHZuGlD28Qa6ZBNof-8GI_9Ezmv1peih6rROZmgkk-l1a71fXIWIDEdyrW5AijnIVKjGGxb0t3yFrm547e9IWGte_5CBCyyAwNUv_0ttfGQjYubexIw8blzKnKhpgEeM63CAC32TgAfADnXl6l-7MnKPi-s_hu-JGeAl5oTsLN9_V?width=944&height=510&cropmode=none">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4mZtcLVtUvscU2EY89MNsCRlh3-LzbU3WJIJokv1b3O-UxkIPs3XV5olOn9-Z8Amaj8ofgr0keiXz5DJ4XSJ9W2NPmH5zkuMIHEX7drfcYOI4iXyT31IQcEByA67St33rHBgiWugClW68n1FHL1l0wtvUpDFLLVuU7bQUnknuTxAabo3S6d9QsIU5qz8XwpDPZ?width=759&height=579&cropmode=none">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4mxyvtoauyJ85JUNrs-uwua7n_iOjREbp3aNkbJHW739lbATfWEXsNRuzS2E-No-BbZBQ9M1TghFQmZ-XRZZFN27d7oU9nh0v00oTruhu5IEh8B34D_djzYGOI5yFPLgNXcVdRs0-s4VmH_dCOzvVs8hhcA252WTLPTbr5MaWD7tef8WuGMA73Hug4V5XfuJcf?width=1015&height=694&cropmode=none">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4mT_Cl_oVEDeLc4b_huquuXlt9CHbtFmaRsgUW4cWchBDwysZJ4Oo0SWXHUWS7BRxGwd_mkKNJ6_EoZtnwRwigqP78ehj15LtmSePtD8PwXEd9xyQJbWunUOZzuzbu6X77Z_mTlVhtgtuOHQzDoD3ZWFL0p5AXBwF3Du1XTTKlxLVRYRImeglNArBBxQLn3Eb_?width=691&height=437&cropmode=none">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4m86FPkvdLWmhKLBqUSImFqSk5MzYho90X31EGmrAKsnh7FX21je1DAkfQgWpabXN5fLpW7MxF_zqCSAl9MAHQuVGIdxV_vx8-ULd7GXb721jXy8sRkqrVOOKRajeN7sH8oeb2mnePJiqWg6-BybcVnHfiMRZVpA11hEajpb1R1Xaxm1oszSTBVl4phvBS7RwQ?width=930&height=769&cropmode=none">
+<meta property="article:published_time" content="2019-02-24T04:08:38.000Z">
+<meta property="article:modified_time" content="2021-05-24T15:33:13.506Z">
+<meta property="article:author" content="joakim.liu">
+<meta property="article:tag" content="WWDC">
+<meta property="article:tag" content="AppleDocument">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://sat02pap001files.storage.live.com/y4mdiXRM-Ek8YeyYoOs02P8EGghahbcWIZ0SeHatXlJkIIMcSv7i5OThV8FgSquFPjsEnd6yIvlse3rY1p_4j-q5wTYkM-5fH7PS2tr8oENc6Iio4m_WO-LVDLMk_5oifmegqZxTmEV3Tyi3T5ZjzQ8efJJwvflhDybl2mZsR3Q-Hp4d-vJDE5nqQMFzseLWCgo?width=1467&height=456&cropmode=none">
+
+<link rel="canonical" href="http://example.com/2019/02/24/wwdc-2011-421/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Core Animation Essentials(Core Animation Programming Guide) | 牛易疯先森的开发记录</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">牛易疯先森的开发记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/02/24/wwdc-2011-421/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Core Animation Essentials(Core Animation Programming Guide)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-02-24 12:08:38" itemprop="dateCreated datePublished" datetime="2019-02-24T12:08:38+08:00">2019-02-24</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><a href="https://developer.apple.com/videos/play/wwdc2011/421/">Core Animation Essentials</a>，主要讲了 Core Animation 的一些基础知识。</p>
+<p>讲了一个点击图片 item 有各种效果的 demo 。 </p>
+<ol>
+<li>点击动画变大 (change bound)</li>
+<li>shrink and grow (UIKit 定时器改变 bound ， CA 可以用 CAMedia timing protocol and repeated animation) </li>
+<li>边框闪烁，颜色变化 (layer.border color is animation property, repeated animation)</li>
+<li>flip 到中心然后回到原处 (2.5D perspective transform)</li>
+<li>边框粒子闪烁效果 </li>
+</ol>
+<p>然后后面就是讲 Core Animation 一些基础，所以下面就把<a href="https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/CoreAnimation_guide/Introduction/Introduction.html#//apple_ref/doc/uid/TP40004514">Core Animation Programming Guide</a>的内容大致过一下。</p>
+<a id="more"></a>
+
+<h1 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h1><p>Core Animation 是 iOS 和 OS X 上<strong>可用的图形渲染和动画基础结构</strong>，可用于为视图和应用程序的其他可视元素设置动画。  使用它，绘制动画的每个帧所需的大部分工作，都是它完成的。 我们所要做的就是配置一些动画参数（例如起点和终点）并告诉 Core Animation 启动。 Core Animation 完成剩下的工作，将大部分<strong>实际绘图工作交给</strong>图形硬件以加速渲染。 这种自动图形加速可以实现高帧速率和流畅的动画，而不会给 CPU 带来负担并降低应用程序的速度。 它大致有以下相关功能。</p>
+<ul>
+<li>Core Animation Manages Your App’s Content,  Core Animation 本身不是绘图系统。 它是一种<strong>用于在硬件中合成和操作应用内容的基础架构</strong>。 此基础结构的核心是图层对象(layer objects)，可以使用它来管理和操作内容。  <strong>layer 将内容捕获到可以由图形硬件轻松操作的位图(bitmap)中</strong>。 在大多数应用程序中，图层用作管理视图内容的方式，但也可以根据需要创建独立图层。</li>
+<li>Layer Modifications Trigger Animations, layer 相关属性的改变会导致创建隐式动画。 如果我们想要更好的控制，可以使用显式动画。</li>
+<li>Layers Can Be Organized into Hierarchies,  可以像 UIView 一样排列创建父子关系(parent-child relationships)。  附加到 view 的一组 layer 的层次结构**镜像(mirror)**出相应的 view 层次结构； 也可以将独立 layer 添加到 layer 层次结构中。</li>
+<li>Actions Let You Change a Layer’s Default Behavior,  隐式动画是由操作对象(action objects)实现的，它是实现预定义接口的通用对象。 Core Animation 使用操作对象来实现通常与图层关联的<strong>默认动画集</strong>。 我们可以创建自己的操作对象来实现自定义动画，也可以使用它们来实现其他类型的行为。 然后，将操作对象分配给图层的某个属性。<strong>当该属性更改时，Core Animation 将检索操作对象并告诉它执行其操作</strong>。(ps: session 2011.421 P25 也有讲到)</li>
+</ul>
+<h1 id="Core-Animation-Basics"><a href="#Core-Animation-Basics" class="headerlink" title="Core Animation Basics"></a>Core Animation Basics</h1><p>Core Animation 提供了一个通用系统，用于<strong>动画</strong>视图和应用程序的其他可视元素。 它不是取代应用程序的视图。相反，它是一种与视图集成的技术，可为动画内容提供更好的性能和支持。 它通过<strong>将视图内容缓存到可以由图形硬件直接操作的位图</strong>来实现此行为。 在某些情况下，此缓存行为可能需要我们<strong>重新考虑</strong>如何呈现和管理应用程序的内容，但大多数时候使用 Core Animation 时却不知道它存在。<strong>除了缓存视图内容之外，它还可以动画</strong>。</p>
+<h2 id="Layers-Provide-the-Basis-for-Drawing-and-Animations"><a href="#Layers-Provide-the-Basis-for-Drawing-and-Animations" class="headerlink" title="Layers Provide the Basis for Drawing and Animations"></a>Layers Provide the Basis for Drawing and Animations</h2><p>图层对象(layer object)是在 3D 空间中的 2D 表面，是使用 Core Animation 的核心。跟视图一样，它管理有关其曲面几何，内容和视觉属性的信息。<strong>但跟视图不同的是，图层不会定义自己的外观，仅管理位图周围的状态信息。位图本身可以是视图绘制本身的结果，或者是指定的固定图像的结果。</strong> 因此，在应用中使用的主要图层被视为模型对象(model objects)，因为它们主要<strong>管理数据</strong>。 这个概念很重要，因为它会影响动画的行为。 (ps: layer 管理位图相关的状态信息)</p>
+<h3 id="The-Layer-Based-Drawing-Model"><a href="#The-Layer-Based-Drawing-Model" class="headerlink" title="The Layer-Based Drawing Model"></a>The Layer-Based Drawing Model</h3><p>大多数图层都不会在应用中进行任何实际绘图。 <strong>相反，图层会捕获应用提供的内容，并将其缓存在位图中，有时也称为后备存储(backing store)。</strong> 当随后更改图层的属性时，所做的<strong>只是更改</strong>与图层对象关联的状态信息。 当更改触发动画时， Core Animation 会将图层的位图和状态信息传递给图形硬件，图形硬件会使用新信息渲染位图，如下图所示：</p>
+<p><img src="https://sat02pap001files.storage.live.com/y4mdiXRM-Ek8YeyYoOs02P8EGghahbcWIZ0SeHatXlJkIIMcSv7i5OThV8FgSquFPjsEnd6yIvlse3rY1p_4j-q5wTYkM-5fH7PS2tr8oENc6Iio4m_WO-LVDLMk_5oifmegqZxTmEV3Tyi3T5ZjzQ8efJJwvflhDybl2mZsR3Q-Hp4d-vJDE5nqQMFzseLWCgo?width=1467&height=456&cropmode=none" alt="Figure 1-1  How Core Animation draws content"> </p>
+<p>在<strong>硬件中</strong>操作位图会产生比在软件中更快。 (ps: 更改 layer 的属性或者触发动画时， Core Animation 只会更改相关联的状态信息，而不是图层，更高效。)</p>
+<p>因为它操纵静态位图，所以基于图层(layer-based)的绘图与更传统的基于视图的绘图技术显着不同。 使用基于视图的绘图时，对视图本身的更改通常会导致调用视图的 <code>drawRect:</code> 方法以使用新参数<strong>重绘内容</strong>。 但是以这种方式绘制是很昂贵的，因为它是在主线程上使用 CPU 完成的。 Core Animation 通过在硬件中操纵缓存的位图来实现相同或类似的效果，尽可能避免这种费用。 (ps: <code>drawRect:</code> 会比较耗时，相对于 Layer-Based 操作静态位图)</p>
+<h3 id="Layer-Based-Animations"><a href="#Layer-Based-Animations" class="headerlink" title="Layer-Based Animations"></a>Layer-Based Animations</h3><p>图层对象的数据和状态信息 与 屏幕上该图层内容的可视化表示 <strong>分离</strong>。这种解耦使 Core Animation 成为一种介入自身的方法，并将从旧状态值到新状态值的变化设置为动画。</p>
+<p>在动画过程中， Core Animation 会在硬件中完成所有逐帧绘图(frame-by-frame drawing)。 (ps: 硬件中绘制，这里应该是讲的 Render Server 中的 Core Animation 在 GPU 中绘制， session 2014.419 P34 也有讲到)</p>
+<h2 id="Layer-Objects-Define-Their-Own-Geometry"><a href="#Layer-Objects-Define-Their-Own-Geometry" class="headerlink" title="Layer Objects Define Their Own Geometry"></a>Layer Objects Define Their Own Geometry</h2><p>图层的一个工作就是<strong>管理其内容的可视几何体</strong>。 可视几何体包含有关该内容边界，其在屏幕上的位置以及该层是否以任何方式旋转，缩放或变换的信息。(ps: 只要跟位置、大小相关的都与可视几何有关。) 与视图一样，图层具有 frame 和 bounds 属性，可以使用它们来定位图层及其内容。 图层还具有视图不具有的其他属性，例如 anchor point ，用于<strong>定义操作发生的点</strong>。 指定图层几何图形的某些方面的方式也与为视图指定信息的方式不同（ps: 这里应该主要就是讲 anchor point 吧）。</p>
+<h3 id="Layers-Use-Two-Types-of-Coordinate-Systems"><a href="#Layers-Use-Two-Types-of-Coordinate-Systems" class="headerlink" title="Layers Use Two Types of Coordinate Systems"></a>Layers Use Two Types of Coordinate Systems</h3><p>图层使用基于点(point-based)的坐标系和单位(unit)坐标系来指定内容的位置。 使用哪种坐标系<strong>取决于</strong>所传达的信息类型。 指定直接映射到屏幕坐标的值 或 必须相对于另一个图层指定的值时使用基于点的坐标，例如图层的 position 属性。 当值<strong>不应与屏幕坐标相关联时</strong>使用单位坐标，因为它与<strong>某个其他值</strong>相关(ps: 后面紧接着一句有提到)。 例如，图层的 anchorPoint 属性指定<strong>相对于图层本身边界的点</strong>，它可以更改。</p>
+<p>基于点的坐标最常见的用途是指定图层的大小和位置，使用图层的 bounds 和 position 属性。尽管图层还有 frame 属性，它实际上 bounds 和 position 属性的值派生的，并且使用频率较低。</p>
+<p>图层 bounds 和 frame 的方向始终与底层平台的默认方向匹配。</p>
+<ul>
+<li>iOS(top-left corner)</li>
+<li>OS X(bottom-left corner)</li>
+</ul>
+<p>如图<br><img src="https://sat02pap001files.storage.live.com/y4mH2HRXYqZnb1WstVwwbp3IHrwmJH1o0FxCGm2UJ-9Dxm45hUKeleD7u1XLJAm6iFIdvgX_vNFaoXP92D3FV-q0oTTSHP0eaLWgBFARKtzzpHB2vTb72BU5Xp-mLYXPzrGuaVhEdUcgE6O6YXIjG-3lUQ82jUwT6CbAGoBlShGuj6jw_s8sYPan09xz_xkVOO-?width=1133&height=445&cropmode=none" alt="The default layer geometries for iOS and OS X"></p>
+<p>anchorPoint 是使用单位坐标系指定的几个属性之一。 Core Animation 使用单位坐标 来表示 在图层 size 更改时其值<strong>可能会更改的属性</strong>。 可以将单位坐标视为指定总可能值的百分比。 单位坐标空间中的每个坐标的范围都为 0.0 到 1.0 。 例如，沿 x 轴，左边缘位于坐标 0.0 ，右边缘位于坐标 1.0 。 沿 y 轴，单位坐标值的方向根据平台而变化，如图</p>
+<p><img src="https://sat02pap001files.storage.live.com/y4mYLCD3EJkaogucfbQr6TlfRGikIl99lGZvI1ARL8n-ehy8xerqghM8fO-Ujr7L5Z_rkS5Kids2wuWNC2QkJjZZEVPANL4Tlz5okdnRIKWd0ZsBicSiB43oKrXF1BeKB7o5aCg9RlJx9nnFDupKm-Q2-vYg_dZQJP-L6JamQZtG1XB2CigxzXJfx2eURnWACss?width=947&height=400&cropmode=none" alt="The default unit coordinate systems for iOS and OS X"></p>
+<p>所有坐标值（无论是点还是单位坐标）都指定为浮点数。 使用浮点数可以指定可能介于正常坐标值之间的<strong>精确位置</strong>。 使用浮点值很方便，特别是在打印期间或绘制到 Retina 显示器时，其中一个点可能由多个像素表示。 浮点值允许您忽略基础设备分辨率，只需以您需要的精度指定值。 (ps: 浮点值的好处)</p>
+<h3 id="Anchor-Points-Affect-Geometric-Manipulations"><a href="#Anchor-Points-Affect-Geometric-Manipulations" class="headerlink" title="Anchor Points Affect Geometric Manipulations"></a>Anchor Points Affect Geometric Manipulations</h3><p>position 和 transform 都受到 anchorPoint 的影响。</p>
+<p>见下图<br><img src="https://sat02pap001files.storage.live.com/y4mnUnXVApXrufKbOgcwwIn6Y2DoQPzAvIRDVjOu3IRGfU0uTIL_DuEDd58luXBet5tgOVdeP8NUtoGth_NVqHoOAcPUHWmrlfQqt03JwsuXvUu0vdueu9hGy-SbCJM9HdHtbaxaQNV2h9Ym70BmhszLAyUd15JP7fCeZlebGS8lEsgK-m44VfrygvHt5MoKiTw?width=1338&height=1485&cropmode=none" alt="How the anchor point affects the layer’s position property"></p>
+<p><img src="https://sat02pap001files.storage.live.com/y4mLQFZ7UN3pLuqRozSXgGpSGtmSLA81bHPoa57EWPFQFqCjkNPDFSZLvR0h4ZmhigSIsQVodwo3DurVbACqQ3qXmioNy6DkVKYKH2u0un7K1fBcvmI0bj_dKxAEzKZS58mXe9RXYxjiw_7E6lklL9qMJWIlHyMHTttU87Msy1DXnw20blPB-UmyMJ-50-WlpPd?width=1338&height=1302&cropmode=none" alt="How the anchor point affects layer transformations"></p>
+<h3 id="Layers-Can-Be-Manipulated-in-Three-Dimensions"><a href="#Layers-Can-Be-Manipulated-in-Three-Dimensions" class="headerlink" title="Layers Can Be Manipulated in Three Dimensions"></a>Layers Can Be Manipulated in Three Dimensions</h3><p>每个图层都有两个变换矩阵，可以使用它们来操纵图层及其内容。</p>
+<ul>
+<li>transform, 指定要应用于图层及其嵌入子图层的变换。</li>
+<li>sublayerTransform, 仅适用于子图层的其他转换，最常用于向场景内容添加透视视觉效果。</li>
+</ul>
+<p>通过将坐标值乘以数字矩阵来做变换工作，以获得表示原始点的变换版本的新坐标。 如图<br><img src="https://sat02pap001files.storage.live.com/y4m8gZTdmc4e0StYmp8Z4MIA19bTmY1MSeRhF0i8SHwXlGfevS3QJl0qE5zNPFXKGEeUxAg_8a2DtjhXO2u3HgLtVJBrFt03QzkU2FbciJNMH0aj7lQEfwWX8bZrGUmfQkm1d57sf1Z0lYmNcQty1h86rQoLh_Mgf2EynNVH44P61KFxqcJ0O5PTkFUf9uWSRX7?width=617&height=219&cropmode=none" alt="Converting a coordinate using matrix math"></p>
+<p>还列举了各种常用的变换矩阵。如图<br><img src="https://sat02pap001files.storage.live.com/y4mvvO9GI0Fhpsay0VFTkZCBQZg3KTH-g9b3dr8d40GHH03w6b-xripjBLR4bhadmiYuZisP2RMBBBQL4q79yPMhzrF4v5Gxx2qocdXNVFRR0Cu6M6lzyR_SQEFI-s6P_x1T0MiuapzyAZC6O_ogvUKutWb6h2FoulismmnfKpXZwFeg2Kscy15iqJmQzFMGV0d?width=543&height=595&cropmode=none" alt="Matrix configurations for common transformations"></p>
+<h2 id="Layer-Trees-Reflect-Different-Aspects-of-the-Animation-State"><a href="#Layer-Trees-Reflect-Different-Aspects-of-the-Animation-State" class="headerlink" title="Layer Trees Reflect Different Aspects of the Animation State"></a>Layer Trees Reflect Different Aspects of the Animation State</h2><p>使用 Core Animation 的应用程序有三组图层对象。 每组图层对象在使应用内容显示在屏幕上时具有不同的作用：</p>
+<ul>
+<li>layer tree(图层树), 应用与之交互的对象，它存储动画的目标值，当更改 layer 的属性内容时，就是用的它。</li>
+<li>presentation tree(呈现树), 正在运行的动画的 in-flight values(时刻都会变换的，它表示动画的当前值)，我们不应该改变它的值，相反而是获取这些值，然后开始新的动画。</li>
+<li>render tree(渲染树), 它执行实际动画，并且是 Core Animation 的私有动画。</li>
+</ul>
+<p>每组图层对象都组织成一个分层结构，就像应用程序中的视图一样，这是伴随着视图的。 </p>
+<p>可以将与视图无关的图层添加到图层层次中，好处就是针对不需要视图的所有开销的内容，优化应用程序的性能(Q: 具体是指哪些开销呢？)。</p>
+<p>对于图层树中的每个对象，在呈现树和渲染树中都有一个匹配的对象。 应用程序主要使用图层树中的对象，但有时可能访问呈现树中的对象(用 presentationLayer 属性获取)，因为我们想获取动画的当前值。</p>
+<p>注意：只有动画在进行中(in flight)时，才应该访问呈现树中的对象。不然没有意义。此行为与图层树不同，图层树始终反映代码设置的最后一个值，并且等效于动画的最终状态。(因为它实时反映当前的值，所以 explicit animation 的时候要设置最终的值，不然动画完成以后会回到初始值，以为没做任何改变。)</p>
+<h2 id="The-Relationship-Between-Layers-and-Views"><a href="#The-Relationship-Between-Layers-and-Views" class="headerlink" title="The Relationship Between Layers and Views"></a>The Relationship Between Layers and Views</h2><p>图层<strong>不能替代</strong>应用程序的视图 - 也就是说，无法仅基于图层对象创建可视化界面。 图层为视图提供<strong>基础结构</strong>。 具体而言，在执行此操作时，图层可以更轻松、更有效地绘制视图内容并为其设置动画并保持较高的帧速率。 但是，图层有很多事情没有做。 图层<strong>不处理事件，绘制内容(draw content)，参与响应链或执行许多其他操作</strong>。 出于这个原因，每个应用程序必须仍然有一个或多个视图来处理这些类型的交互。</p>
+<p>在 iOS 中，每个视图都由相应的图层对象支持(backed)，被称为图层支持的视图(layer-backed view)。在图层支持的视图中，系统负责创建底层图层对象并保持该图层与视图同步。</p>
+<p>注意：对于图层支持的视图，建议尽可能操纵视图而不是其图层。 在 iOS 中，视图只是图层对象的一个<strong>薄包装</strong>，因此对图层所做的任何操作通常都可以正常工作。 但是在 iOS 和 OS X 中都存在这样的情况：操纵图层而不是视图可能无法产生预期的结果。 只要有可能，本文档指出了这些陷阱，并试图提供方法来帮助您解决这些问题。 (ps: 操作视图，而是图层。)</p>
+<p>除了与视图关联的图层外，还可以创建没有相应视图的图层对象。可以将这些独立图层对象嵌入到应用程序中的任何其他图层对象中，包括与视图关联的对象。 通常使用独立层对象作为特定优化路径的一部分。 例如，如果要在多个位置使用相同的图像，可以将图像加载一次，并将其与多个独立图层对象关联，然后将这些对象添加到图层树。 然后，每个层都<strong>引用源图像，而不是</strong>尝试在内存中创建自己的图像副本。</p>
+<h1 id="Setting-Up-Layer-Objects"><a href="#Setting-Up-Layer-Objects" class="headerlink" title="Setting Up Layer Objects"></a>Setting Up Layer Objects</h1><p>图层对象是使用 Core Animation 执行的所有操作的核心。 <strong>图层管理应用程序的可视内容，并提供 用于修改该内容的样式和视觉外观的 选项</strong>。</p>
+<h2 id="Enabling-Core-Animation-Support-in-Your-App"><a href="#Enabling-Core-Animation-Support-in-Your-App" class="headerlink" title="Enabling Core Animation Support in Your App"></a>Enabling Core Animation Support in Your App</h2><p>在 iOS 应用程序中，始终启用 Core Animation ，每个视图都由一个图层支持。</p>
+<h2 id="Changing-the-Layer-Object-Associated-with-a-View"><a href="#Changing-the-Layer-Object-Associated-with-a-View" class="headerlink" title="Changing the Layer Object Associated with a View"></a>Changing the Layer Object Associated with a View</h2><p>默认情况下，图层支持的视图会创建 CALayer 类的实例，在大多数情况下，可能不需要不同类型的图层对象。  选择不同的图层类可能会以简单的方式<strong>提高性能或支持特定类型的内容</strong>。 例如， CATiledLayer 类被优化用于以有效的方式显示大图像。(ps:专人专项)</p>
+<h3 id="Changing-the-Layer-Class-Used-by-UIView"><a href="#Changing-the-Layer-Class-Used-by-UIView" class="headerlink" title="Changing the Layer Class Used by UIView"></a>Changing the Layer Class Used by UIView</h3><p>可以通过覆盖视图的 layerClass 方法并返回不同的类对象来更改 iOS 视图使用的图层类型。默认是 CALayer 对象。 但是可能在某些情况下，不同的图层类更合适。比如：</p>
+<ul>
+<li>视图使用 Metal 或 OpenGL ES 绘制内容，在这种情况下，应该使用 CAMetalLayer 或 CAEAGLLayer 对象。</li>
+<li>有一个专门的图层类可以提供更好的性能。(专人专项)</li>
+<li>希望利用一些专门的 Core Animation 图层类，例如粒子发射器(particle emitters)或复制器(replicators)。</li>
+</ul>
+<p>改变图层的代码如下，在显示之前，视图调用 layerClass 方法并使用返回的类为自己创建新的图层对象。 创建后，<strong>无法更改</strong>视图的图层对象。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">+ (Class) layerClass &#123;</span><br><span class="line">   return [CAMetalLayer class];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="Different-Layer-Classes-Provide-Specialized-Behaviors"><a href="#Different-Layer-Classes-Provide-Specialized-Behaviors" class="headerlink" title="Different Layer Classes Provide Specialized Behaviors"></a>Different Layer Classes Provide Specialized Behaviors</h3><p>列举了不同的 Layer 类型提供的特定行为。</p>
+<ul>
+<li>CAEmitterLayer,  用于实现基于Core Animation的粒子发射器系统。 </li>
+<li>CAGradientLayer, 颜色渐变。</li>
+<li>CAMetalLayer,  Metal 渲染内容。</li>
+<li>CAEAGLLayer/CAOpenGLLayer, OpenGL ES (iOS) or OpenGL (OS X) 渲染内容。</li>
+<li>CAReplicatorLayer, 复制器。</li>
+<li>CAScrollLayer, 滚动。</li>
+<li>CAShapeLayer, 用于绘制立方贝塞尔样条曲线。形状图层有利于绘制基于路径的形状，因为它们总是会<strong>产生清晰的路径，而不是</strong>绘制到图层的后备存储中的路径，这在缩放时看起来不太好。 但是，清晰的结果确实涉及在主线程上呈现形状并缓存结果。</li>
+<li>CATextLayer,  纯/富 文本。</li>
+<li>CATiledLayer,  用于管理大图像，可以将其划分为较小的图块并单独渲染，并支持放大和缩小内容。</li>
+<li>CATransformLayer,  用于呈现<strong>真正的 3D 图层</strong>层次结构，而不是由其他图层类实现的展平图层层次结构。</li>
+<li>QCCompositionLayer,  用于渲染Quartz Composer合成。 (仅限OS X)</li>
+</ul>
+<h2 id="Providing-a-Layer’s-Contents"><a href="#Providing-a-Layer’s-Contents" class="headerlink" title="Providing a Layer’s Contents"></a>Providing a Layer’s Contents</h2><p><strong>图层是 管理应用提供内容的 数据对象</strong>。 图层的内容由 包含要显示的可视数据的位图 组成。 </p>
+<ul>
+<li>将图像对象(image object)直接分配给图层对象的 contents 属性。 （此技术最适用于从未或很少更改的图层内容。）</li>
+<li>将委托对象(delegate object)分配给图层，让委托绘制图层的内容。 （此技术最适用于可能会定期更改并可由外部对象（如视图, UIView ）提供的图层内容。）</li>
+<li>定义图层子类(layer subclass)并覆盖其绘图方法之一以自己提供图层内容。 （如果必须创建自定义图层子类或者如果要更改图层的基本绘图行为，则此技术是合适的。）</li>
+</ul>
+<p>自己创建图层对象时，唯一需要担心为图层提供内容<strong>的时间</strong>。 如果应用程序只包含图层支持的视图，则不必担心使用上述任何技术来提供图层内容，图层支持的视图<strong>以最有效的方式</strong>自动提供其关联图层的内容。</p>
+<h3 id="Using-an-Image-for-the-Layer’s-Content"><a href="#Using-an-Image-for-the-Layer’s-Content" class="headerlink" title="Using an Image for the Layer’s Content"></a>Using an Image for the Layer’s Content</h3><p><strong>由于图层只是用于管理位图图像的容器</strong>，因此可以将图像直接指定给图层的内容属性。<br>图层使用我们直接提供的图像对象，不会尝试创建<strong>自己的图像副本</strong>。 如果在应用的多个位置使用相同的图像，此行为可以节省内存。</p>
+<p>赋值的时候 CGImageRef 类型，记得提供一个分辨率与本机设备分辨率相匹配的图像（调整 contentsScale 属性）。 </p>
+<h3 id="Using-a-Delegate-to-Provide-the-Layer’s-Content"><a href="#Using-a-Delegate-to-Provide-the-Layer’s-Content" class="headerlink" title="Using a Delegate to Provide the Layer’s Content"></a>Using a Delegate to Provide the Layer’s Content</h3><p>使用委托对象在显示时，图层调用委托的方法来提供所需的内容：</p>
+<ul>
+<li>如果委托对象实现了 <code>displayLayer:</code> 方法，那么它实现负责创建位图并将其分配给图层的 contents 属性。</li>
+<li>如果委托对象实现了 <code>drawLayer:inContext:</code> 方法，则 Core Animation 会创建一个位图，创建一个图形上下文(graphics context)以绘制到该位图，然后调用委托方法来填充该位图。 所有委托方法都要<strong>绘制到提供的图形上下文中</strong>。</li>
+</ul>
+<p>委托对象实现了 <code>displayLayer:</code> 或者 <code>drawLayer:inContext:</code> 方法，如果两者都实现了，只会调用 <code>displayLayer:</code> 方法。</p>
+<p>覆盖 <code>displayLayer:</code> 方法 最适合 应用程序<strong>更喜欢加载或创建它想要显示的位图的情况</strong>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; Setting the layer contents directly</span><br><span class="line">- (void)displayLayer:(CALayer *)theLayer &#123;</span><br><span class="line">    &#x2F;&#x2F; Check the value of some state property</span><br><span class="line">    if (self.displayYesImage) &#123;</span><br><span class="line">        &#x2F;&#x2F; Display the Yes image</span><br><span class="line">        theLayer.contents &#x3D; [someHelperObject loadStateYesImage];</span><br><span class="line">    &#125;</span><br><span class="line">    else &#123;</span><br><span class="line">        &#x2F;&#x2F; Display the No image</span><br><span class="line">        theLayer.contents &#x3D; [someHelperObject loadStateNoImage];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果没有预渲染图像或辅助对象来<strong>创建位图</strong>，则委托可以使用 <code>drawLayer:inContext:</code> 方法动态绘制内容。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; Drawing the contents of a layer</span><br><span class="line">- (void)drawLayer:(CALayer *)theLayer inContext:(CGContextRef)theContext &#123;</span><br><span class="line">    CGMutablePathRef thePath &#x3D; CGPathCreateMutable();</span><br><span class="line"> </span><br><span class="line">    CGPathMoveToPoint(thePath,NULL,15.0f,15.f);</span><br><span class="line">    CGPathAddCurveToPoint(thePath,</span><br><span class="line">                          NULL,</span><br><span class="line">                          15.f,250.0f,</span><br><span class="line">                          295.0f,250.0f,</span><br><span class="line">                          295.0f,15.0f);</span><br><span class="line"> </span><br><span class="line">    CGContextBeginPath(theContext);</span><br><span class="line">    CGContextAddPath(theContext, thePath);</span><br><span class="line"> </span><br><span class="line">    CGContextSetLineWidth(theContext, 5);</span><br><span class="line">    CGContextStrokePath(theContext);</span><br><span class="line"> </span><br><span class="line">    &#x2F;&#x2F; Release the path</span><br><span class="line">    CFRelease(thePath);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对于具有自定义内容的图层支持视图，应该继续覆盖视图的方法来进行绘制。 图层支持的视图自动<strong>使其自身成为其图层的委托</strong>，并实现所需的委托方法，不应更改该配置。 相反，应该实现视图的 <code>drawRect:</code> 方法来绘制内容。 (ps: layer-backed custom view 就是其 layer 的代理)。</p>
+<h3 id="Providing-Layer-Content-Through-Subclassing"><a href="#Providing-Layer-Content-Through-Subclassing" class="headerlink" title="Providing Layer Content Through Subclassing"></a>Providing Layer Content Through Subclassing</h3><p>如果要实现自定义图层类，则可以覆盖图层类的<strong>绘图方法</strong>以执行任何绘图。 图层对象本身生成自定义内容的情况并不常见，但图层当然可以<strong>管理内容的显示</strong>。例如， CATiledLayer 类通过将大图像分成可以单独管理和呈现的较小图块 来管理大图像。因为<strong>只有图层具有关于在任何给定时间需要渲染哪些图块的信息，所以它直接管理绘图行为</strong>。</p>
+<p>子类化时，可以使用以下任一技术绘制图层的内容：</p>
+<ul>
+<li>覆盖图层的 <code>display</code> 方法，并使用它直接设置图层的 contents 属性。</li>
+<li>覆盖图层的 <code>drawInContext:</code> 方法，并使用它绘制到提供的图形上下文中。</li>
+</ul>
+<p>覆盖哪种方法取决于在绘图过程中的控制程度。 display 方法是更新图层内容的<strong>主要入口点</strong>，因此覆盖该方法可以<strong>完全控制</strong>该过程。覆盖 display 方法还意味着我们负责创建要分配给 contents 属性的 CGImageRef 。如果只想绘制内容（或让图层管理绘图操作），可以改写 <code>drawInContext:</code> 方法，让图层创建后备存储。</p>
+<h3 id="Tweaking-the-Content-You-Provide"><a href="#Tweaking-the-Content-You-Provide" class="headerlink" title="Tweaking the Content You Provide"></a>Tweaking the Content You Provide</h3><p>将图像指定给图层的 contents 属性时，图层的 contentsGravity 属性确定如何处理该图像以适合当前边界。 默认情况下，如果图像大于或小于当前边界，则图层对象会缩放图像以适合可用空间。 如果图层边界的宽高比不同于图像的宽高比，则可能导致图像失真。 可以使用 contentsGravity 属性来确保以尽可能最佳的方式呈现内容。</p>
+<p>分配给 contentsGravity 属性的值分为两类：</p>
+<ul>
+<li>position-based gravity constants, 基于位置的重力常数允许将图像固定到图层边界矩形的特定边或角，而不缩放图像。(见下图 Position-based gravity constants for layers)</li>
+<li>scaling-based gravity constants, 基于缩放的重力常数允许使用多个选项之一来拉伸图像，其中一些选项保留宽高比，而其中一些选项不保留。(见下图 Scaling-based gravity constants for layers)</li>
+</ul>
+<p><img src="https://sat02pap001files.storage.live.com/y4mc1ojWJzj7ZimFJvSkvwxC3eTdG7F-k0nD8EcaE3mBd3fBUguaBW_DhEg8C_E9HCvnkG8uek0TMavoPeSEOeu-YfaDX-7lnzQZXuBVy903QDipT7SAkoQPX-AbfOiht8TBr4POqwUPp4aMwmDdzJ0XUGaHv_QFwRlH64Neiu6Na38V6U2RrS4yt_kdgxcEcig?width=1095&height=679&cropmode=none" alt="Position-based gravity constants for layers"></p>
+<p><img src="https://sat02pap001files.storage.live.com/y4m5fJbUyvK3LzZdW7Z6RyWHZuGlD28Qa6ZBNof-8GI_9Ezmv1peih6rROZmgkk-l1a71fXIWIDEdyrW5AijnIVKjGGxb0t3yFrm547e9IWGte_5CBCyyAwNUv_0ttfGQjYubexIw8blzKnKhpgEeM63CAC32TgAfADnXl6l-7MnKPi-s_hu-JGeAl5oTsLN9_V?width=944&height=510&cropmode=none" alt="Scaling-based gravity constants for layers"></p>
+<p>只有 kCAGravityResize 不保留原图像的宽高比。</p>
+<h3 id="Working-with-High-Resolution-Images"><a href="#Working-with-High-Resolution-Images" class="headerlink" title="Working with High-Resolution Images"></a>Working with High-Resolution Images</h3><p><strong>图层对底层设备屏幕的分辨率没有任何固有的了解，图层只是存储指向位图的指针，并在给定可用像素的情况下以最佳方式显示它</strong>。如果将图像指定给图层的内容属性，则必须通过将图层的 contentsScale 属性设置为适当的值来告知 Core Animation 图像的分辨率。该属性的默认值为 1.0，适用于要在标准分辨率屏幕上显示的图像。如果图像用于 Retina 显示，请将此属性的值设置为 2.0 。</p>
+<p><strong>只有在直接为图层指定位图时，才需要更改 contentsScale 属性的值</strong>。 UIKit 和 AppKit 中的 图层支持的视图 会根据屏幕分辨率和视图管理的内容 <strong>自动</strong>将其图层的比例因子设置为适当的值。</p>
+<h2 id="Adjusting-a-Layer’s-Visual-Style-and-Appearance"><a href="#Adjusting-a-Layer’s-Visual-Style-and-Appearance" class="headerlink" title="Adjusting a Layer’s Visual Style and Appearance"></a>Adjusting a Layer’s Visual Style and Appearance</h2><p>图层对象内置了视觉装饰(visual adornments)，例如边框和背景颜色，可用于补充图层的主要内容。 由于这些视觉装饰<strong>不需要进行任何渲染，因此可以在某些情况下将图层用作独立实体</strong>。 我们所要做的就是在图层上设置属性，图层处理必要的图形，包括任何动画。 有关这些视觉装饰如何影响图层外观的其他说明，请参阅”#Layer Style Property Animations#”。</p>
+<h3 id="Layers-Have-Their-Own-Background-and-Border"><a href="#Layers-Have-Their-Own-Background-and-Border" class="headerlink" title="Layers Have Their Own Background and Border"></a>Layers Have Their Own Background and Border</h3><p><img src="https://sat02pap001files.storage.live.com/y4mZtcLVtUvscU2EY89MNsCRlh3-LzbU3WJIJokv1b3O-UxkIPs3XV5olOn9-Z8Amaj8ofgr0keiXz5DJ4XSJ9W2NPmH5zkuMIHEX7drfcYOI4iXyT31IQcEByA67St33rHBgiWugClW68n1FHL1l0wtvUpDFLLVuU7bQUnknuTxAabo3S6d9QsIU5qz8XwpDPZ?width=759&height=579&cropmode=none" alt="Adding a border and background to a layer"><br>background color 在图层的内容图像后面呈现， border 呈现在该图像的顶部。</p>
+<p>注意：请注意 Core Graphics 处理图案图像(pattern images)的渲染，并使用其标准坐标系进行处理，该坐标系与 iOS 中的默认坐标系不同。 (ps: 注意 Core Graphics 使用的坐标系与 iOS 中的 y 轴相反。)</p>
+<p>如果将图层的背景颜色设置为不透明颜色(opaque color)，请考虑将图层的 opaque 属性设置为 YES 。 这样做可以在屏幕上<strong>合成图层时提高性能</strong>，并且无需图层的<strong>后备存储来管理 Alpha 通道</strong>。 <strong>但是</strong>，如果图层也具有非零角半径(nonzero corner radius)，则<strong>不能将</strong>图层标记为不透明。</p>
+<h3 id="Layers-Support-a-Corner-Radius"><a href="#Layers-Support-a-Corner-Radius" class="headerlink" title="Layers Support a Corner Radius"></a>Layers Support a Corner Radius</h3><p>角半径(corner radius)是一种视觉装饰，可以**遮盖(mask)**图层边界矩形的一部分角落，以允许底层内容显示，如下图所示。</p>
+<p><img src="https://sat02pap001files.storage.live.com/y4mxyvtoauyJ85JUNrs-uwua7n_iOjREbp3aNkbJHW739lbATfWEXsNRuzS2E-No-BbZBQ9M1TghFQmZ-XRZZFN27d7oU9nh0v00oTruhu5IEh8B34D_djzYGOI5yFPLgNXcVdRs0-s4VmH_dCOzvVs8hhcA252WTLPTbr5MaWD7tef8WuGMA73Hug4V5XfuJcf?width=1015&height=694&cropmode=none" alt="A corner radius on a layer"></p>
+<p>因为它涉及应用透明蒙版，所以角半径<strong>不会影响图层</strong>内容属性中的图像，<strong>除非</strong> masksToBounds 属性设置为 YES 。但是，角半径始终会影响图层的 Background 和 Border 的绘制方式。 </p>
+<p>设置 layer.cornerRadius 即可完成这种效果。</p>
+<h3 id="Layers-Support-Built-In-Shadows"><a href="#Layers-Support-Built-In-Shadows" class="headerlink" title="Layers Support Built-In Shadows"></a>Layers Support Built-In Shadows</h3><p>CALayer 类有几个用于配置阴影效果的属性。 阴影使图层看起来好像浮在其底层内容之上，从而增加了图层的深度。 默认情况下，图层阴影的不透明度值设置为 0 ，这有效地隐藏了阴影。将不透明度更改为非零值会导致 Core Animation 绘制阴影。由于默认情况下阴影直接位于图层下方，因此可能还需要先更改阴影的偏移量，然后才能看到它。但重要的是要记住，为阴影指定的偏移量是使用图层的原生坐标系统应用的，这在 iOS 和 OS X 上是不同的。</p>
+<p><img src="https://sat02pap001files.storage.live.com/y4mT_Cl_oVEDeLc4b_huquuXlt9CHbtFmaRsgUW4cWchBDwysZJ4Oo0SWXHUWS7BRxGwd_mkKNJ6_EoZtnwRwigqP78ehj15LtmSePtD8PwXEd9xyQJbWunUOZzuzbu6X77Z_mTlVhtgtuOHQzDoD3ZWFL0p5AXBwF3Du1XTTKlxLVRYRImeglNArBBxQLn3Eb_?width=691&height=437&cropmode=none" alt="Applying a shadow to a layer"></p>
+<p>实现向下的阴影， iOS y 为正值，而 OS X 则为负值。</p>
+<p>向图层添加阴影时，阴影是<strong>图层内容的一部分</strong>，但实际上是在图层的<strong>边界矩形之外</strong>。 因此，如果为图层启用 masksToBounds 属性，则会在<strong>边缘周围剪切阴影效果</strong>， 如果图层包含任何透明内容，这可能会导致奇怪的效果，即图层正下方的阴影部分仍然可见，但超出图层的部分则不会。 如果想要阴影但又想使用边界遮罩，则使用两个图层而不是一个图层。 将蒙版应用于包含内容的图层，然后将该图层嵌入到启用了阴影效果的完全相同大小的第二层内。 (ps: 阴影嵌套圆角，需要写个 demo 处理玩一下)</p>
+<h2 id="Adding-Custom-Properties-to-a-Layer"><a href="#Adding-Custom-Properties-to-a-Layer" class="headerlink" title="Adding Custom Properties to a Layer"></a>Adding Custom Properties to a Layer</h2><p>CAAnimation 和 CALayer 类都扩展了 键值编码(key-value coding)约定以支持自定义属性。 可以使用此行为将<strong>数据</strong>添加到图层，并使用自定义键检索它。 甚至可以将<strong>操作</strong>与自定义属性关联，以便在更改属性时执行相应的动画。 可以看 “#Key-Value Coding Compliant Container Classes#” 和 “#Changing a Layer’s Default Behavior#”。</p>
+<h2 id="Printing-the-Contents-of-a-Layer-Backed-View"><a href="#Printing-the-Contents-of-a-Layer-Backed-View" class="headerlink" title="Printing the Contents of a Layer-Backed View"></a>Printing the Contents of a Layer-Backed View</h2><p>在打印期间，层根据需要重新绘制其内容以适应打印环境。 Core Animation 在渲染到屏幕时通常依赖于缓存的位图，而在打印时会重绘该内容。 特别是，如果图层支持的视图使用 <code>drawRect:</code> 方法提供图层内容，则 Core Animation 会在打印期间再次调用 <code>drawRect:</code> 以生成打印的图层内容。 </p>
+<h1 id="Animating-Layer-Content"><a href="#Animating-Layer-Content" class="headerlink" title="Animating Layer Content"></a>Animating Layer Content</h1><p>Core Animation 提供的基础架构可以轻松创建应用层的复杂动画，并通过扩展创建拥有这些层的任何视图。 示例包括更改图层框架矩形的大小(frame)，更改其在屏幕上的位置(position)，应用旋转变换(rotation transform)或更改其不透明度(opacity)。 使用 Core Animation ，启动动画通常只需更改属性即可(隐式动画)，但也可以创建动画并明确设置动画参数(显式动画)。</p>
+<p>关于创建更高级的动画，情况”#Advanced Animation Tricks#”。</p>
+<h2 id="Animating-Simple-Changes-to-a-Layer’s-Properties"><a href="#Animating-Simple-Changes-to-a-Layer’s-Properties" class="headerlink" title="Animating Simple Changes to a Layer’s Properties"></a>Animating Simple Changes to a Layer’s Properties</h2><p>可以根据需要<strong>隐式或显式地</strong>执行简单的动画。 <strong>隐式动画使用默认的计时和动画属性来执行动画</strong>，而显式动画则要求使用动画对象<strong>自己配置</strong>这些属性。 因此，隐式动画非常适合想要在没有大量代码的情况下进行更改的情况，并且默认时间适合业务需求。</p>
+<p>简单的动画涉及更改图层的属性，让 Core Animation 随时间动画显示这些更改。 图层定义了许多影响图层可见外观的属性。 更改其中一个属性是一种为外观更改设置动画的方法。 例如，将图层的不透明度从 1.0 更改为 0.0 会导致图层淡出并变为透明。</p>
+<p>要触发隐式动画，所要做的就是<strong>更新图层对象的属性</strong>。 在图层树中修改图层对象时，这些对象会立即反映这些更改。 但是，图层对象的视觉外观<strong>不会立即</strong>更改(ps: 应该是需要等待下个 runloop)。 相反， Core Animation 使用所做的更改<strong>作为触发器来创建和安排</strong>一个或多个隐式动画以供执行。 因此，进行类似于代码清单 3-1 中的更改会导致 Core Animation 创建动画对象，并安排该动画从<strong>下一个更新周期</strong>开始运行。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; Listing 3-1  Animating a change implicitly</span><br><span class="line">theLayer.opacity &#x3D; 0.0;</span><br></pre></td></tr></table></figure>
+<p>若要使用动画对象显式进行相同更改，请创建 CABasicAnimation 对象并使用该对象配置动画参数。 可以在将动画添<strong>加到图层之前</strong>设置动画的开始和结束值，更改持续时间或更改任何其他动画参数。 代码清单 3-2 显示了如何使用动画对象淡出图层。 创建对象时，指定要设置动画的属性的键路径(key path)，然后设置动画参数。 要执行动画，可以使用 <code>addAnimation:forKey:</code> 方法将其添加到要设置动画的图层。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; Listing 3-2  Animating a change explicitly</span><br><span class="line">CABasicAnimation* fadeAnim &#x3D; [CABasicAnimation animationWithKeyPath:@&quot;opacity&quot;];</span><br><span class="line">fadeAnim.fromValue &#x3D; [NSNumber numberWithFloat:1.0];</span><br><span class="line">fadeAnim.toValue &#x3D; [NSNumber numberWithFloat:0.0];</span><br><span class="line">fadeAnim.duration &#x3D; 1.0;</span><br><span class="line">[theLayer addAnimation:fadeAnim forKey:@&quot;opacity&quot;];</span><br><span class="line"> </span><br><span class="line">&#x2F;&#x2F; Change the actual data value in the layer to the final value.</span><br><span class="line">theLayer.opacity &#x3D; 0.0;</span><br></pre></td></tr></table></figure>
+<p>提示：创建显式动画时，建议始终为动画对象的 <strong>fromValue</strong> 属性指定值。 如果未指定此属性的值， Core Animation 将使用图层的当前值作为起始值。 如果已将属性更新为其最终值，则可能无法获得所需的结果。</p>
+<p>与<strong>更新图层对象的数据值的</strong>隐式动画不同，<strong>显式动画不会修改图层树中的数据，显式动画仅生成动画</strong>。在动画结束时， Core Animation 从图层中<strong>移除</strong>动画对象，并使用<strong>其当前数据值重绘图层</strong>。如果希望显式动画的更改是永久性的，则还必须更新图层的属性，如上例所示。 </p>
+<p>隐式和显式动画通常在当前运行循环(run loop)周期<strong>结束后开始执行</strong>，并且当前线程<strong>必须具有运行循环</strong>才能执行动画。如果更改多个属性，或者向图层添加多个动画对象，则会<strong>同时对</strong>所有这些属性更改进行动画处理。例如，可以通过同时配置两个动画来淡化图层，同时将其移出屏幕。但是，还可以将动画对象配置为在特定时间启动。有关修改动画定时的更多信息，请参阅”#Customizing the Timing of an Animation#”。 (session 2011.421 P20 也有提到)</p>
+<h2 id="Using-a-Keyframe-Animation-to-Change-Layer-Properties"><a href="#Using-a-Keyframe-Animation-to-Change-Layer-Properties" class="headerlink" title="Using a Keyframe Animation to Change Layer Properties"></a>Using a Keyframe Animation to Change Layer Properties</h2><p>基于属性的动画(property-based animation)将属性从起始值更改为结束值，而 CAKeyframeAnimation 对象允许以不是线性的方式设置一组目标值的动画。 关键帧动画由一组目标数据值和每个值到达的时间组成。 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; Listing 3-3  Creating a bounce keyframe animation (用 path 来处理)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; create a CGPath that implements two arcs (a bounce)</span><br><span class="line">CGMutablePathRef thePath &#x3D; CGPathCreateMutable();</span><br><span class="line">CGPathMoveToPoint(thePath,NULL,74.0,74.0);</span><br><span class="line">CGPathAddCurveToPoint(thePath,NULL,74.0,500.0,</span><br><span class="line">                                   320.0,500.0,</span><br><span class="line">                                   320.0,74.0);</span><br><span class="line">CGPathAddCurveToPoint(thePath,NULL,320.0,500.0,</span><br><span class="line">                                   566.0,500.0,</span><br><span class="line">                                   566.0,74.0);</span><br><span class="line"> </span><br><span class="line">CAKeyframeAnimation * theAnimation;</span><br><span class="line"> </span><br><span class="line">&#x2F;&#x2F; Create the animation object, specifying the position property as the key path.</span><br><span class="line">theAnimation&#x3D;[CAKeyframeAnimation animationWithKeyPath:@&quot;position&quot;];</span><br><span class="line">theAnimation.path&#x3D;thePath;</span><br><span class="line">theAnimation.duration&#x3D;5.0;</span><br><span class="line"> </span><br><span class="line">&#x2F;&#x2F; Add the animation to the layer.</span><br><span class="line">[theLayer addAnimation:theAnimation forKey:@&quot;position&quot;];</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="Specifying-Keyframe-Values"><a href="#Specifying-Keyframe-Values" class="headerlink" title="Specifying Keyframe Values"></a>Specifying Keyframe Values</h3><p>api 的相关用法，具体看文档吧。</p>
+<h3 id="Specifying-the-Timing-of-a-Keyframe-Animation"><a href="#Specifying-the-Timing-of-a-Keyframe-Animation" class="headerlink" title="Specifying the Timing of a Keyframe Animation"></a>Specifying the Timing of a Keyframe Animation</h3><p>api 的相关用法，具体看文档吧。</p>
+<h2 id="Stopping-an-Explicit-Animation-While-It-Is-Running"><a href="#Stopping-an-Explicit-Animation-While-It-Is-Running" class="headerlink" title="Stopping an Explicit Animation While It Is Running"></a>Stopping an Explicit Animation While It Is Running</h2><p>动画通常会一直运行直到完成，但如果需要，可以使用以下技术之一提前停止：</p>
+<ul>
+<li>要从图层中删除单个动画对象，请调用图层的 <code>removeAnimationForKey:</code> 方法以删除动画对象。此方法使用传递给 <code>addAnimation:forKey:</code> 方法的键来标识动画。 key 不能为 nil。</li>
+<li>要从图层中删除所有动画对象，请调用图层的 <code>removeAllAnimations</code> 方法。 此方法<strong>立即删除所有正在进行的</strong>动画，并使用其当前状态信息重新绘制图层。</li>
+</ul>
+<p><strong>注意</strong>：无法直接从图层中删除隐式动画。</p>
+<p>从图层中删除动画时， Core Animation 会通过使用当前值重新绘制图层。因为当前值通常是动画的结束值，这可能导致图层的外观<strong>突然跳跃</strong>。如果希望图层的外观保持在动画<strong>最后一帧的</strong>位置，则可以使用呈现树中的对象检索这些最终值并将其设置在图层树中的对象上。</p>
+<h2 id="Animating-Multiple-Changes-Together"><a href="#Animating-Multiple-Changes-Together" class="headerlink" title="Animating Multiple Changes Together"></a>Animating Multiple Changes Together</h2><p>如果要同时将多个动画应用于图层对象，可以使用 CAAnimationGroup 对象将它们组合在一起。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; Listing 3-4  Animating two animations together (同时修改边框宽度和颜色)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; Animation 1</span><br><span class="line">CAKeyframeAnimation* widthAnim &#x3D; [CAKeyframeAnimation animationWithKeyPath:@&quot;borderWidth&quot;];</span><br><span class="line">NSArray* widthValues &#x3D; [NSArray arrayWithObjects:@1.0, @10.0, @5.0, @30.0, @0.5, @15.0, @2.0, @50.0, @0.0, nil];</span><br><span class="line">widthAnim.values &#x3D; widthValues;</span><br><span class="line">widthAnim.calculationMode &#x3D; kCAAnimationPaced;</span><br><span class="line"> </span><br><span class="line">&#x2F;&#x2F; Animation 2</span><br><span class="line">CAKeyframeAnimation* colorAnim &#x3D; [CAKeyframeAnimation animationWithKeyPath:@&quot;borderColor&quot;];</span><br><span class="line">NSArray* colorValues &#x3D; [NSArray arrayWithObjects:(id)[UIColor greenColor].CGColor,</span><br><span class="line">            (id)[UIColor redColor].CGColor, (id)[UIColor blueColor].CGColor,  nil];</span><br><span class="line">colorAnim.values &#x3D; colorValues;</span><br><span class="line">colorAnim.calculationMode &#x3D; kCAAnimationPaced;</span><br><span class="line"> </span><br><span class="line">&#x2F;&#x2F; Animation group</span><br><span class="line">CAAnimationGroup* group &#x3D; [CAAnimationGroup animation];</span><br><span class="line">group.animations &#x3D; [NSArray arrayWithObjects:colorAnim, widthAnim, nil];</span><br><span class="line">group.duration &#x3D; 5.0;</span><br><span class="line"> </span><br><span class="line">[myLayer addAnimation:group forKey:@&quot;BorderChanges&quot;];</span><br></pre></td></tr></table></figure>
+<p><strong>将动画分组在一起的更高级方法是使用事务对象</strong>(transaction object)。 事务提供了更大的灵活性，通过允许创建嵌套的动画集并为每个动画分配不同的动画参数。 有关如何使用事务对象的信息，请参阅”#Explicit Transactions Let You Change Animation Parameters#”。</p>
+<h2 id="Detecting-the-End-of-an-Animation"><a href="#Detecting-the-End-of-an-Animation" class="headerlink" title="Detecting the End of an Animation"></a>Detecting the End of an Animation</h2><p>Core Animation 支持检测动画开始或结束的时间。这些通知是进行与动画相关的任何内务(housekeeping)处理任务的好时机。例如，可以使用开始通知来设置一些相关的状态信息，并使用相应的结束通知来拆除该状态。</p>
+<p>有两种不同的方式可以通知动画的状态：</p>
+<ul>
+<li>使用 setCompletionBlock: 方法将完成块(completion block)添加到当前事务。当事务中的所有动画完成后，事务将执行完成块。</li>
+<li>将委托分配给 CAAnimation 对象并实现 animationDidStart: 和 animationDidStop:finished: 委托方法。</li>
+</ul>
+<p>如果要将两个动画链接在一起，以便在另一个完成时启动另外一个动画，<strong>请不要使用动画通知</strong>。而是使用动画对象的 beginTime 属性在所需的时间启动每个属性。要将两个动画链接在一起，请将第二个动画的开始时间设置为第一个动画的结束时间。有关动画和计时值的更多信息，请参阅”#Customizing the Timing of an Animation#”。 (session 2011.421 P51 也有讲到。三个气球依次跳的例子)</p>
+<h2 id="How-to-Animate-Layer-Backed-Views"><a href="#How-to-Animate-Layer-Backed-Views" class="headerlink" title="How to Animate Layer-Backed Views"></a>How to Animate Layer-Backed Views</h2><p>如果图层属于图层支持的视图，则建议创建动画的方法是使用 UIKit 或 AppKit 提供的基于视图的动画接口(view-based animation interfaces)。 有一些方法可以使用 Core Animation 接口直接为图层设置动画，但是如何创建这些动画取决于目标平台。</p>
+<h3 id="Rules-for-Modifying-Layers-in-iOS"><a href="#Rules-for-Modifying-Layers-in-iOS" class="headerlink" title="Rules for Modifying Layers in iOS"></a>Rules for Modifying Layers in iOS</h3><p>由于 iOS 视图始终具有图层，因此 UIView 类本身直接从层对象派生其大部分数据。因此，<strong>对图层所做的更改也会自动反映在视图对象中</strong>(ps: 前面 “The Relationship Between Layers and Views” 也有提到)。 此行为意味着可以使用 Core Animation 或 UIView 接口进行更改。</p>
+<p>如果要使用 Core Animation 类来启动动画，则<strong>必须从基于视图的动画块中</strong>发出所有 Core Animation 调用。 <strong>UIView 类默认禁用图层动画，但在动画块内重新启用它们</strong>。因此，在动画块之外所做的任何更改都不会生成动画。代码清单3-5显示了如何隐式更改图层的不透明度及其显式位置的示例。在此示例中， myNewPosition 变量预先计算并由块捕获。两个动画同时开始，但不透明度动画以默认时序运行，而位置动画以其动画对象中指定的时间运行。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;&#x2F; Listing 3-5  Animating a layer attached to an iOS view</span><br><span class="line"></span><br><span class="line">[UIView animateWithDuration:1.0 animations:^&#123;</span><br><span class="line">   &#x2F;&#x2F; Change the opacity implicitly.</span><br><span class="line">   myView.layer.opacity &#x3D; 0.0;</span><br><span class="line"> </span><br><span class="line">   &#x2F;&#x2F; Change the position explicitly.</span><br><span class="line">   CABasicAnimation* theAnim &#x3D; [CABasicAnimation animationWithKeyPath:@&quot;position&quot;];</span><br><span class="line">   theAnim.fromValue &#x3D; [NSValue valueWithCGPoint:myView.layer.position];</span><br><span class="line">   theAnim.toValue &#x3D; [NSValue valueWithCGPoint:myNewPosition];</span><br><span class="line">   theAnim.duration &#x3D; 3.0;</span><br><span class="line">   [myView.layer addAnimation:theAnim forKey:@&quot;AnimateFrame&quot;];</span><br><span class="line">&#125;];</span><br></pre></td></tr></table></figure>
+<h3 id="Rules-for-Modifying-Layers-in-OS-X"><a href="#Rules-for-Modifying-Layers-in-OS-X" class="headerlink" title="Rules for Modifying Layers in OS X"></a>Rules for Modifying Layers in OS X</h3><p>OS X 先不管。</p>
+<h3 id="Remember-to-Update-View-Constraints-as-Part-of-Your-Animation"><a href="#Remember-to-Update-View-Constraints-as-Part-of-Your-Animation" class="headerlink" title="Remember to Update View Constraints as Part of Your Animation"></a>Remember to Update View Constraints as Part of Your Animation</h3><p>如果使用基于约束(constraint-based layout)的布局规则来管理视图的位置，则必须删除可能会影响动画的任何约束，尤其是作为配置该动画的那一部分。 约束会影响对视图的位置或大小所做的任何更改。 它们还会影响视图与其子视图之间的关系。 如果要为这些项中的任何项设置动画，则可以删除约束，进行更改，然后应用所需的任何新约束。 (ps: 先移除约束，进行改变后，在添加新的约束) 具体的去看 <a href="https://developer.apple.com/library/archive/documentation/UserExperience/Conceptual/AutolayoutPG/index.html#//apple_ref/doc/uid/TP40010853">Auto Layout Guide</a></p>
+<h1 id="Building-a-Layer-Hierarchy"><a href="#Building-a-Layer-Hierarchy" class="headerlink" title="Building a Layer Hierarchy"></a>Building a Layer Hierarchy</h1><p>大多数情况下，在应用中使用图层的<strong>最佳方法是将它们与视图对象结合使用</strong>。 但是，有时可能需要通过向其添加其他图层对象来增强视图层次结构。 可以在使用图层时<strong>使用图层提供更好的性能</strong>，或者让实现仅使用视图难以执行的功能。 在这些情况下，需要知道如何管理您创建的图层层次结构。 </p>
+<h2 id="Arranging-Layers-into-a-Layer-Hierarchy"><a href="#Arranging-Layers-into-a-Layer-Hierarchy" class="headerlink" title="Arranging Layers into a Layer Hierarchy"></a>Arranging Layers into a Layer Hierarchy</h2><p>Layer 层次结构在许多方面类似于 View 层次结构。 将一个图层嵌入另一个图层中，以在嵌入的图层（称为子图层）和父图层（称为超级图层）之间创建父子关系。 这种父子关系影响子层的各个方面。 例如，其内容位于其父级的内容之上，其位置相对于其父级的坐标系指定，并且它受应用于父级的任何变换的影响。</p>
+<h3 id="Adding-Inserting-and-Removing-Sublayers"><a href="#Adding-Inserting-and-Removing-Sublayers" class="headerlink" title="Adding, Inserting, and Removing Sublayers"></a>Adding, Inserting, and Removing Sublayers</h3><ul>
+<li>Adding layers, “addSublayer:” 方法, “zPosition” 属性</li>
+<li>Inserting layers, “insertSublayer:above:   insertSublayer:atIndex:   insertSublayer:below:” 方法,</li>
+<li>Removing layers, “removeFromSuperlayer”方法，</li>
+<li>Exchanging layers, “replaceSublayer:with:”方法，</li>
+</ul>
+<p>在处理自己创建的图层对象时，可以使用上述方法。 <strong>不能用在图层支持的视图的图层</strong>。 但是，图层支持的视图的图层可以作为己创建的图层对象的父级。</p>
+<h3 id="Positioning-and-Sizing-Sublayers"><a href="#Positioning-and-Sizing-Sublayers" class="headerlink" title="Positioning and Sizing Sublayers"></a>Positioning and Sizing Sublayers</h3><p>添加和插入子图层时，必须先设置子图层在屏幕上显示之前的大小和位置。 将子图层添加到图层层次结构后，可以修改子图层的大小和位置，但在创建图层时应养成设置这些值的<strong>习惯</strong>。 (ps: 养成先设置值再添加的好习惯)</p>
+<p>重要：图层的宽高值一直用整数。</p>
+<h3 id="How-Layer-Hierarchies-Affect-Animations"><a href="#How-Layer-Hierarchies-Affect-Animations" class="headerlink" title="How Layer Hierarchies Affect Animations"></a>How Layer Hierarchies Affect Animations</h3><p>某些父图层属性<strong>可能会影响</strong>应用于其子图层的任何动画的行为。一个这样的属性是 speed 属性，它是动画速度的乘数。默认情况下，此属性的值设置为 1.0 ，但将其更改为 2.0 会导致动画以原始速度的两倍运行，从而在一半的时间内完成。此属性不仅会影响为其设置的图层，<strong>还会</strong>影响该图层的子图层。这种变化也是倍增的，如果子层及其父层都具有 2.0 的速度，则子层上的动画以其原始速度的四倍运行。(ps: 父层的值影响子层。)</p>
+<p>大多数其他图层更改 以可预测的方式 影响任何包含的子图层。例如，将<strong>旋转变换</strong>应用于图层会旋转该图层及其所有子图层。同样，更改图层的<strong>不透明度</strong>会更改其子图层的不透明度。 对图层大小的更改遵循”#Adjusting the Layout of Your Layer Hierarchies#”。</p>
+<h2 id="Adjusting-the-Layout-of-Your-Layer-Hierarchies"><a href="#Adjusting-the-Layout-of-Your-Layer-Hierarchies" class="headerlink" title="Adjusting the Layout of Your Layer Hierarchies"></a>Adjusting the Layout of Your Layer Hierarchies</h2><p>Core Animation 支持多种选项，用于调整子层的大小和位置以响应其超层的更改。 在 iOS 中，图层支持的视图的普遍使用使得层次结构的创建不那么重要；仅支持手动布局更新。 对于 OS X ，还有其他几个选项可以更轻松地管理图层层次结构。</p>
+<p>仅当使用创建的独立图层对象构建图层层次结构时，图层级布局(Layer-level layout)才有意义。 如果应用的图层都与视图相关联，请使用基于视图的布局支持来更新视图的大小和位置以响应更改。 (ps: 只对独立的图层形成的图层关系才有意义，所以这一节对 iOS 意义不大，都忽略掉。)</p>
+<h3 id="Using-Constraints-to-Manage-Your-Layer-Hierarchies-in-OS-X"><a href="#Using-Constraints-to-Manage-Your-Layer-Hierarchies-in-OS-X" class="headerlink" title="Using Constraints to Manage Your Layer Hierarchies in OS X"></a>Using Constraints to Manage Your Layer Hierarchies in OS X</h3><h3 id="Setting-Up-Autoresizing-Rules-for-Your-OS-X-Layer-Hierarchies"><a href="#Setting-Up-Autoresizing-Rules-for-Your-OS-X-Layer-Hierarchies" class="headerlink" title="Setting Up Autoresizing Rules for Your OS X Layer Hierarchies"></a>Setting Up Autoresizing Rules for Your OS X Layer Hierarchies</h3><h3 id="Manually-Laying-Out-Your-Layer-Hierarchies"><a href="#Manually-Laying-Out-Your-Layer-Hierarchies" class="headerlink" title="Manually Laying Out Your Layer Hierarchies"></a>Manually Laying Out Your Layer Hierarchies</h3><h2 id="Sublayers-and-Clipping"><a href="#Sublayers-and-Clipping" class="headerlink" title="Sublayers and Clipping"></a>Sublayers and Clipping</h2><p>与视图不同，父图层不会自动剪切位于其边界矩形之外的子图层的内容。 相反，父层允许其子层默认显示完整。 但是，可以通过将图层的 masksToBounds 属性设置为 YES ，来重新启用剪切。</p>
+<p>图层的剪切蒙版的形状包括图层的角半径（如果指定了一个，就是说裁剪的时候角半径还是留着的）。 下图显示了一个图层，该图层演示了 masksToBounds 属性如何影响具有圆角的图层。 当属性设置为 NO 时，即使子图层超出其父图层的边界，也会完整显示子图层。 将属性更改为 YES 会导致其内容被剪裁。<br><img src="https://sat02pap001files.storage.live.com/y4m86FPkvdLWmhKLBqUSImFqSk5MzYho90X31EGmrAKsnh7FX21je1DAkfQgWpabXN5fLpW7MxF_zqCSAl9MAHQuVGIdxV_vx8-ULd7GXb721jXy8sRkqrVOOKRajeN7sH8oeb2mnePJiqWg6-BybcVnHfiMRZVpA11hEajpb1R1Xaxm1oszSTBVl4phvBS7RwQ?width=930&height=769&cropmode=none" alt="Clipping sublayers to the parent’s bounds"></p>
+<h2 id="Converting-Coordinate-Values-Between-Layers"><a href="#Converting-Coordinate-Values-Between-Layers" class="headerlink" title="Converting Coordinate Values Between Layers"></a>Converting Coordinate Values Between Layers</h2><p>有时，可能需要将一个图层中的坐标值转换为另一个图层中<strong>同一屏幕位置</strong>的坐标值。 CALayer 类提供了一组简单的转换例程，可以将它们用于此目的：</p>
+<ul>
+<li>convertPoint:fromLayer:</li>
+<li>convertPoint:toLayer:</li>
+<li>convertRect:fromLayer:</li>
+<li>convertRect:toLayer:</li>
+</ul>
+<p>除了转换 Point 和 Rect 值之外，还可以使用 <code>convertTime:fromLayer:</code> 和 <code>convertTime:toLayer:</code> 方法在图层之间转换时间值。 每个层定义自己的本地时间空间，并使用该时间空间将动画的开始和结束与系统的其余部分同步。 这些时间空间默认是同步的；但是，如果更改一组图层的<strong>动画速度</strong>，则这些图层的时间空间会相应更改。 可以使用时间转换(time conversion)方法来考虑任何此类因素，并确保两个图层的时间同步。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 参考代码， self.view 是 button 的 superView.superView....</span><br><span class="line">var buttonInViewPoint &#x3D; button.convert(self.view.frame.origin, to: self.view)</span><br></pre></td></tr></table></figure>
+
+<h1 id="Advanced-Animation-Tricks"><a href="#Advanced-Animation-Tricks" class="headerlink" title="Advanced Animation Tricks"></a>Advanced Animation Tricks</h1><p>有许多方法可以配置基于属性(property-based)或关键帧(keyframe)的动画，以便完成更多操作。 需要一起或按顺序执行多个动画的应用程序，可以使用更高级的行为来同步这些动画的时序或将它们链接(chain)在一起。 还可以使用<strong>其他类型的动画对象</strong>来创建视觉过渡和其他有趣的动画效果。</p>
+<h2 id="Transition-Animations-Support-Changes-to-Layer-Visibility"><a href="#Transition-Animations-Support-Changes-to-Layer-Visibility" class="headerlink" title="Transition Animations Support Changes to Layer Visibility"></a>Transition Animations Support Changes to Layer Visibility</h2><p><strong>顾名思义，过渡动画对象为图层创建动画视觉过渡</strong>。过渡对象(transition objects)最常见的用途是以协调的方式(coordinated manner)为一个图层的显示和另一个图层的消失设置动画。与基于属性的动画（动画更改图层的一个属性）不同，过渡动画<strong>操纵图层的缓存图像</strong>以创建 通过单独更改属性而难以或无法完成的 视觉效果。标准的过渡类型允许执行 reveal, push, move 或 crossfade 动画。在 OS X 上，还可以使用 Core Image 过滤器创建使用其他类型效果。</p>
+<p>要执行过渡动画，要创建 CATransition 对象并将其添加到过渡中涉及的层上。 可以使用过渡对象指定要执行的<strong>过渡类型</strong>以及过渡动画的<strong>起点和终点</strong>。也不需要使用整个过渡动画，过渡对象允许动画时指定要使用的开始和结束进度值。这些值允许在其中点处开始或结束动画。</p>
+<p>代码清单 5-1 显示了用于在两个视图之间创建动画 push 过渡的代码。在示例中， myView1 和 myView2 都位于同一父视图中的相同位置，但当前只能看到 myView1 。 push 过渡导致 myView1 向左滑动并淡出，直到隐藏，而 myView2 从右侧滑入并变为可见。更新两个视图的隐藏属性可确保在<strong>动画结束时</strong>两个视图的可见性都是正确的。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; Listing 5-1  Animating a transition between two views in iOS</span><br><span class="line"></span><br><span class="line">CATransition* transition &#x3D; [CATransition animation];</span><br><span class="line">transition.startProgress &#x3D; 0;</span><br><span class="line">transition.endProgress &#x3D; 1.0;</span><br><span class="line">transition.type &#x3D; kCATransitionPush;</span><br><span class="line">transition.subtype &#x3D; kCATransitionFromRight;</span><br><span class="line">transition.duration &#x3D; 1.0;</span><br><span class="line"> </span><br><span class="line">&#x2F;&#x2F; Add the transition animation to both layers</span><br><span class="line">[myView1.layer addAnimation:transition forKey:@&quot;transition&quot;];</span><br><span class="line">[myView2.layer addAnimation:transition forKey:@&quot;transition&quot;];</span><br><span class="line"> </span><br><span class="line">&#x2F;&#x2F; Finally, change the visibility of the layers.</span><br><span class="line">myView1.hidden &#x3D; YES;</span><br><span class="line">myView2.hidden &#x3D; NO;</span><br></pre></td></tr></table></figure>
+<p>当两个图层涉及同一个过渡时，可以为两个图层使用相同的过渡对象。 使用相同的转换对象还可以简化必须编写的代码。 但是，也可以使用不同的过渡对象，如果每个层的过渡参数不同，则肯定需要这样做。</p>
+<h2 id="Customizing-the-Timing-of-an-Animation"><a href="#Customizing-the-Timing-of-an-Animation" class="headerlink" title="Customizing the Timing of an Animation"></a>Customizing the Timing of an Animation</h2><p>时序(timing)是动画的重要组成部分，通过 Core Animation, 可以通过 CAMediaTiming 协议的方法和属性为动画指定<strong>精确的时序信息</strong>。两个核心动画类采用此协议。  CAAnimation 类采用它，以便可以在动画<strong>对象中指定</strong>时序信息。  CALayer 也采用它，以便可以<strong>为隐式动画配置</strong>一些与时序相关的功能，尽管包装这些动画的隐式事务对象通常提供<strong>优先的默认时序信息</strong>。</p>
+<p>在考虑时间和动画时，了解图层对象如何随时间工作非常重要。每个图层都有自己的<strong>本地时间</strong>，用于管理动画计时。通常，两个不同层的本地时间足够接近，可以为每个层指定相同的时间值，用户可能不会注意到任何内容。但是，图层的本地时间可以通过其父层或其自己的时序参数进行修改。例如，更改图层的速度(speed)属性会导致该图层（及其子图层）上的动画持续时间按比例更改。</p>
+<p>为了帮助确保时间值适合给定图层， CALayer 类定义 <code>convertTime:fromLayer:</code> 和 <code>convertTime:toLayer:</code> 方法。可以使用这些方法将固定时间值转换为图层的本地时间，或将时间值从一个图层转换为另一个图层。这些方法会考虑可能影响图层本地时间的媒体计时属性(media timing properties), 并返回可与其他图层一起使用的值。代码清单5-3显示了一个示例，应该定期使用该示例来获取图层的当前本地时间。 CACurrentMediaTime 函数是一个便捷函数，它返回计算机当前的时钟时间，该方法采用该时间并转换为图层的本地时间。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CFTimeInterval localLayerTime &#x3D; [myLayer convertTime:CACurrentMediaTime() fromLayer:nil];</span><br></pre></td></tr></table></figure>
+<p>一旦在图层的本地时间中有时间值后，可以使用该值更新动画对象或图层的 与时序相关的 属性。使用这些时序属性，可以实现一些有趣的动画行为，包括：</p>
+<ul>
+<li>使用 beginTime 属性设置动画的开始时间。通常，<strong>动画在下一个更新周期开始</strong>。可以使用 beginTime 参数将动画开始时间延迟几秒钟。将两个动画链接在一起的方法是，将一个动画的开始时间设置为与另一个动画的结束时间相匹配。 如果要 延迟 动画的开始，可能还需要将 fillMode 属性设置为 kCAFillModeBackwards 。即使图层树中的图层对象包含不同的值，此填充模式也会使<strong>图层显示动画的起始值</strong>。如果没有此填充模式，将看到在动画开始执行之前跳转到<strong>最终值</strong>。其他填充模式也可用。</li>
+<li>autoreverses 属性使动画在指定的持续时间内执行，然后返回到动画的起始值。可以将此属性与 repeatCount 属性组合，以在起始值和结束值之间来回动画。将 repeatCount 设置为自动回转动画的整数（例如 1.0）会导致动画停止在其起始值上。添加额外的半步（例如为1.5）会导致动画停止在其结束值上。</li>
+<li>将 timeOffset 属性与组动画一起使用，可以在以后的时间启动某些动画。 (ps: 见下面的代码清单 5-4 ，有用到 timeOffset)</li>
+</ul>
+<h2 id="Pausing-and-Resuming-Animations"><a href="#Pausing-and-Resuming-Animations" class="headerlink" title="Pausing and Resuming Animations"></a>Pausing and Resuming Animations</h2><p>要暂停动画，可以利用层 采用 CAMediaTiming 协议并将图层动画的速度设置为 0.0。 将速度设置为零会暂停动画，直到将值更改回非零值。 代码清单5-4显示了一个简单的示例，说明如何在以后暂停和恢复动画。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; Listing 5-4  Pausing and resuming a layer’s animations</span><br><span class="line"></span><br><span class="line">-(void)pauseLayer:(CALayer*)layer &#123;</span><br><span class="line">   CFTimeInterval pausedTime &#x3D; [layer convertTime:CACurrentMediaTime() fromLayer:nil];</span><br><span class="line">   layer.speed &#x3D; 0.0;</span><br><span class="line">   layer.timeOffset &#x3D; pausedTime;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">-(void)resumeLayer:(CALayer*)layer &#123;</span><br><span class="line">   CFTimeInterval pausedTime &#x3D; [layer timeOffset];</span><br><span class="line">   layer.speed &#x3D; 1.0;</span><br><span class="line">   layer.timeOffset &#x3D; 0.0;</span><br><span class="line">   layer.beginTime &#x3D; 0.0;</span><br><span class="line">   CFTimeInterval timeSincePause &#x3D; [layer convertTime:CACurrentMediaTime() fromLayer:nil] - pausedTime;</span><br><span class="line">   layer.beginTime &#x3D; timeSincePause;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Explicit-Transactions-Let-You-Change-Animation-Parameters"><a href="#Explicit-Transactions-Let-You-Change-Animation-Parameters" class="headerlink" title="Explicit Transactions Let You Change Animation Parameters"></a>Explicit Transactions Let You Change Animation Parameters</h2><p><strong>对图层所做的每项更改都必须是事务(transaction)的一部分。 CATransaction 类在适当的时间管理动画的创建和分组及其执行。</strong> 在大多数情况下，不需要创建自己的事务。 每当向其中一个图层添加显式或隐式动画时，Core Animation 都会<strong>自动创建</strong>隐式事务。但是，还可以创建显式事务以更精确地管理这些动画。(ps: 事务是管理动画的，很重要，下面禁用隐式动画也用到了显式事务；见 wwdc-2011-121 “CATransaction and when views get rendered”)</p>
+<p>可以使用 CATransaction 类的方法创建和管理事务。 要启动（并隐式创建）新事务，请调用 begin 类方法; 要结束该事务，请调用 commit 类方法。 想 在这些调用之间的更改 成为事务的一部分。 例如，要更改图层的两个属性，可以使用代码清单5-5中的代码。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; Listing 5-5  Creating an explicit transaction</span><br><span class="line"></span><br><span class="line">[CATransaction begin];</span><br><span class="line">theLayer.zPosition&#x3D;200.0;</span><br><span class="line">theLayer.opacity&#x3D;0.0;</span><br><span class="line">[CATransaction commit];</span><br></pre></td></tr></table></figure>
+<p>使用事务的主要原因之一，是在显式事务的<strong>范围内，可以更改</strong>持续时间，计时功能和其他参数。 还可以为整个事务分配完成块(completion block)，以便在动画组完成时通知应用。 更改动画参数需要使用 <code>setValue:forKey:</code> 方法修改事务字典中的相应键。 例如，要将默认持续时间更改为 10 秒，将更改 kCATransactionAnimationDuration 键，如代码清单5-6所示。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; Listing 5-6  Changing the default duration of animations</span><br><span class="line"></span><br><span class="line">[CATransaction begin];</span><br><span class="line">[CATransaction setValue:[NSNumber numberWithFloat:10.0f]</span><br><span class="line">                 forKey:kCATransactionAnimationDuration];</span><br><span class="line">&#x2F;&#x2F; Perform the animations</span><br><span class="line">[CATransaction commit];</span><br></pre></td></tr></table></figure>
+<p>还可以嵌套处理。 只有在为最外层事务提交更改后， Core Animation 才会开始关联的动画。 (ps: begin 和 commit 方法一定要相匹配)</p>
+<h2 id="Adding-Perspective-to-Your-Animations"><a href="#Adding-Perspective-to-Your-Animations" class="headerlink" title="Adding Perspective to Your Animations"></a>Adding Perspective to Your Animations</h2><p>应用程序可以在三维空间中操作图层，但为了简单起见，Core Animation 使用平行投影显示图层，该投影基本上将场景展平为二维平面。 修改场景的透视图时，需要修改包含正在查看的图层的<strong>父层的</strong> sublayerTransform 矩阵。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; Listing 5-8  Adding a perspective transform to a parent layer</span><br><span class="line"></span><br><span class="line">CATransform3D perspective &#x3D; CATransform3DIdentity;</span><br><span class="line">perspective.m34 &#x3D; -1.0&#x2F;eyePosition;</span><br><span class="line"> </span><br><span class="line">&#x2F;&#x2F; Apply the transform to a parent layer.</span><br><span class="line">myParentLayer.sublayerTransform &#x3D; perspective;</span><br></pre></td></tr></table></figure>
+<p>eyePosition 值越大，场景越平坦，而值越小，层间的视觉差异越大。 配置父图层后，可以<strong>更改任何</strong>子图层的 zPosition 属性，并根据它们与眼睛位置的相对距离观察它们的大小如何变化。 (ps: 三维默认是关闭的，要设置父图层的 sublayerTransform 属性后，再设置子图层的 zPosition 才会起作用)</p>
+<h1 id="Changing-a-Layer’s-Default-Behavior"><a href="#Changing-a-Layer’s-Default-Behavior" class="headerlink" title="Changing a Layer’s Default Behavior"></a>Changing a Layer’s Default Behavior</h1><p><strong>Core Animation 使用操作对象(action object)为图层实现其隐式动画行为</strong>。 操作对象是符合 CAAction 协议的对象，它定义了要在图层上执行的某些相关<strong>行为</strong>。 所有 CAAnimation 对象都实现了该协议，并且通常会分配这些对象，以便在图层属性发生更改时执行。 (ps: session 2011.421 P26 也有讲到。)</p>
+<p>动画属性(animating properties)是一种操作类型，但可以使用我们<strong>想要的几乎任何行为</strong>来定义操作。但是，要做到这一点，必须定义操作对象并将它们与应用程序的图层对象相关联。</p>
+<h2 id="Custom-Action-Objects-Adopt-the-CAAction-Protocol"><a href="#Custom-Action-Objects-Adopt-the-CAAction-Protocol" class="headerlink" title="Custom Action Objects Adopt the CAAction Protocol"></a>Custom Action Objects Adopt the CAAction Protocol</h2><p>要创建自己的操作对象，采用 CAAction 协议并实现 <code>runActionForKey:object:arguments:</code> 方法。在该方法中，使用可用信息执行要在图层上执行的任何操作。可以使用该方法将动画对象添加到图层，也可以使用它来执行其他任务。(ps: 动画、图层)</p>
+<p>定义操作对象时，必须确定要如何触发该操作。操作的触发器 定义用于稍后注册该操作的 键。可以通过以下任何一种情况触发操作对象：</p>
+<ul>
+<li>其中一个图层属性的值<strong>已更改</strong>。这可以是图层的任何属性，而不仅仅是可动画的属性。 （还可以将操作与添加到图层的<strong>自定义</strong>属性相关联。）标识此操作的键是属性的名称。</li>
+<li>图层变为可见或已添加到图层层次结构中。标识此操作的关键是 kCAOnOrderIn 。</li>
+<li>该图层已从图层层次结构中删除。标识此操作的关键是 kCAOnOrderOut 。</li>
+<li>该图层即将参与过渡动画。标识此操作的关键是 kCATransition 。</li>
+</ul>
+<h2 id="Action-Objects-Must-Be-Installed-On-a-Layer-to-Have-an-Effect"><a href="#Action-Objects-Must-Be-Installed-On-a-Layer-to-Have-an-Effect" class="headerlink" title="Action Objects Must Be Installed On a Layer to Have an Effect"></a>Action Objects Must Be Installed On a Layer to Have an Effect</h2><p>在可以执行操作之前，该图层需要找到要执行的相应操作对象。 与层相关的操作的关键是要修改的属性的名称或标识操作的特殊字符串。 会调用 actionForKey: 方法来查找，具体请见官方文档。 (ps: session 2011.421 P26 也有讲到。)</p>
+<p>如果在任何适当的搜索点提供操作对象，则图层将停止其搜索<strong>并执行返回的</strong>操作对象。 当它找到一个动作对象时，该层调用该对象的 runActionForKey:object:arguments: 方法来执行该动作。 如果为给定键定义的操作已经是 CAAnimation 类的实例，则可以使用该方法的<strong>默认实现</strong>来执行动画。 如果要定义符合 CAAction 协议的自定义对象，则必须使用对象的该方法实现来采取适当的操作。</p>
+<p>安装操作对象的位置取决于我们打算如何修改图层，具体请见官方文档。(ps: 跟上面的查找方法类似，请注意自定义属性(custom properties)的处理。)</p>
+<h2 id="Disable-Actions-Temporarily-Using-the-CATransaction-Class"><a href="#Disable-Actions-Temporarily-Using-the-CATransaction-Class" class="headerlink" title="Disable Actions Temporarily Using the CATransaction Class"></a>Disable Actions Temporarily Using the CATransaction Class</h2><p>可以使用 CATransaction 类临时禁用图层操作(layer actions)。 更改图层的属性时， Core Animation <strong>通常会创建一个隐式事务</strong>对象来为更改设置动画。 如果不想为更改设置动画，可以通过创建显式事务并将其 kCATransactionDisableActions 属性设置为 true 来禁用隐式动画。 清单6-2显示了一个代码片段，它在从图层树中删除指定图层时禁用动画。 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; Listing 6-2  Temporarily disabling a layer’s actions</span><br><span class="line"></span><br><span class="line">[CATransaction begin];</span><br><span class="line">[CATransaction setValue:(id)kCFBooleanTrue</span><br><span class="line">                 forKey:kCATransactionDisableActions];</span><br><span class="line">[aLayer removeFromSuperlayer];</span><br><span class="line">[CATransaction commit];</span><br></pre></td></tr></table></figure>
+<p>(ps: session 2011.421 P25 也有讲到 <code>[CATransaction setDisableActions:YES]</code> 禁用隐式动画。)</p>
+<p>有关使用事务对象管理动画行为的更多信息，请参阅”#Explicit Transactions Let You Change Animation Parameters#”。</p>
+<h1 id="Improving-Animation-Performance"><a href="#Improving-Animation-Performance" class="headerlink" title="Improving Animation Performance"></a>Improving Animation Performance</h1><p>Core Animation 是提高基于应用程序的<strong>动画的帧速率</strong>的好方法，但它的使用<strong>并不能</strong>保证提高性能。 特别是在 OS X 中，仍然必须选择使用 Core Animation 行为的最有效方法。 与所有与性能相关的问题一样，应该使用 Instruments 来<strong>衡量和跟踪</strong>应用程序的性能，以便确保性能得到改善而不是回归。</p>
+<h2 id="Choose-the-Best-Redraw-Policy-for-Your-OS-X-Views"><a href="#Choose-the-Best-Redraw-Policy-for-Your-OS-X-Views" class="headerlink" title="Choose the Best Redraw Policy for Your OS X Views"></a>Choose the Best Redraw Policy for Your OS X Views</h2><p>OS X 先不管。</p>
+<h2 id="Update-Layers-in-OS-X-to-Optimize-Your-Rendering-Path"><a href="#Update-Layers-in-OS-X-to-Optimize-Your-Rendering-Path" class="headerlink" title="Update Layers in OS X to Optimize Your Rendering Path"></a>Update Layers in OS X to Optimize Your Rendering Path</h2><p>OS X 先不管。</p>
+<h2 id="General-Tips-and-Tricks"><a href="#General-Tips-and-Tricks" class="headerlink" title="General Tips and Tricks"></a>General Tips and Tricks</h2><p>有几种方法可以提高图层实现的效率。 但是，与任何此类优化一样，在<strong>尝试优化之前</strong>，应始终<strong>测量代码的当前性能</strong>。 这为提供了一个基线，可用于确定优化是否有效。</p>
+<h3 id="Use-Opaque-Layers-Whenever-Possible"><a href="#Use-Opaque-Layers-Whenever-Possible" class="headerlink" title="Use Opaque Layers Whenever Possible"></a>Use Opaque Layers Whenever Possible</h3><p>将图层的 opaque 属性设置为 YES ，可让 Core Animation 知道它<strong>不需要为图层维护</strong> alpha 通道。 没有 Alpha 通道<strong>意味着合成器(compositor)**不需要将图层的内容与其背景内容混合，这样可以在渲染过程中</strong>节省时间<strong>。 但是，此属性</strong>主要与<strong>作为图层支持视图一部分的图层 或 Core Animation 创建基础图层位图的情况相关。 如果</strong>将图像直接指定<strong>给图层的 contents 属性，则</strong>无论** opaque 属性中的值如何，都<strong>会保留</strong>该图像的 Alpha 通道。</p>
+<h3 id="Use-Simpler-Paths-for-CAShapeLayer-Objects"><a href="#Use-Simpler-Paths-for-CAShapeLayer-Objects" class="headerlink" title="Use Simpler Paths for CAShapeLayer Objects"></a>Use Simpler Paths for CAShapeLayer Objects</h3><p>CAShapeLayer 类通过<strong>在复合(composite)时</strong>将我们提供的路径渲染到位图图像来创建其内容。<strong>优点</strong>是该层总是以尽可能好的分辨率绘制路径，但这种优势是以额外的渲染时间<strong>为代价</strong>的。如果提供的路径很复杂，那么栅格化(rasterizing)该路径可能会过于昂贵。如果图层的大小<strong>经常变化</strong>（因此必须经常重绘），绘制所花费的时间可能会增加并成为<strong>性能瓶颈</strong>。</p>
+<p>优化形状层的绘制时间的一种方法，是将复杂形状<strong>分解为更简单</strong>的形状。使用更简单的路径并在合成器中将多个 CAShapeLayer 对象叠加在一起可以<strong>比</strong>绘制一个大的复杂路径<strong>快得多</strong>。这是因为绘图操作发生在 CPU 上，而合成发生在 GPU 上。与此类性质的任何简化一样，潜在的性能提升<strong>取决于</strong>内容。<strong>因此，在优化之前测量代码的性能尤为重要，这样就可以使用基线进行比较。(优化的准则)</strong> (ps: 分割就是减少 CPU 的工作量，把工作转移到 GPU 上。)</p>
+<h3 id="Set-the-Layer-Contents-Explicitly-for-Identical-Layers"><a href="#Set-the-Layer-Contents-Explicitly-for-Identical-Layers" class="headerlink" title="Set the Layer Contents Explicitly for Identical Layers"></a>Set the Layer Contents Explicitly for Identical Layers</h3><p>如果在多个图层对象中<strong>使用相同的图像</strong>，请自行加载图像并将其<strong>直接指定</strong>给这些图层对象的 contents 属性。 将图像分配给 contents 属性<strong>可防止图层为后备存储分配内存。 相反，该图层使用我们提供的图像作为其后备存储</strong>。 当多个图层使用相同的图像时，这意味着所有这些图层共享相同的内存，而不是为自己分配图像的<strong>副本</strong>。</p>
+<h3 id="Always-Set-a-Layer’s-Size-to-Integral-Values"><a href="#Always-Set-a-Layer’s-Size-to-Integral-Values" class="headerlink" title="Always Set a Layer’s Size to Integral Values"></a>Always Set a Layer’s Size to Integral Values</h3><p>为获得最佳效果，请始终将图层对象的宽度和高度设置为整数值。 虽然使用浮点数指定图层边界的宽度和高度，但图层边界(layer bounds)<strong>最终用于</strong>创建位图图像。 指定宽度和高度的整数值<strong>可简化</strong> Core Animation 在创建和管理<strong>后备存储</strong>和其他图层信息时必须执行的工作。 (ps: bitmap 位图，最终都是加载位图。)</p>
+<h3 id="Use-Asynchronous-Layer-Rendering-As-Needed"><a href="#Use-Asynchronous-Layer-Rendering-As-Needed" class="headerlink" title="Use Asynchronous Layer Rendering As Needed"></a>Use Asynchronous Layer Rendering As Needed</h3><p>在委托的 <code>drawLayer:inContext:</code> 方法或视图的 <code>drawRect:</code> 方法中执行的任何绘图，通常在应用程序的<strong>主线程上同步发生</strong>。 但在某些情况下，同步绘制内容可能<strong>无法提供最佳性能</strong>。 如果注意到动画效果不佳，可以尝试在图层上启用 <code>drawAsynchronously</code> 属性，将这些操作<strong>移动到后台线程</strong>。 如果这样做，请确保绘图代码是<strong>线程安全的</strong>。 和往常一样，在将其放入生产代码<strong>之前，应始终</strong>测量异步绘图的性能。</p>
+<h3 id="Specify-a-Shadow-Path-When-Adding-a-Shadow-to-Your-Layer"><a href="#Specify-a-Shadow-Path-When-Adding-a-Shadow-to-Your-Layer" class="headerlink" title="Specify a Shadow Path When Adding a Shadow to Your Layer"></a>Specify a Shadow Path When Adding a Shadow to Your Layer</h3><p>让 Core Animation <strong>确定阴影的形状(shape)可能很昂贵并影响应用程序的性能</strong>。 不要让 Core Animation 确定阴影的形状，而是使用 CALayer 的 shadowPath 属性显式指定阴影形状。 为此属性指定路径对象时， Core Animation 使用该形状<strong>绘制和缓存</strong>阴影效果。 对于形状<strong>永不变化或很少更改</strong>的图层，可以通过<strong>减少</strong> Core Animation 完成的<strong>渲染量</strong>来大大提高性能。</p>
+<h1 id="Layer-Style-Property-Animations"><a href="#Layer-Style-Property-Animations" class="headerlink" title="Layer Style Property Animations"></a>Layer Style Property Animations</h1><p>在渲染过程中， Core Animation 采用图层的不同属性并按<strong>特定顺序</strong>呈现它们。 此顺序确定图层的最终外观。 本章说明通过设置不同的图层样式属性实现的渲染结果。 </p>
+<h2 id="Geometry-Properties"><a href="#Geometry-Properties" class="headerlink" title="Geometry Properties"></a>Geometry Properties</h2><p>几何相关属性。 frame 是从 bounds 和 position 计算而来的，它是不可以动画的。</p>
+<h2 id="Background-Properties"><a href="#Background-Properties" class="headerlink" title="Background Properties"></a>Background Properties</h2><p>最开始渲染的背景。 (Q: 是不是可以认为，先背景，然后从下往上渲染，也就是下面内容的顺序)</p>
+<p>在 iOS 中的， CALayer.backgroundFilters 设置 filters 是会被忽略的。</p>
+<h2 id="Layer-Content"><a href="#Layer-Content" class="headerlink" title="Layer Content"></a>Layer Content</h2><p>所以有内容的话，会在背景上上面渲染内容。 “#Providing a Layer’s Contents#” 中有提到三种设置内容的方式。</p>
+<h2 id="Sublayers-Content"><a href="#Sublayers-Content" class="headerlink" title="Sublayers Content"></a>Sublayers Content</h2><p>子图层内容是会循环递归渲染的。</p>
+<h2 id="Border-Attributes"><a href="#Border-Attributes" class="headerlink" title="Border Attributes"></a>Border Attributes</h2><p>border 在 content 和 Sublayers Content 的上面。</p>
+<h2 id="Filters-Property"><a href="#Filters-Property" class="headerlink" title="Filters Property"></a>Filters Property</h2><p>只有 OS X 才有用。</p>
+<h2 id="Shadow-Properties"><a href="#Shadow-Properties" class="headerlink" title="Shadow Properties"></a>Shadow Properties</h2><p>没背景颜色的情况下， Shadow 是添加到图层内容上的。</p>
+<h2 id="Opacity-Property"><a href="#Opacity-Property" class="headerlink" title="Opacity Property"></a>Opacity Property</h2><p>不透明度。</p>
+<h2 id="Mask-Properties"><a href="#Mask-Properties" class="headerlink" title="Mask Properties"></a>Mask Properties</h2><p>可以使用 Mask 来遮盖图层内容的全部或部分内容。Mask 本身就是一个图层对象，其 alpha 通道用于确定阻塞和传输的内容。Mask 层内容的<strong>不透明部分允许</strong>底层图像内容透过，而透明部分部分或完全<strong>遮盖</strong>底层内容。</p>
+<h1 id="Animatable-Properties"><a href="#Animatable-Properties" class="headerlink" title="Animatable Properties"></a>Animatable Properties</h1><p>主要是讲了可动画属性的相关默认值。 都是 CABasicAnimation(0.25) 或者 CATransition(0.25) 0.0-1.0 。</p>
+<h1 id="Key-Value-Coding-Extensions"><a href="#Key-Value-Coding-Extensions" class="headerlink" title="Key-Value Coding Extensions"></a>Key-Value Coding Extensions</h1><p>Core Animation 通过 CAAnimation 和 CALayer 扩展了 NSKeyValueCoding 协议。</p>
+<h2 id="Key-Value-Coding-Compliant-Container-Classes"><a href="#Key-Value-Coding-Compliant-Container-Classes" class="headerlink" title="Key-Value Coding Compliant Container Classes"></a>Key-Value Coding Compliant Container Classes</h2><p>你可以设置任意的 key ，就算是 CALayer 没有的也行。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 赋值</span><br><span class="line">[theLayer setValue:[NSNumber numberWithInteger:50] forKey:@&quot;someKey&quot;];</span><br><span class="line">&#x2F;&#x2F; 取值</span><br><span class="line">someKeyValue&#x3D;[theLayer valueForKey:@&quot;someKey&quot;];</span><br></pre></td></tr></table></figure>
+<h2 id="Default-Value-Support"><a href="#Default-Value-Support" class="headerlink" title="Default Value Support"></a>Default Value Support</h2><p>子类的话，然后重载 <code>defaultValueForKey:</code> 方法。</p>
+<h2 id="Wrapping-Conventions"><a href="#Wrapping-Conventions" class="headerlink" title="Wrapping Conventions"></a>Wrapping Conventions</h2><p>结构体或者常量值记得包裹和解包。这里例举了一些属性，记得看看。</p>
+<h2 id="Key-Path-Support-for-Structures"><a href="#Key-Path-Support-for-Structures" class="headerlink" title="Key Path Support for Structures"></a>Key Path Support for Structures</h2><p>支持 key path 。注意看这一小节里面的相关 keypath 的含义。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">setValue:forKeyPath:</span><br><span class="line">valueForKeyPath:</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/WWDC/" rel="tag"># WWDC</a>
+              <a href="/tags/AppleDocument/" rel="tag"># AppleDocument</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/02/24/wwdc-2011-121/" rel="prev" title="Understanding UIKit Rendering(View Programming Guide for iOS)">
+      <i class="fa fa-chevron-left"></i> Understanding UIKit Rendering(View Programming Guide for iOS)
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/02/24/wwdc-2011-129/" rel="next" title="Practical Drawing for iOS Developers(Quartz 2D Programming Guide)">
+      Practical Drawing for iOS Developers(Quartz 2D Programming Guide) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Introduction"><span class="nav-number">1.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Core-Animation-Basics"><span class="nav-number">2.</span> <span class="nav-text">Core Animation Basics</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Layers-Provide-the-Basis-for-Drawing-and-Animations"><span class="nav-number">2.1.</span> <span class="nav-text">Layers Provide the Basis for Drawing and Animations</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#The-Layer-Based-Drawing-Model"><span class="nav-number">2.1.1.</span> <span class="nav-text">The Layer-Based Drawing Model</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Layer-Based-Animations"><span class="nav-number">2.1.2.</span> <span class="nav-text">Layer-Based Animations</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Layer-Objects-Define-Their-Own-Geometry"><span class="nav-number">2.2.</span> <span class="nav-text">Layer Objects Define Their Own Geometry</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Layers-Use-Two-Types-of-Coordinate-Systems"><span class="nav-number">2.2.1.</span> <span class="nav-text">Layers Use Two Types of Coordinate Systems</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Anchor-Points-Affect-Geometric-Manipulations"><span class="nav-number">2.2.2.</span> <span class="nav-text">Anchor Points Affect Geometric Manipulations</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Layers-Can-Be-Manipulated-in-Three-Dimensions"><span class="nav-number">2.2.3.</span> <span class="nav-text">Layers Can Be Manipulated in Three Dimensions</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Layer-Trees-Reflect-Different-Aspects-of-the-Animation-State"><span class="nav-number">2.3.</span> <span class="nav-text">Layer Trees Reflect Different Aspects of the Animation State</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#The-Relationship-Between-Layers-and-Views"><span class="nav-number">2.4.</span> <span class="nav-text">The Relationship Between Layers and Views</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Setting-Up-Layer-Objects"><span class="nav-number">3.</span> <span class="nav-text">Setting Up Layer Objects</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Enabling-Core-Animation-Support-in-Your-App"><span class="nav-number">3.1.</span> <span class="nav-text">Enabling Core Animation Support in Your App</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Changing-the-Layer-Object-Associated-with-a-View"><span class="nav-number">3.2.</span> <span class="nav-text">Changing the Layer Object Associated with a View</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Changing-the-Layer-Class-Used-by-UIView"><span class="nav-number">3.2.1.</span> <span class="nav-text">Changing the Layer Class Used by UIView</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Different-Layer-Classes-Provide-Specialized-Behaviors"><span class="nav-number">3.2.2.</span> <span class="nav-text">Different Layer Classes Provide Specialized Behaviors</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Providing-a-Layer%E2%80%99s-Contents"><span class="nav-number">3.3.</span> <span class="nav-text">Providing a Layer’s Contents</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Using-an-Image-for-the-Layer%E2%80%99s-Content"><span class="nav-number">3.3.1.</span> <span class="nav-text">Using an Image for the Layer’s Content</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Using-a-Delegate-to-Provide-the-Layer%E2%80%99s-Content"><span class="nav-number">3.3.2.</span> <span class="nav-text">Using a Delegate to Provide the Layer’s Content</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Providing-Layer-Content-Through-Subclassing"><span class="nav-number">3.3.3.</span> <span class="nav-text">Providing Layer Content Through Subclassing</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Tweaking-the-Content-You-Provide"><span class="nav-number">3.3.4.</span> <span class="nav-text">Tweaking the Content You Provide</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Working-with-High-Resolution-Images"><span class="nav-number">3.3.5.</span> <span class="nav-text">Working with High-Resolution Images</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Adjusting-a-Layer%E2%80%99s-Visual-Style-and-Appearance"><span class="nav-number">3.4.</span> <span class="nav-text">Adjusting a Layer’s Visual Style and Appearance</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Layers-Have-Their-Own-Background-and-Border"><span class="nav-number">3.4.1.</span> <span class="nav-text">Layers Have Their Own Background and Border</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Layers-Support-a-Corner-Radius"><span class="nav-number">3.4.2.</span> <span class="nav-text">Layers Support a Corner Radius</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Layers-Support-Built-In-Shadows"><span class="nav-number">3.4.3.</span> <span class="nav-text">Layers Support Built-In Shadows</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Adding-Custom-Properties-to-a-Layer"><span class="nav-number">3.5.</span> <span class="nav-text">Adding Custom Properties to a Layer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Printing-the-Contents-of-a-Layer-Backed-View"><span class="nav-number">3.6.</span> <span class="nav-text">Printing the Contents of a Layer-Backed View</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Animating-Layer-Content"><span class="nav-number">4.</span> <span class="nav-text">Animating Layer Content</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Animating-Simple-Changes-to-a-Layer%E2%80%99s-Properties"><span class="nav-number">4.1.</span> <span class="nav-text">Animating Simple Changes to a Layer’s Properties</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Using-a-Keyframe-Animation-to-Change-Layer-Properties"><span class="nav-number">4.2.</span> <span class="nav-text">Using a Keyframe Animation to Change Layer Properties</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Specifying-Keyframe-Values"><span class="nav-number">4.2.1.</span> <span class="nav-text">Specifying Keyframe Values</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Specifying-the-Timing-of-a-Keyframe-Animation"><span class="nav-number">4.2.2.</span> <span class="nav-text">Specifying the Timing of a Keyframe Animation</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Stopping-an-Explicit-Animation-While-It-Is-Running"><span class="nav-number">4.3.</span> <span class="nav-text">Stopping an Explicit Animation While It Is Running</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Animating-Multiple-Changes-Together"><span class="nav-number">4.4.</span> <span class="nav-text">Animating Multiple Changes Together</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Detecting-the-End-of-an-Animation"><span class="nav-number">4.5.</span> <span class="nav-text">Detecting the End of an Animation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#How-to-Animate-Layer-Backed-Views"><span class="nav-number">4.6.</span> <span class="nav-text">How to Animate Layer-Backed Views</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Rules-for-Modifying-Layers-in-iOS"><span class="nav-number">4.6.1.</span> <span class="nav-text">Rules for Modifying Layers in iOS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Rules-for-Modifying-Layers-in-OS-X"><span class="nav-number">4.6.2.</span> <span class="nav-text">Rules for Modifying Layers in OS X</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Remember-to-Update-View-Constraints-as-Part-of-Your-Animation"><span class="nav-number">4.6.3.</span> <span class="nav-text">Remember to Update View Constraints as Part of Your Animation</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Building-a-Layer-Hierarchy"><span class="nav-number">5.</span> <span class="nav-text">Building a Layer Hierarchy</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Arranging-Layers-into-a-Layer-Hierarchy"><span class="nav-number">5.1.</span> <span class="nav-text">Arranging Layers into a Layer Hierarchy</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Adding-Inserting-and-Removing-Sublayers"><span class="nav-number">5.1.1.</span> <span class="nav-text">Adding, Inserting, and Removing Sublayers</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Positioning-and-Sizing-Sublayers"><span class="nav-number">5.1.2.</span> <span class="nav-text">Positioning and Sizing Sublayers</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#How-Layer-Hierarchies-Affect-Animations"><span class="nav-number">5.1.3.</span> <span class="nav-text">How Layer Hierarchies Affect Animations</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Adjusting-the-Layout-of-Your-Layer-Hierarchies"><span class="nav-number">5.2.</span> <span class="nav-text">Adjusting the Layout of Your Layer Hierarchies</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Using-Constraints-to-Manage-Your-Layer-Hierarchies-in-OS-X"><span class="nav-number">5.2.1.</span> <span class="nav-text">Using Constraints to Manage Your Layer Hierarchies in OS X</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Setting-Up-Autoresizing-Rules-for-Your-OS-X-Layer-Hierarchies"><span class="nav-number">5.2.2.</span> <span class="nav-text">Setting Up Autoresizing Rules for Your OS X Layer Hierarchies</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Manually-Laying-Out-Your-Layer-Hierarchies"><span class="nav-number">5.2.3.</span> <span class="nav-text">Manually Laying Out Your Layer Hierarchies</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Sublayers-and-Clipping"><span class="nav-number">5.3.</span> <span class="nav-text">Sublayers and Clipping</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Converting-Coordinate-Values-Between-Layers"><span class="nav-number">5.4.</span> <span class="nav-text">Converting Coordinate Values Between Layers</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Advanced-Animation-Tricks"><span class="nav-number">6.</span> <span class="nav-text">Advanced Animation Tricks</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Transition-Animations-Support-Changes-to-Layer-Visibility"><span class="nav-number">6.1.</span> <span class="nav-text">Transition Animations Support Changes to Layer Visibility</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Customizing-the-Timing-of-an-Animation"><span class="nav-number">6.2.</span> <span class="nav-text">Customizing the Timing of an Animation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pausing-and-Resuming-Animations"><span class="nav-number">6.3.</span> <span class="nav-text">Pausing and Resuming Animations</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Explicit-Transactions-Let-You-Change-Animation-Parameters"><span class="nav-number">6.4.</span> <span class="nav-text">Explicit Transactions Let You Change Animation Parameters</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Adding-Perspective-to-Your-Animations"><span class="nav-number">6.5.</span> <span class="nav-text">Adding Perspective to Your Animations</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Changing-a-Layer%E2%80%99s-Default-Behavior"><span class="nav-number">7.</span> <span class="nav-text">Changing a Layer’s Default Behavior</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Custom-Action-Objects-Adopt-the-CAAction-Protocol"><span class="nav-number">7.1.</span> <span class="nav-text">Custom Action Objects Adopt the CAAction Protocol</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Action-Objects-Must-Be-Installed-On-a-Layer-to-Have-an-Effect"><span class="nav-number">7.2.</span> <span class="nav-text">Action Objects Must Be Installed On a Layer to Have an Effect</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Disable-Actions-Temporarily-Using-the-CATransaction-Class"><span class="nav-number">7.3.</span> <span class="nav-text">Disable Actions Temporarily Using the CATransaction Class</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Improving-Animation-Performance"><span class="nav-number">8.</span> <span class="nav-text">Improving Animation Performance</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Choose-the-Best-Redraw-Policy-for-Your-OS-X-Views"><span class="nav-number">8.1.</span> <span class="nav-text">Choose the Best Redraw Policy for Your OS X Views</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Update-Layers-in-OS-X-to-Optimize-Your-Rendering-Path"><span class="nav-number">8.2.</span> <span class="nav-text">Update Layers in OS X to Optimize Your Rendering Path</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#General-Tips-and-Tricks"><span class="nav-number">8.3.</span> <span class="nav-text">General Tips and Tricks</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Use-Opaque-Layers-Whenever-Possible"><span class="nav-number">8.3.1.</span> <span class="nav-text">Use Opaque Layers Whenever Possible</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Use-Simpler-Paths-for-CAShapeLayer-Objects"><span class="nav-number">8.3.2.</span> <span class="nav-text">Use Simpler Paths for CAShapeLayer Objects</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Set-the-Layer-Contents-Explicitly-for-Identical-Layers"><span class="nav-number">8.3.3.</span> <span class="nav-text">Set the Layer Contents Explicitly for Identical Layers</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Always-Set-a-Layer%E2%80%99s-Size-to-Integral-Values"><span class="nav-number">8.3.4.</span> <span class="nav-text">Always Set a Layer’s Size to Integral Values</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Use-Asynchronous-Layer-Rendering-As-Needed"><span class="nav-number">8.3.5.</span> <span class="nav-text">Use Asynchronous Layer Rendering As Needed</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Specify-a-Shadow-Path-When-Adding-a-Shadow-to-Your-Layer"><span class="nav-number">8.3.6.</span> <span class="nav-text">Specify a Shadow Path When Adding a Shadow to Your Layer</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Layer-Style-Property-Animations"><span class="nav-number">9.</span> <span class="nav-text">Layer Style Property Animations</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Geometry-Properties"><span class="nav-number">9.1.</span> <span class="nav-text">Geometry Properties</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Background-Properties"><span class="nav-number">9.2.</span> <span class="nav-text">Background Properties</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Layer-Content"><span class="nav-number">9.3.</span> <span class="nav-text">Layer Content</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Sublayers-Content"><span class="nav-number">9.4.</span> <span class="nav-text">Sublayers Content</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Border-Attributes"><span class="nav-number">9.5.</span> <span class="nav-text">Border Attributes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Filters-Property"><span class="nav-number">9.6.</span> <span class="nav-text">Filters Property</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Shadow-Properties"><span class="nav-number">9.7.</span> <span class="nav-text">Shadow Properties</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Opacity-Property"><span class="nav-number">9.8.</span> <span class="nav-text">Opacity Property</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Mask-Properties"><span class="nav-number">9.9.</span> <span class="nav-text">Mask Properties</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Animatable-Properties"><span class="nav-number">10.</span> <span class="nav-text">Animatable Properties</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Key-Value-Coding-Extensions"><span class="nav-number">11.</span> <span class="nav-text">Key-Value Coding Extensions</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Key-Value-Coding-Compliant-Container-Classes"><span class="nav-number">11.1.</span> <span class="nav-text">Key-Value Coding Compliant Container Classes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Default-Value-Support"><span class="nav-number">11.2.</span> <span class="nav-text">Default Value Support</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Wrapping-Conventions"><span class="nav-number">11.3.</span> <span class="nav-text">Wrapping Conventions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Key-Path-Support-for-Structures"><span class="nav-number">11.4.</span> <span class="nav-text">Key Path Support for Structures</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">joakim.liu</p>
+  <div class="site-description" itemprop="description">你不解决问题，就会成为问题。iOS菜逗一枚。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/JoakimLiu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/JoakimLiu" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">joakim.liu</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://example.com/2019/02/24/wwdc-2011-421/";
+    this.page.identifier = "2019/02/24/wwdc-2011-421/";
+    this.page.title = "Core Animation Essentials(Core Animation Programming Guide)";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://http-joakimliu-github-io.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

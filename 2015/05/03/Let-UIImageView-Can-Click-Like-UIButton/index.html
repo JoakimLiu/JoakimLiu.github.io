@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="#前言让图片可点击这个需求在项目中经常遇到，一般我会有两种做法。   UIImageView + UITapGestureRecognizer UIButton setBackgroundImage   但是最近遇到这样一种需求：   图片可点击 图片数量多 能够获取Image对象   如果还用上面那两种方法的话，感觉有点蛋疼，于是自己就写了一个UIImageView的子类。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="让UIImageView像UIButton那样点击">
+<meta property="og:url" content="http://example.com/2015/05/03/Let-UIImageView-Can-Click-Like-UIButton/index.html">
+<meta property="og:site_name" content="牛易疯先森的开发记录">
+<meta property="og:description" content="#前言让图片可点击这个需求在项目中经常遇到，一般我会有两种做法。   UIImageView + UITapGestureRecognizer UIButton setBackgroundImage   但是最近遇到这样一种需求：   图片可点击 图片数量多 能够获取Image对象   如果还用上面那两种方法的话，感觉有点蛋疼，于是自己就写了一个UIImageView的子类。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2015-05-03T12:10:09.000Z">
+<meta property="article:modified_time" content="2021-01-20T14:51:29.665Z">
+<meta property="article:author" content="joakim.liu">
+<meta property="article:tag" content="UIImageView">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2015/05/03/Let-UIImageView-Can-Click-Like-UIButton/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>让UIImageView像UIButton那样点击 | 牛易疯先森的开发记录</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">牛易疯先森的开发记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2015/05/03/Let-UIImageView-Can-Click-Like-UIButton/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          让UIImageView像UIButton那样点击
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2015-05-03 20:10:09" itemprop="dateCreated datePublished" datetime="2015-05-03T20:10:09+08:00">2015-05-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF/" itemprop="url" rel="index"><span itemprop="name">技术积累</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>#前言<br>让图片可点击这个需求在项目中经常遇到，一般我会有两种做法。</p>
+<blockquote>
+<ul>
+<li>UIImageView + UITapGestureRecognizer</li>
+<li>UIButton setBackgroundImage</li>
+</ul>
+</blockquote>
+<p>但是最近遇到这样一种需求：</p>
+<blockquote>
+<ul>
+<li>图片可点击</li>
+<li>图片数量多</li>
+<li>能够获取Image对象</li>
+</ul>
+</blockquote>
+<p>如果还用上面那两种方法的话，感觉有点蛋疼，于是自己就写了一个UIImageView的子类。</p>
+<a id="more"></a>
+
+<hr>
+<p>#原理<br>UIImageView -&gt; UIView -&gt; UIResponder -&gt; NSObject.  继承自UIResponder！那UIImageView响应事件就好办了。在UIResponder头文件中，可以看到响应手势的四个函数</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event;</span><br><span class="line">- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event;</span><br><span class="line">- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event;</span><br><span class="line">- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event;</span><br></pre></td></tr></table></figure>
+<p>那么我可以在Began、Ended、Cancelled这三个函数中想办法：</p>
+<blockquote>
+<ul>
+<li>在Began方法中，添加一层模糊遮罩（类似于点击button时的效果）</li>
+<li>在Ended方法中，取消模糊遮罩，并且让它响应相应的方法</li>
+<li>在Cancelled方法中，取消模糊遮罩</li>
+</ul>
+</blockquote>
+<p>如何在Ended方法中，如何响应相应的方法呢？我可以采取类似于代理的方法，在头文件暴露一个SEL类型（响应方法）和一个id类型（响应方法的持有对象）的属性，创建该对象的时候赋值。</p>
+<hr>
+<p>#代码</p>
+<h4 id="h文件"><a href="#h文件" class="headerlink" title="h文件"></a>h文件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">@property (nonatomic,assign) id delegate;  &#x2F;&#x2F;回调对象</span><br><span class="line">@property (nonatomic,assign) SEL method;  &#x2F;&#x2F;回调方法</span><br></pre></td></tr></table></figure>
+<h4 id="m文件"><a href="#m文件" class="headerlink" title="m文件"></a>m文件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line">- (id)initWithFrame:(CGRect)frame &#123;</span><br><span class="line">    self &#x3D; [super initWithFrame:frame];</span><br><span class="line">    if (self) &#123;</span><br><span class="line">        self.userInteractionEnabled &#x3D; YES;</span><br><span class="line">    &#125;</span><br><span class="line">    return self;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> *  实现点击高亮</span><br><span class="line"> *</span><br><span class="line"> *  @param touches touches description</span><br><span class="line"> *  @param event   event description</span><br><span class="line"> *&#x2F;</span><br><span class="line">-(void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event</span><br><span class="line">&#123;</span><br><span class="line">    UIView *maskView &#x3D; [self viewWithTag:viewTag];</span><br><span class="line">    if (!maskView) &#123;</span><br><span class="line">        </span><br><span class="line">        maskView &#x3D; [[UIView alloc]initWithFrame:self.bounds];</span><br><span class="line">        maskView.backgroundColor &#x3D; [UIColor whiteColor];</span><br><span class="line">        maskView.alpha &#x3D; 0.25;</span><br><span class="line">        maskView.tag &#x3D; viewTag;</span><br><span class="line">        [self addSubview:maskView];</span><br><span class="line">        </span><br><span class="line">    &#125;else&#123;</span><br><span class="line">        maskView.hidden &#x3D; NO;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;**</span><br><span class="line"> *  重载touch方法</span><br><span class="line"> *</span><br><span class="line"> *  @param touches touches description</span><br><span class="line"> *  @param event   event description</span><br><span class="line"> *&#x2F;</span><br><span class="line">-(void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event</span><br><span class="line">&#123;</span><br><span class="line">    UIView *maskView &#x3D; [self viewWithTag:viewTag];</span><br><span class="line">    if(maskView)&#123;</span><br><span class="line">        maskView.hidden&#x3D;YES;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    if([self.delegate respondsToSelector:self.method])&#123;</span><br><span class="line">        </span><br><span class="line">        SuppressPerformSelectorLeakWarning([self.delegate performSelector:self.method withObject:self]);</span><br><span class="line">    &#125;else&#123;</span><br><span class="line">        </span><br><span class="line">        NSLog(@&quot;回调方法没有实现%@&quot;,NSStringFromSelector(self.method));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">-(void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event</span><br><span class="line">&#123;</span><br><span class="line">    UIView *maskView &#x3D; [self viewWithTag:viewTag];</span><br><span class="line">    if(maskView)&#123;</span><br><span class="line">        maskView.hidden&#x3D;YES;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>项目链接： <a href="https://github.com/JoakimLiu/FMClickedImageView">https://github.com/JoakimLiu/FMClickedImageView</a></p>
+<hr>
+<p>#总结<br>这个方法比较简单，还可以在该子类中添加其他属性、方法，既然UIImageView能用，那么那些继承至UIResponder的其他控件（没有点击响应事件）也能用该方法，比如UILabel。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/UIImageView/" rel="tag"># UIImageView</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2015/04/19/Github&&Hexo-%3EPersonal%20Blog%20for%20Mac%20OS/" rel="prev" title="Github && Hexo -> 个人博客 for Mac OS">
+      <i class="fa fa-chevron-left"></i> Github && Hexo -> 个人博客 for Mac OS
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2015/05/22/Some-Debug-Method-in-iOS/" rel="next" title="iOS开发中一些Debug方法">
+      iOS开发中一些Debug方法 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#h%E6%96%87%E4%BB%B6"><span class="nav-number">1.</span> <span class="nav-text">h文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#m%E6%96%87%E4%BB%B6"><span class="nav-number">2.</span> <span class="nav-text">m文件</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">joakim.liu</p>
+  <div class="site-description" itemprop="description">你不解决问题，就会成为问题。iOS菜逗一枚。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/JoakimLiu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/JoakimLiu" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">joakim.liu</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://example.com/2015/05/03/Let-UIImageView-Can-Click-Like-UIButton/";
+    this.page.identifier = "2015/05/03/Let-UIImageView-Can-Click-Like-UIButton/";
+    this.page.title = "让UIImageView像UIButton那样点击";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://http-joakimliu-github-io.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

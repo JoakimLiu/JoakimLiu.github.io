@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="牛易疯先森的开发记录">
+<meta property="og:url" content="http://example.com/page/3/index.html">
+<meta property="og:site_name" content="牛易疯先森的开发记录">
+<meta property="og:description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="joakim.liu">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/page/3/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : true,
+    isPost : false,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>牛易疯先森的开发记录</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">牛易疯先森的开发记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content index posts-expand">
+            
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2017/01/15/iOS%E7%9A%84%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2017/01/15/iOS%E7%9A%84%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86/" class="post-title-link" itemprop="url">iOS的事件处理</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-01-15 10:20:28" itemprop="dateCreated datePublished" datetime="2017-01-15T10:20:28+08:00">2017-01-15</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index"><span itemprop="name">经验分享</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>iOS中的事件处理</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2017/01/15/iOS%E7%9A%84%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86/">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2016/11/20/SCLAlertView/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2016/11/20/SCLAlertView/" class="post-title-link" itemprop="url">SCLAlertView 源码解析</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2016-11-20 08:35:17" itemprop="dateCreated datePublished" datetime="2016-11-20T08:35:17+08:00">2016-11-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">源码解析</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>SCLAlertView 源码解析</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2016/11/20/SCLAlertView/">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2016/09/24/Xcode-Concepts/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2016/09/24/Xcode-Concepts/" class="post-title-link" itemprop="url">Xcode Concepts</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2016-09-24 22:59:55" itemprop="dateCreated datePublished" datetime="2016-09-24T22:59:55+08:00">2016-09-24</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index"><span itemprop="name">经验分享</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>使用 xcconfig 进行环境分离</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2016/09/24/Xcode-Concepts/">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2016/06/26/NSURLProtocol%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-UIWebView-%E8%AE%BE%E7%BD%AE%E8%AF%B7%E6%B1%82%E5%A4%B4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2016/06/26/NSURLProtocol%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-UIWebView-%E8%AE%BE%E7%BD%AE%E8%AF%B7%E6%B1%82%E5%A4%B4/" class="post-title-link" itemprop="url">NSURLProtocol学习笔记-UIWebView 设置请求头</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2016-06-26 09:40:28" itemprop="dateCreated datePublished" datetime="2016-06-26T09:40:28+08:00">2016-06-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index"><span itemprop="name">经验分享</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>NSURLProtocol 设置 UIWebView 请求头</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2016/06/26/NSURLProtocol%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-UIWebView-%E8%AE%BE%E7%BD%AE%E8%AF%B7%E6%B1%82%E5%A4%B4/">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2016/06/23/simple-algorithm/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2016/06/23/simple-algorithm/" class="post-title-link" itemprop="url">OC数组排列组合</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2016-06-23 00:23:06" itemprop="dateCreated datePublished" datetime="2016-06-23T00:23:06+08:00">2016-06-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index"><span itemprop="name">经验分享</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><img src="http://ww2.sinaimg.cn/mw690/005IevIrgw1f544iisowoj30k00qojsb.jpg" alt="出租告示"></p>
+<p>今天上午同事在rtx群里面发了这样一张图片，挺有意思的哈，地球人已经阻止不了程序猿哥了。只要懂一点程序的人都知道这段代码是干什么用的（这应该是java吧），这就是根据index数组里面的值从另外一个数组arr里面读取值，然后组成一个电话号码字符串。</p>
+<p>后面的结果电话号码是：18013820100 （ps 貌似这个电话打不通哈）</p>
+<p>中午吃饭的时候，想了下，这里 <code>arr</code> 应该有 <code>n!</code> 中可能（n代码电话号码去重后的数字个数），这里就是高中数学的排列组合知识，然后根据 <code>arr</code> 数组确定 <code>index</code> 数组。</p>
+<p>画了一张<a href="https://www.processon.com/view/link/576ab9a6e4b0b63300e58988">解决思路流程图</a>，其实就像高中数学老师讲的一样，第一位有n种选择，第二位有 n - 1 种选择，以此类推，然后将这种解决方式列举出来，下面就是相关代码。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2016/06/23/simple-algorithm/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2016/06/03/%E4%B8%80%E4%BA%9B%E6%9C%89%E8%B6%A3%E7%9A%84%E4%BA%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2016/06/03/%E4%B8%80%E4%BA%9B%E6%9C%89%E8%B6%A3%E7%9A%84%E4%BA%8B/" class="post-title-link" itemprop="url">一些有趣的事</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2016-06-03 22:45:23" itemprop="dateCreated datePublished" datetime="2016-06-03T22:45:23+08:00">2016-06-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index"><span itemprop="name">经验分享</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="U0000202E-2016-6-3"><a href="#U0000202E-2016-6-3" class="headerlink" title="\U0000202E   (2016.6.3)"></a>\U0000202E   (2016.6.3)</h1><p>今天在项目中遇到一个很有意思的事情，测试在编辑用户昵称的时候，不知道从哪里copy了一个特殊字符<code>\U0000202E</code>，然后我们在label上面显示的时候就出问题了，本来应该是<code>wind参加了活动</code>，结果变成了<code>wind动活了加参</code>，当时我就懵逼了，后面断点调试，发现字符串为<code>wind\U0000202E参加了活动</code>。后面我在Google上搜索<code>\U0000202E</code>，只搜到了两条结果</p>
+<p><code>http://permalink.gmane.org/gmane.comp.lib.regexp.tre/39 https://github.com/nbjahan/launchbar-unisym/blob/master/src/2000-206f_general_punctuation.go</code></p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2016/06/03/%E4%B8%80%E4%BA%9B%E6%9C%89%E8%B6%A3%E7%9A%84%E4%BA%8B/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2016/05/15/UIWebView%E8%AE%BE%E7%BD%AE%E8%AF%B7%E6%B1%82%E5%A4%B4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2016/05/15/UIWebView%E8%AE%BE%E7%BD%AE%E8%AF%B7%E6%B1%82%E5%A4%B4/" class="post-title-link" itemprop="url">UIWebView 设置请求头</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2016-05-15 20:33:27" itemprop="dateCreated datePublished" datetime="2016-05-15T20:33:27+08:00">2016-05-15</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index"><span itemprop="name">经验分享</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><em>这篇文章所说的东西是错的，只是一个过程记录，设置请求头请移步<a href="http://joakimliu.github.io/2016/06/26/NSURLProtocol%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-UIWebView-%E8%AE%BE%E7%BD%AE%E8%AF%B7%E6%B1%82%E5%A4%B4/">NSURLProtocol学习笔记-UIWebView-设置请求头</a></em></p>
+<p>最近在做内置浏览器的时候遇到了设置请求头的问题，我们项目中要兼容iOS7，所以用的是<a href="https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIWebView_Class/">UIWebView</a>，UIWebView能满足我们的需求，虽然WKWebView性能上比UIWebView要强很多。</p>
+<p>设置请求头的方法比较简单，在需要调用<code>loadRequest:</code>方法时，设置<code>NSMutableURLRequest</code>的<code>allHTTPHeaderFields</code>的property即可。在<code>webViewDidFinishLoad:</code>代理里面将<code>webView.request.allHTTPHeaderFields</code>的打印出来，该代理第一次执行的时候里面有设置的请求头信息，但是在webView里面点击跳转到另外一个webView里面的时候，会发现<code>webView.request.allHTTPHeaderFields</code>里面是没有第一次设置的请求头信息的。我觉得应该是我<code>loadRequest:</code>的姿势不对，然后把<a href="https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIWebView_Class/">UIWebView Class</a>看了几片，结果里面没有我要的，WTF！</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2016/05/15/UIWebView%E8%AE%BE%E7%BD%AE%E8%AF%B7%E6%B1%82%E5%A4%B4/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2016/04/18/%E9%93%BE%E6%8E%A5%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2016/04/18/%E9%93%BE%E6%8E%A5%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/" class="post-title-link" itemprop="url">链接正则表达式</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2016-04-18 23:26:37" itemprop="dateCreated datePublished" datetime="2016-04-18T23:26:37+08:00">2016-04-18</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index"><span itemprop="name">经验分享</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>总是在项目中遇到比较小的问题，以前都没怎么放在心上，今天下班前在和同事讨论，怎么一段字符串中寻找相关的子字符串然后在将其替换掉，（如将链接替换成”link”  “<a href="http://www.google.com&quot;/">www.google.com&quot;</a> -&gt; “link”）。我说我记得以前有处理过，看了自己的代码以后，笑了，😊😊😊😊😊😊<br>今天来说说链接的正则匹配 </p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2016/04/18/%E9%93%BE%E6%8E%A5%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2016/03/27/NIMKit%E6%B5%85%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2016/03/27/NIMKit%E6%B5%85%E6%9E%90/" class="post-title-link" itemprop="url">NIMKit浅析</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2016-03-27 11:08:39" itemprop="dateCreated datePublished" datetime="2016-03-27T11:08:39+08:00">2016-03-27</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">源码解析</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>最近把公司项目的聊天模块从”XMPP”转到”网易云信”<a href="http://netease.im/">官网</a>、<a href="https://github.com/netease-im">github</a>。在转的过程中，上手很快，基本上没遇到什么难题，很多程度上感谢云信的<a href="https://github.com/netease-im/NIM_iOS_UIKit">NIMKit</a>。以前也接触过几个IM SDK服务商的代码，那个时候看他们的代码根本没什么欲望，但这次看云信的代码有种被吸引的感觉，恨不得一下子把它的代码全部看完，封装的很好，扩展性很强（ps:就我目前的水平只能说出这些优点）。对于一般的聊天UI完全可以满足，就算不用网易的IM SDK，但他们的代码真的值得一下（尽管他们的UIKit代码注释比较少）。</p>
+<p>在看本文之前，请先看一下他们官方的<a href="https://github.com/netease-im/NIM_iOS_UIKit">github简介</a>。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2016/03/27/NIMKit%E6%B5%85%E6%9E%90/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2016/03/04/NSDate%20Tips/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2016/03/04/NSDate%20Tips/" class="post-title-link" itemprop="url">NSDate读取相差31年的问题</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2016-03-04 22:18:32" itemprop="dateCreated datePublished" datetime="2016-03-04T22:18:32+08:00">2016-03-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF/" itemprop="url" rel="index"><span itemprop="name">技术积累</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>这周在做数据库迁移（v1.sqlite to v2.sqlite，需求：更改数据库里面某个字段的值，数据库用的是coredata，在读取数据库、迁移是用的是FMDB）时，遇到一个比较奇怪的bug（其实一点都不奇怪，只怪自己图样图生破）。就是时间字段（coredata存储的是NSDate对象）迁移后的年份是1985年（比如：原数据库的时间是2016.2.26，而迁移后却是1985.2.26），百事不得其解……后面查到原因是因为Apple NSDate对象存储的时候不是以1970.1.1作为基准，而是以2001.1.1作为基准的，详情请看下面。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2016/03/04/NSDate%20Tips/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+
+  
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+  </nav>
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">joakim.liu</p>
+  <div class="site-description" itemprop="description">你不解决问题，就会成为问题。iOS菜逗一枚。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/JoakimLiu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/JoakimLiu" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">joakim.liu</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+</body>
+</html>

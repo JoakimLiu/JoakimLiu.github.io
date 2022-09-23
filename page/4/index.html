@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="牛易疯先森的开发记录">
+<meta property="og:url" content="http://example.com/page/4/index.html">
+<meta property="og:site_name" content="牛易疯先森的开发记录">
+<meta property="og:description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="joakim.liu">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/page/4/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : true,
+    isPost : false,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>牛易疯先森的开发记录</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">牛易疯先森的开发记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content index posts-expand">
+            
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2015/11/15/Resolve-The-SourceCode-Of-SDWebImage/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2015/11/15/Resolve-The-SourceCode-Of-SDWebImage/" class="post-title-link" itemprop="url">SDWebImage源码浅析</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2015-11-15 15:33:37" itemprop="dateCreated datePublished" datetime="2015-11-15T15:33:37+08:00">2015-11-15</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">源码解析</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><a href="https://github.com/rs/SDWebImage">SDWebImage</a>这个第三方库大家都不陌生吧，一个网络请求图片用的。其官方解释是：作为UIImageView的类别，支持缓存的异步下载图片。</p>
+<p>它有一些特点：</p>
+<blockquote>
+<p>一个带有管理网络图片下载和缓存的UIImageView类别<br>一个异步图片下载器<br>一个提供内存和磁盘缓存图片，并且能够自动清理过期的缓存<br>支持<code>GIF</code>图片<br>支持<code>WebP</code><br>图片后台解压图片<br>保证通一个<code>URL</code>不会下载多次<br>保证假的<code>URL</code>不会返回加载<br>保证主线程不会堵塞<br>高性能<br>使用<code>GCD</code>和<code>ARC</code><br>支持<code>Arm64</code></p>
+</blockquote>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2015/11/15/Resolve-The-SourceCode-Of-SDWebImage/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2015/10/14/new-skill-in-this-week-two/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2015/10/14/new-skill-in-this-week-two/" class="post-title-link" itemprop="url">这周所学新技巧（2）</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2015-10-14 23:43:31" itemprop="dateCreated datePublished" datetime="2015-10-14T23:43:31+08:00">2015-10-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index"><span itemprop="name">经验分享</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>博客已经两个月没有更新了，心里塞塞的。国庆节，把<a href="http://www.amazon.cn/Objective-C%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8B-iOS%E4%B8%8EOS-X%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%92%8C%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86-%E5%9D%82%E6%9C%AC%E4%B8%80%E6%A0%91/dp/B00DE60G3S/ref=sr_1_1?ie=UTF8&qid=1444828266&sr=8-1&keywords=objective-c%E9%AB%98%E7%BA%A7%E7%BC%96%E7%A8%8B+ios%E4%B8%8Eos+x%E5%A4%9A%E7%BA%BF%E7%A8%8B%E5%92%8C%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86">Objective-C高级编程:iOS与OS X多线程和内存管理</a>看了一遍，其实这本书去年就买了，但是一直都放在柜子里冷藏中，这本书里面分析苹果源码的写的很好，里面很多东西都是从苹果官方网站摘要的，第一章”自动引用计数”大部分内容摘自<a href="https://developer.apple.com/library/ios/releasenotes/ObjectiveC/RN-TransitioningToARC/Introduction/Introduction.html#//apple_ref/doc/uid/TP40011226-CH1-SW11">Transitioning to ARC Release Notes</a>。对于只有一点C、C++基础而直接接触iOS开发的我，开发中大部分都是从网上找资料，学的东西也是很零散，项目中需要什么就赶紧补什么，能够实现这个功能并且不出bug就行，原理方面的知道的很少，其实苹果官方网站和Xcode真的是学习的好工具，在苹果官方网站，你能系统的学到该知识点，用的时候能够说出个所以然来。在看文档的时候，对比自己项目中的代码，有违背apple开发文档的就改回来，这样对项目和自身都是有好处。所以，我打算多看看apple开发文档，记录一下那些快速消化技术点而遗漏的知识点。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2015/10/14/new-skill-in-this-week-two/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2015/08/09/Simple-implementation-for-topic/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2015/08/09/Simple-implementation-for-topic/" class="post-title-link" itemprop="url">UITextView中#话题#功能的简单实现</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2015-08-09 09:44:07" itemprop="dateCreated datePublished" datetime="2015-08-09T09:44:07+08:00">2015-08-09</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF/" itemprop="url" rel="index"><span itemprop="name">技术积累</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="实现过程1"><a href="#实现过程1" class="headerlink" title="实现过程1"></a>实现过程1</h1><p>今天来谈谈类似于新浪微博话题功能的简单实现，当文字是”#话题#”这种格式时，该文字字体得变颜色。个人觉得，这种问题的处理方式可以是，监听用户输入的信息，如果遇到有”#”号输入或删除时，再处理看是否需要改变字体颜色。于是我就按照这种思路写了一段改变颜色的代码，它就是是遍历textview.text，然后在将两个”#”号之间有文字的字体设置颜色，不会玩正则，所以这个方法比较蠢。O(∩_∩)O~</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2015/08/09/Simple-implementation-for-topic/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2015/07/26/new-skill-in-this-week-one/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2015/07/26/new-skill-in-this-week-one/" class="post-title-link" itemprop="url">这周所学新技巧（1）</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2015-07-26 22:57:24" itemprop="dateCreated datePublished" datetime="2015-07-26T22:57:24+08:00">2015-07-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index"><span itemprop="name">经验分享</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>#前言<br>今天隔上一篇博文已经差不多有一个月了，感觉非常羞愧，因为这意味着我特么将近一个月里面没有学到新知识。其实呢，不是这样子的，做项目过程中肯定有遇到问题，也有解决问题，但是就是没有长记性，说白了点，就没有记下来。今天洗澡的时候，突然又创建了一句座右铭“你可以蠢，但是不能懒；你可以懒，但是不能没有责任感。”作为一个经常刷技术微博的我，肯定会学在大牛的博客里面了解到一点东西。“先转后看”，这就是我的原则。其实，这种想法、做法是非常浪费时间的，因为我平均一天要刷将近半个多小时的微博，在项目中很有可能会遇到以前在微博中看到过的东西，但是你还要去找啊找。就前几天，同事要做类似于黄易导航栏点击切换栏目的效果，我记得我有看到过，果不其然在微博中找到了它<a href="https://github.com/wangmchn/WMPageController">WMPageController</a>，但如果时间隔很久，那我岂不是要找很久，这就是浪费时间啊！以前转发微博的时候，会@我的印象笔记，当然这比较容易搜索，但是东西多了，你总得要花点时间去找到自己想要的那个东西。所以吧，“好记性，不如烂笔头”，古人的话总没错。这又让我想起了我们家那边的老话，“出门带好下雨伞”，然后然后我就想起了前天周五湿身的感觉，fuck！！！幸亏有好心同事救济我。前几天在cc上面看到一篇文章<a href="http://www.cocoachina.com/programmer/20150716/12592.html">如何坚持每周写一篇博客</a>，个人觉得写地挺好的，一想到自己隔这么久没有写博客了，就感到非常羞愧，所以吧，要坚持！因为你是男人嘛。好了，废话了这么久，实在不像是一个程序猿，下面来扯扯这周所学到的新技巧。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2015/07/26/new-skill-in-this-week-one/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2015/07/01/Translate-The-Blog-Post-Concurrent-Debug-Beta-and-App-Store-Builds/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2015/07/01/Translate-The-Blog-Post-Concurrent-Debug-Beta-and-App-Store-Builds/" class="post-title-link" itemprop="url">（译）Debug，Beta，App Store版本的同时构建</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2015-07-01 21:56:36" itemprop="dateCreated datePublished" datetime="2015-07-01T21:56:36+08:00">2015-07-01</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">翻译</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>以前开发App的时候就两个版本，调试版和发布版，至于这两个版本的区别大家都知道，服务器的数据库不同（即URL不同），那个时候我的做法就是，在网络请求API里面，将URL定义成宏，版本上线时手动切换URL。当时没有觉得这个方法很挫，后面到新东家的时候，发现有三个版本，即测试版、企业版、AppStore版，我当时就在想如果还像以前那样搞，这该怎么玩啊。后面发现三个版本生成的APP名字都不一样，我当时很惊讶，这个看上去很牛逼的样子啊。直到前段时间借助一篇<a href="http://www.swwritings.com/post/2013-05-20-concurrent-debug-beta-app-store-builds/">博文</a>才搞懂其中的秘密，下面我来翻译一下这篇博文，下面我采取中英文并茂的形式展现，如有翻译不当之处，请拍砖。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2015/07/01/Translate-The-Blog-Post-Concurrent-Debug-Beta-and-App-Store-Builds/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2015/06/26/A-way-of-implementation-for-adding-tag-to-photo/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2015/06/26/A-way-of-implementation-for-adding-tag-to-photo/" class="post-title-link" itemprop="url">图片打标签的一种实现方式</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2015-06-26 23:26:32" itemprop="dateCreated datePublished" datetime="2015-06-26T23:26:32+08:00">2015-06-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF/" itemprop="url" rel="index"><span itemprop="name">技术积累</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>最近在项目有遇到图片打标签的需求，即在图片上面添加相关标签（标签可移动、删除），然后生成一张新的图片，上传到服务器上。下面就来谈谈我的实现方式吧，如果你有更好的方法，麻烦告诉我，THX。</p>
+<p>###实现过程<br>我的思路是：Pan手势拖动标签；LongPress手势显示“删除”ItemMenu，点击删除item删除标签；新图片屏幕截图生成；图片展示在画布的方式自适应。首先将标签自定义一个View。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2015/06/26/A-way-of-implementation-for-adding-tag-to-photo/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2015/05/22/Some-Debug-Method-in-iOS/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2015/05/22/Some-Debug-Method-in-iOS/" class="post-title-link" itemprop="url">iOS开发中一些Debug方法</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2015-05-22 21:02:42" itemprop="dateCreated datePublished" datetime="2015-05-22T21:02:42+08:00">2015-05-22</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index"><span itemprop="name">经验分享</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><hr>
+<p>当时刚开始搞iOS开发的时候，对断点调试的理解局限于：看代码风骚的走位，即当运行出来的效果对不住我的代码时，我会去看代码是怎么运行的，然后用雍正之剑去砍杀八阿哥。后面慢慢的接触lldb后，发现lldb用起来真的很赞，下面我来分享一下我在平时开发中积累的一些用法，这些用法有些是从网上发现的，有些是同事告诉我的。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2015/05/22/Some-Debug-Method-in-iOS/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2015/05/03/Let-UIImageView-Can-Click-Like-UIButton/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2015/05/03/Let-UIImageView-Can-Click-Like-UIButton/" class="post-title-link" itemprop="url">让UIImageView像UIButton那样点击</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2015-05-03 20:10:09" itemprop="dateCreated datePublished" datetime="2015-05-03T20:10:09+08:00">2015-05-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF/" itemprop="url" rel="index"><span itemprop="name">技术积累</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>#前言<br>让图片可点击这个需求在项目中经常遇到，一般我会有两种做法。</p>
+<blockquote>
+<ul>
+<li>UIImageView + UITapGestureRecognizer</li>
+<li>UIButton setBackgroundImage</li>
+</ul>
+</blockquote>
+<p>但是最近遇到这样一种需求：</p>
+<blockquote>
+<ul>
+<li>图片可点击</li>
+<li>图片数量多</li>
+<li>能够获取Image对象</li>
+</ul>
+</blockquote>
+<p>如果还用上面那两种方法的话，感觉有点蛋疼，于是自己就写了一个UIImageView的子类。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2015/05/03/Let-UIImageView-Can-Click-Like-UIButton/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2015/04/19/Github&&Hexo-%3EPersonal%20Blog%20for%20Mac%20OS/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2015/04/19/Github&&Hexo-%3EPersonal%20Blog%20for%20Mac%20OS/" class="post-title-link" itemprop="url">Github && Hexo -> 个人博客 for Mac OS</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2015-04-19 18:34:40" itemprop="dateCreated datePublished" datetime="2015-04-19T18:34:40+08:00">2015-04-19</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index"><span itemprop="name">经验分享</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>#前言<br>想用blog的形式来记录自己的开发路程这个想法很早就有了，但是一直都没有行动。最近有段时间在面试，很多东西当时项目中遇到的时候能搞懂，但是面试官一问就有点卡壳了，归根结底是自己没有理解渗透、掌握牢固。这周在知乎上面看到了 <a href="http://www.zhihu.com/question/20576786">费曼技巧</a> 的相关问答，觉得这种学习技巧真的很好，能把所学东西经过自己的理解，让普通人都能听懂，这样说明你自己真正的懂了。个人觉得写blog好处有如下几点</p>
+<blockquote>
+<ul>
+<li>记录自己的学习点滴、开发过程</li>
+<li>加强自己的表达能力</li>
+<li>练习费曼技巧</li>
+<li>结交有共同爱好的朋友</li>
+</ul>
+</blockquote>
+<p>今天下午在网上找了很多资料，终于把基于github和hexo的个人blog给搭建好了，下面我把搭建的经过述说一下。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2015/04/19/Github&&Hexo-%3EPersonal%20Blog%20for%20Mac%20OS/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+
+  
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span>
+  </nav>
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">joakim.liu</p>
+  <div class="site-description" itemprop="description">你不解决问题，就会成为问题。iOS菜逗一枚。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/JoakimLiu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/JoakimLiu" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">joakim.liu</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+</body>
+</html>

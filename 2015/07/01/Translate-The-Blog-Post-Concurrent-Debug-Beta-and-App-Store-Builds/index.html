@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="前言以前开发App的时候就两个版本，调试版和发布版，至于这两个版本的区别大家都知道，服务器的数据库不同（即URL不同），那个时候我的做法就是，在网络请求API里面，将URL定义成宏，版本上线时手动切换URL。当时没有觉得这个方法很挫，后面到新东家的时候，发现有三个版本，即测试版、企业版、AppStore版，我当时就在想如果还像以前那样搞，这该怎么玩啊。后面发现三个版本生成的APP名字都不一样，我当">
+<meta property="og:type" content="article">
+<meta property="og:title" content="（译）Debug，Beta，App Store版本的同时构建">
+<meta property="og:url" content="http://example.com/2015/07/01/Translate-The-Blog-Post-Concurrent-Debug-Beta-and-App-Store-Builds/index.html">
+<meta property="og:site_name" content="牛易疯先森的开发记录">
+<meta property="og:description" content="前言以前开发App的时候就两个版本，调试版和发布版，至于这两个版本的区别大家都知道，服务器的数据库不同（即URL不同），那个时候我的做法就是，在网络请求API里面，将URL定义成宏，版本上线时手动切换URL。当时没有觉得这个方法很挫，后面到新东家的时候，发现有三个版本，即测试版、企业版、AppStore版，我当时就在想如果还像以前那样搞，这该怎么玩啊。后面发现三个版本生成的APP名字都不一样，我当">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://ww2.sinaimg.cn/mw690/005IevIrgw1etlcni2qqdj31210mvaqa.jpg">
+<meta property="og:image" content="http://ww1.sinaimg.cn/mw690/005IevIrgw1etlcnm589lj31210mvdvg.jpg">
+<meta property="og:image" content="http://ww4.sinaimg.cn/mw690/005IevIrgw1etlcnq8nzej31210mvdxl.jpg">
+<meta property="og:image" content="http://ww1.sinaimg.cn/mw690/005IevIrgw1etlcnug1zij31210mvasc.jpg">
+<meta property="og:image" content="http://ww3.sinaimg.cn/mw690/005IevIrgw1etlcnzc9mvj30zn0kj12h.jpg">
+<meta property="og:image" content="http://ww1.sinaimg.cn/mw690/005IevIrgw1etlco10us3j30fc05hwem.jpg">
+<meta property="article:published_time" content="2015-07-01T13:56:36.000Z">
+<meta property="article:modified_time" content="2021-01-22T14:55:23.849Z">
+<meta property="article:author" content="joakim.liu">
+<meta property="article:tag" content="Xcode Build">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://ww2.sinaimg.cn/mw690/005IevIrgw1etlcni2qqdj31210mvaqa.jpg">
+
+<link rel="canonical" href="http://example.com/2015/07/01/Translate-The-Blog-Post-Concurrent-Debug-Beta-and-App-Store-Builds/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>（译）Debug，Beta，App Store版本的同时构建 | 牛易疯先森的开发记录</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">牛易疯先森的开发记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2015/07/01/Translate-The-Blog-Post-Concurrent-Debug-Beta-and-App-Store-Builds/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          （译）Debug，Beta，App Store版本的同时构建
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2015-07-01 21:56:36" itemprop="dateCreated datePublished" datetime="2015-07-01T21:56:36+08:00">2015-07-01</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BF%BB%E8%AF%91/" itemprop="url" rel="index"><span itemprop="name">翻译</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>以前开发App的时候就两个版本，调试版和发布版，至于这两个版本的区别大家都知道，服务器的数据库不同（即URL不同），那个时候我的做法就是，在网络请求API里面，将URL定义成宏，版本上线时手动切换URL。当时没有觉得这个方法很挫，后面到新东家的时候，发现有三个版本，即测试版、企业版、AppStore版，我当时就在想如果还像以前那样搞，这该怎么玩啊。后面发现三个版本生成的APP名字都不一样，我当时很惊讶，这个看上去很牛逼的样子啊。直到前段时间借助一篇<a href="http://www.swwritings.com/post/2013-05-20-concurrent-debug-beta-app-store-builds/">博文</a>才搞懂其中的秘密，下面我来翻译一下这篇博文，下面我采取中英文并茂的形式展现，如有翻译不当之处，请拍砖。</p>
+<a id="more"></a>
+
+<hr>
+<h1 id="Concurrent-Debug-Beta-and-App-Store-Builds"><a href="#Concurrent-Debug-Beta-and-App-Store-Builds" class="headerlink" title="Concurrent Debug, Beta and App Store Builds"></a>Concurrent Debug, Beta and App Store Builds</h1><p>Debug，Beta，App Store版本的同时构建</p>
+<p>Whilst I was developing <a href="http://avtag.it/">avTag</a> I started using <a href="http://www.hockeyapp.net/">HockeyApp</a> to distribute builds to beta testers. As part of that process I decided to follow their advice and configure my project so that I could have debug, beta and App Store builds all installed on devices concurrently. You then have access to the three states of your application quickly and easily. However I found some of the configuration notes slightly confusing and although <a href="https://twitter.com/therealkerni">Andreas Linde</a> gave me some <a href="http://support.hockeyapp.net/discussions/questions/1803-optimal-project-setup">very handy notes</a> I’ve decided to write things up in a more agnostic way. I wholeheartedly recommend HockeyApp but realise that some of you are either tied in to things like <a href="https://testflightapp.com/dashboard/">TestFlight</a> or simply don’t use a distribution service.</p>
+<p>当我开发<a href="http://avtag.it/">avTag</a>的时候，我开始使用<a href="http://www.hockeyapp.net/">HockeyApp</a>发布beta测试版给测试者。在这过程中，我听从他们的意见，配置我的项目，这样我就可以有debug，beta和AppStore版本同时安装在设备上面。然后你可以迅速容易的得到你程序的三种状态。不过，我发现其中的配置说明有些轻微的混淆，尽管<a href="https://twitter.com/therealkerni">Andreas Linde</a>给我一些<a href="http://support.hockeyapp.net/discussions/questions/1803-optimal-project-setup">非常便利笔记</a> ，我决定以不可知论（即什么都不知道）的方法写一些东西。我衷心地建议HockeyApp要意识到一些要绑定的东西要么像 <a href="https://testflightapp.com/dashboard/">TestFlight</a>一样或者根本不使用分发服务。</p>
+<hr>
+<h1 id="The-Theory"><a href="#The-Theory" class="headerlink" title="The Theory"></a>The Theory</h1><p>理论</p>
+<p>The theory behind what we are doing is very simple. Each application on your device needs to have a unique bundle identifier. If two apps share the same bundle identifier then one will over-write the other. All we are going to do to create three versions of our application is give each its own bundle identifier.</p>
+<p>我做这个的理论非常简单。你设备上面的每一个应用程序都有一个唯一的包标识符。如果两个应用程序共享相同的包标识符，那么一个会覆盖另外一个。所以我们要做的是创建三个版本的应用程序，每个应用程序都有不同的包标识符。</p>
+<hr>
+<h1 id="Application-Identifiers-amp-Provisioning-Profiles"><a href="#Application-Identifiers-amp-Provisioning-Profiles" class="headerlink" title="Application Identifiers &amp; Provisioning Profiles"></a>Application Identifiers &amp; Provisioning Profiles</h1><p>应用程序标识符和配置文件</p>
+<p>If your application isn’t doing anything with iCloud, Game Center or any of the other services which require unique bundle identifiers then you could use a wildcard application identifier:<br><code>com.mycompany.ios.myapp*</code></p>
+<p>如果你的应用程序没有使用像iCloud，Game Center或者其他其他需要使用唯一包标识符的服务，那么你可以使用一个通用的应用程序标识符：<br><code>com.mycompany.ios.myapp*</code></p>
+<p>If however you are using a service which requires unique bundle identifiers then your must create three explicit application identifiers such as:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">com.mycompany.ios.myapp</span><br><span class="line">com.mycompany.ios.myapp.debug</span><br><span class="line">com.mycompany.ios.myapp.adhoc</span><br></pre></td></tr></table></figure>
+<p>但是如果你使用了需要用到唯一包标识符的服务，那么你必须得创建三个明确标识符，如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">com.mycompany.ios.myapp</span><br><span class="line">com.mycompany.ios.myapp.debug</span><br><span class="line">com.mycompany.ios.myapp.adhoc</span><br></pre></td></tr></table></figure>
+<p>Not all of you will add the ‘ios’ element but I tend to so that I can also create Mac equivalents if I need to.<br>不是所有的标识符你都要添加‘ios’元素，但是我倾向于这样做，因为如果我需要的话我还可以创建相对于的‘Mac’元素。</p>
+<p>‘debug’ and ‘adhoc’ can also be anything you want. Just make sure you can remember what type of build they refer to.<br>‘debug’ 和 ‘adhoc’也可以指向其他你想要指向的东西。只要你确定你能记住它们指向哪种类型即可。</p>
+<p>The ‘clean’ identifier is the one that will be used for the App Store version.<br>没有后缀名的标识符是用于指向App Store版本的。</p>
+<p>Whilst the wildcard identifier is okay, since you still need to create three provisioning profiles (one for development, one for ad hoc releases and one for App Store releases) I tend to create three unique application identifiers. It also means that if you do then retrospectively add a service which needs unique bundle identifiers it’s easy to do.<br>通用标识符虽然很好，因为你还需要创建三个配置文件（一个用于development，一个用于ad hoc releases，一个用于App Store releases），所以我倾向于创建三个唯一的标识符。这也意味着如果你回顾头来添加需要唯一标识符的服务时，这样很容易做到。</p>
+<p>After setting up your application identifiers you need to create the provisioning profiles. As mentioned above, you can either create development, ad hoc and release ones for your wildcard application identifier or create one development one for com.mycompany.ios.myapp.debug, an ad hoc distribution one for com.mycompany.ios.myapp.adhoc and an App Store one for com.mycompany.ios.myapp.<br>设置好你的应用程序标识符后，你还得创建配置文件。正如上面提到的，你可以用通用标识符创建development，ad hoc，App Store发布版本的其中一个，或者三个版本每个版本一个标识符。</p>
+<p>Add those provisioning profiles to Xcode and you’re ready to start configuring your project.<br>添加这些配置文件到Xcode里面后你可以准备开始配置你的工程了。</p>
+<hr>
+<h1 id="Project-Configuration"><a href="#Project-Configuration" class="headerlink" title="Project Configuration"></a>Project Configuration</h1><p>工程配置</p>
+<p>Select the Project Navigator and then click on your project at the top to show the project and target details. Select the project and then the Info tab. You need to add a new configuration so click on the plus button and duplicate the Release configuration. Call it something like ‘Ad Hoc’ or something else which will help you identify its purpose.<br>选择工程导航栏然后点击顶部查看project和target详情。选择project的info选项，你需要添加新的configuration，所以你得点击添加按钮并且复制Release configuration。我们叫它‘Ad Hoc’或者别的名字，能够帮你明确它的用途。<br><img src="http://ww2.sinaimg.cn/mw690/005IevIrgw1etlcni2qqdj31210mvaqa.jpg"><br><a href="http://images.swwritings.com/2013-05-20-concurrent-debug-beta-app-store-builds-1.png">原图</a></p>
+<p>Next select your target in Xcode and then switch to the Info tab. You need to modify the bundle identifier and the bundle display name.<br>然后选择target的info选项，你需要去修改标识符和显示名称。</p>
+<p>Your bundle identifier should be something like ‘com.mycompany.ios.myapp’ or ‘com.mycompany.ios.${PRODUCT_NAME:rfc1034identifier}’. This is fine for the App Store provisioning profile but it won’t work for your other two provisioning profiles.<br>你的包标识符应该是像‘com.mycompany.ios.myapp’ 或者 ‘com.mycompany.ios.${PRODUCT_NAME:rfc1034identifier}’。这对App Store的配置文件非常好，但是它不会对另外两个配置文件起作用。</p>
+<p>Edit the bundle identifier so that it reads:<br><code>com.mycompany.ios.myapp$&#123;BUNDLE_ID_SUFFIX&#125;</code><br>or<br><code>com.mycompany.ios.$&#123;PRODUCT_NAME:rfc1034identifier&#125;$&#123;BUNDLE_ID_SUFFIX&#125;</code><br>像下面一样修改标识符<br><code>com.mycompany.ios.myapp$&#123;BUNDLE_ID_SUFFIX&#125;</code><br>或者<br><code>com.mycompany.ios.$&#123;PRODUCT_NAME:rfc1034identifier&#125;$&#123;BUNDLE_ID_SUFFIX&#125;</code></p>
+<p>Next change the bundle display name. It’s hopefully currently ${PRODUCT_NAME}. This simply means that the product name is gleaned from the build settings. Change it to:<br><code>$&#123;PRODUCT_NAME&#125;$&#123;BUNDLE_DISPLAY_NAME_SUFFIX&#125;</code><br>然后修改包的显示名称。目前希望是<code>$&#123;PRODUCT_NAME&#125;</code>，这就意味着你的工程名称是来源于编译设置。<br>改变它：<br><code>$&#123;PRODUCT_NAME&#125;$&#123;BUNDLE_DISPLAY_NAME_SUFFIX&#125;</code></p>
+<p><img src="http://ww1.sinaimg.cn/mw690/005IevIrgw1etlcnm589lj31210mvdvg.jpg"><br><a href="http://images.swwritings.com/2013-05-20-concurrent-debug-beta-app-store-builds-2.png">原图</a></p>
+<p>Switch to the Build Settings tab and click on the Add Build Settings button in the bottom right and select ‘Add User-Defined Setting’. Call the new setting ‘BUNDLE_ID_SUFFIX’. Add a second user-defined setting and call it ‘BUNDLE_DISPLAY_NAME_SUFFIX’. These are the two values you entered in the Info tab.<br>切换到‘Build Settings’，点击右下角的‘Add Build Settings’按钮，选择‘Add User-Defined Setting’。叫新的设置为‘BUNDLE_ID_SUFFIX’，添加第二个user-defined设置并且叫它为‘BUNDLE_DISPLAY_NAME_SUFFIX’。这里有你在Info选项卡输入的两个值。</p>
+<p>Expand both and you will see that you can enter values for each of the three configurations. You’re not going to add anything to the Release configurations but you do need to change the Debug and Ad Hoc ones.<br>展开它们两，你会发现你可以向这三个配置输入值。你不会添加任何东西到Release配置，但是你需要去修改Debug和Ad Hoc。</p>
+<p>The BUNDLE_ID_SUFFIX needs to match the bundle identifiers you set up in the Apple Developer centre so enter ‘.debug’ against the Debug configuration and ‘.adhoc’ against the Ad Hoc one (note the leading periods). This means that when you build your application these values are appended to the bundle identifier so you end up with:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">com.mycompany.ios.myapp.debug for the Debug configuration.</span><br><span class="line">com.mycompany.ios.myapp.adhoc for the Ad Hoc configuration.</span><br><span class="line">com.mycompany.ios.myapp for the Release configuration.</span><br></pre></td></tr></table></figure>
+<p><code>BUNDLE_ID_SUFFIX</code>需要去匹配你你在苹果开发者中心设置的包标识符，所以输入‘.debug’匹配Debug配置，输入‘.adhoc’匹配Ad Hoc配置（注意开始创建的时候）。这就意味着，当你创建应用时，这些值是附加到你的包标识符的，所以你可以这样理解：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">com.mycompany.ios.myapp.debug for the Debug 配置.</span><br><span class="line">com.mycompany.ios.myapp.adhoc for the Ad Hoc 配置.</span><br><span class="line">com.mycompany.ios.myapp for the Release 配置.</span><br></pre></td></tr></table></figure>
+<p>The BUNDLE_DISPLAY_NAME_SUFFIX is totally subjective. I would suggest adding something short. I use alpha and beta symbols for debug and ah hoc releases respectively. Remember to add a space before the suffix too.<br><code>BUNDLE_DISPLAY_NAME_SUFFIX</code>完全是主观的。我会建议添加一些短的值。我用α和β符号分别代表debug版本和ah hoc版本。记住在后缀前面添加了个空格。</p>
+<p><img src="http://ww4.sinaimg.cn/mw690/005IevIrgw1etlcnq8nzej31210mvdxl.jpg"> <a href="http://images.swwritings.com/2013-05-20-concurrent-debug-beta-app-store-builds-3.png">原图</a></p>
+<p>At this point you should configure the Code Signing Entitlements too and match the Debug, Ad Hoc and Release configurations to their respective provisioning profiles. This is the only place where using a wildcard application identifier comes in handy since you can leave Xcode to automatically pick the correct provisioning profile.<br>在这个点上，你应该配置代码签名并且匹配Debug，Ad Hoc 和 Release版本它们各自的配置文件。通用应用程序标志就派上用场了，因为可以让Xcode自动选择正确的配置文件。</p>
+<hr>
+<h1 id="Schemes"><a href="#Schemes" class="headerlink" title="Schemes"></a>Schemes</h1><p>方案<br>You need to do some tinkering with the schemes next so select the ‘Product &gt; Scheme &gt; Manage Schemes…’ menu item. The idea is that you have two schemes; one for ad hoc builds and one for App Store builds. Your debug configuration is shared across them both.<br>你需要用schemes做一些修补，点击‘Product &gt; Scheme &gt; Manage Schemes…’菜单项。这个想法就是，你有两个schemes，一个是ad hoc builds，另外一个是App Store builds，你的debug configuration共享他们两个。</p>
+<p>The schemes list probably only shows one item so duplicate it and call the duplicate something like ‘MyApp Beta’. Run and Test should use the Debug configuration, whilst Profile and Archive should use the Ad Hoc configuration.<br>这个方法列表里面很有可能只显示一个项目，以便复制它并调用复制对象类似于‘MyApp Beta’，运行和测试使用Debug配置，而Profile和Archive应该使用Ad Hoc配置。</p>
+<p>Then edit the original scheme. Select it in the Manage Schemes sheet and then click it again so that you can change the name to something like ‘MyApp App Store’. Then edit it and check that Run and Test use the Debug configuration and that Profile and Archive use the Release configuration.<br>然后编辑最初的scheme，选择Manage Schemes，然后再次点击它，以便你能将它的名字改成类似‘MyApp App Store’样。然后编辑它并且使用Debug配置检查 Run 和 Test，使用Release配置检查Profile 和 Archive。</p>
+<p>You can now select either scheme in Xcode which means that you can build debug versions of your application, build a beta version for distribution by doing an archive build of the Ad Hoc scheme or build an App Store version by doing an archive build of the App Store scheme.<br>现在，你可以在Xcode选择任何一种scheme，这意味着你可以构建你应用程序的测试版本，构建通过Ad Hoc scheme 生成的beta版本，构建通过 App Store scheme生成的App Store版本.</p>
+<hr>
+<h1 id="Build-Numbers"><a href="#Build-Numbers" class="headerlink" title="Build Numbers"></a>Build Numbers</h1><p>编译号</p>
+<p>Version and build numbers tend to be a bit subjective. The approach I use is this…<br>版本号和编译号一般都比较主观性。我用的方法是这样的…</p>
+<p>For pre-release development before the application is in the App Store I increment the version number (‘Bundle versions string, short’ in the Info.plist file) whenever I release a new build to the beta testers. This is something like 0.1 or 0.2.3. The build number (‘Bundle version’ in the Info.plist file) is also incremented each time I release a new build to the beta testers.<br>对于将要发布到AppStore的预发布版本，我增加版本号（在Info.plist文件的‘Bundle versions string, short’项）当我发布一个新的beta版。这个有点像0.1或者0.2.3。编译号在Info.plist文件的‘Bundle version’项）也会增加。</p>
+<p>The first version to be submitted to the App Store will be version 1 and might have a build number of 27.<br>提交到AppStore第一个版本的版本号是1，编译号可能是27。</p>
+<p>Once the application is in the App Store the version number only increased when a new version is released through the store. Here the build number becomes more important since this still increases each time I release a build to the beta testers.<br>一旦应用程序在App Store已发布，当你再提交新版本的时候，这个版本号只能增加。此时，编译号就变得功能重要，因为我每发布一个beta测试版编译号就得增加。</p>
+<p>So, imagine that version 1 of the application is in the store with a build number of 27. A feature is added and the beta testers get a new build to test. This is version 1.1, build 28. Two more beta versions are released to testers so the version which is submitted to the<br>App Store is 1.1 build 30.<br>所以，想象一下当第一次发布在AppStore的应用版本号是1，编译号是27。当增加一个功能后发布beta版本的时候版本号会增加。这是版本号为1.1，编译号为28。当我在发布两次beta测试版后再提交到AppStore的时候版本号为1.1，编译号为30。</p>
+<p>The next beta build would be 1.2 build 31 if it added a feature or, if it is a minor bug release then it would be 1.1.1 build 31.<br>我增加一个新功能，发布下一个测试版的时候版本号为1.2，编译号31。或者我解决了一个bug发布时版本号为1.1.1，编译号31。</p>
+<p>The important thing is that the version number increments for App Store releases and the build number increments for beta releases.<br>所以重要的事情是发布到AppStore的时候版本号增加，发布beta测试版的时候编译号增加。</p>
+<p>On this basis it would be good if the build number auto-incremented each time you did a beta build. For that I use a slightly modified Build Phase <a href="http://stackoverflow.com/questions/9855955/xcode-increment-build-number-only-during-archive">script from Stack Overflow</a>:<br>在此基础上，如果我每次编译时编译号自动增加是非常好的。于是，我用了一个可以改变编译阶段的脚本（来自<a href="http://stackoverflow.com/questions/9855955/xcode-increment-build-number-only-during-archive">Stack Overflow</a>）。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">if [ $CONFIGURATION &#x3D;&#x3D; &quot;Ad Hoc&quot; ]; then</span><br><span class="line">    echo &quot;Bumping build number...&quot;</span><br><span class="line">    plist&#x3D;$&#123;PROJECT_DIR&#125;&#x2F;$&#123;INFOPLIST_FILE&#125;</span><br><span class="line"></span><br><span class="line">    # increment the build number</span><br><span class="line">    buildnum&#x3D;$(&#x2F;usr&#x2F;libexec&#x2F;PlistBuddy -c &quot;Print CFBundleVersion&quot; &quot;$&#123;plist&#125;&quot;)</span><br><span class="line">    if [[ &quot;$&#123;buildnum&#125;&quot; &#x3D;&#x3D; &quot;&quot; ]]; then</span><br><span class="line">        echo &quot;No build number in $plist&quot;</span><br><span class="line">        exit 2</span><br><span class="line">    fi</span><br><span class="line"></span><br><span class="line">    buildnum&#x3D;$(expr $buildnum + 1)</span><br><span class="line">    &#x2F;usr&#x2F;libexec&#x2F;Plistbuddy -c &quot;Set CFBundleVersion $buildnum&quot; &quot;$&#123;plist&#125;&quot;</span><br><span class="line">    echo &quot;Bumped build number to $buildnum&quot;</span><br><span class="line"></span><br><span class="line">else</span><br><span class="line">    echo $CONFIGURATION &quot; build - Not bumping build number.&quot;</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
+<p>The only things you have to remember are:</p>
+<ul>
+<li>  Increase the version number manually. I tend to do this immediately after releasing a version so that I don’t forget.</li>
+<li> Manually increase the build number if you didn’t do any ad hoc builds for a release.</li>
+</ul>
+<p>You could negate number two by running the script for Ad Hoc and Release configurations. As I say, it’s all subjective.</p>
+<p>你唯一要记住的事是：</p>
+<ul>
+<li>手动增加版本号。我倾向于发布一个版本后马上增加，这样我就不会忘记。</li>
+<li>手动增加编译号。如果你发布的时候没有做任何编译。</li>
+</ul>
+<p>你可以通过在Ad Hoc 和 Release 配置上面运行脚本来否定第二点。正如我说的，这都是主观的。</p>
+<p>There is a gotcha however. The scripts is run after Xcode has read the values from the plist file if your current build number is 27 and you do a beta build then the beta application will have a build number of 27. Xcode then ends up with a build number of 28 ready and waiting. Basically, consider the shown build number to be the build number of the version you are next going to release. Thanks to <a href="https://twitter.com/ObjColumnist">Spencer MacDonald</a> for reminding me to add this.</p>
+<p>但是这有一个问题。脚本运行后，Xcode已经从plist文件中读取值，假设你现在的编译号是27，并且你将要发布的beta版本的编译号也是27。然后Xcode会以28的编译号准备一个版本准备。基本上，考虑显示的版本号将成为你下个将要发布版本的版本号。感谢<a href="https://twitter.com/ObjColumnist">Spencer MacDonald</a> 提醒我增加这个。</p>
+<hr>
+<h1 id="Badging-The-Icon"><a href="#Badging-The-Icon" class="headerlink" title="Badging The Icon"></a>Badging The Icon</h1><p>图标的标记号<br>Another way you can improve this process is to badge the actual application icons with build numbers. <a href="https://twitter.com/rjstelling">Richard Stelling</a> kindly emailed me some sample code for this.<br>另一种能够改善这个过程的方法是在实际版本的图标上面添加标记号。<a href="https://twitter.com/rjstelling">Richard Stelling</a> 好心的发邮件，关于这个的实例代码。</p>
+<p>The first thing to note is that the method Richard suggests uses a private API so you don’t want the code included in your App Store build. You can use conditional compilation to achieve this.<br>要注意的第一件事是，Richard 建议我用私有的API，这样你不用考虑在AppStore版本写代码。你可以通过条件编译来实现这个。</p>
+<p>The first step is to add some values to the three configurations for the Preprocessor Macros in the target’s Build Settings. The three values are:<br>第一步是像三种配置添加一些值，这些值用来表示在target编译设置里面的预处理宏。这三个值是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CONFIGURATION_DEBUG</span><br><span class="line">CONFIGURATION_ADHOC</span><br><span class="line">CONFIGURATION_RELEASE</span><br></pre></td></tr></table></figure>
+<p>These can be seen in-situ in the following screenshot:<br>这些可以从下面的截图中复原：<br><img src="http://ww1.sinaimg.cn/mw690/005IevIrgw1etlcnug1zij31210mvasc.jpg"><br><a href="http://images.swwritings.com/2013-05-20-concurrent-debug-beta-app-store-builds-4.png">原图</a></p>
+<p>The ‘DEBUG=1’ item is probably already there, inserted by Xcode.<br>‘DEBUG=1’这一项很有可能由于被Xcode插入从而已经出现在这里。</p>
+<p>What this means is that in your code you can now use conditional compilation to include or exclude code from builds based on their configuration.<br>这就意味着，在你的代码里面，你可以使用条件编译包含或者排除基于配置的代码。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions</span><br><span class="line">&#123;</span><br><span class="line">#if defined (CONFIGURATION_DEBUG)</span><br><span class="line">    [[UIApplication sharedApplication] performSelector:@selector(setApplicationBadgeString:) withObject:@&quot;α&quot;];</span><br><span class="line">#elif defined (CONFIGURATION_ADHOC)</span><br><span class="line">    [[UIApplication sharedApplication] performSelector:@selector(setApplicationBadgeString:) withObject:@&quot;β&quot;];</span><br><span class="line">#elif defined (CONFIGURATION_RELEASE)</span><br><span class="line">    &#x2F;&#x2F; Don&#39;t do the badging. That&#39;ll get you rejected!</span><br><span class="line">#endif</span><br><span class="line"></span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p><img src="http://ww3.sinaimg.cn/mw690/005IevIrgw1etlcnzc9mvj30zn0kj12h.jpg"><br><a href="http://images.swwritings.com/2013-05-20-concurrent-debug-beta-app-store-builds-5.png">原图</a></p>
+<p>The end result of all of this is that your device will be able to show something like this:<br>在你设备上面最终的显示结果是这样的：<br><img src="http://ww1.sinaimg.cn/mw690/005IevIrgw1etlco10us3j30fc05hwem.jpg"><br><a href="http://images.swwritings.com/2013-05-20-concurrent-debug-beta-app-store-builds-6.png">原图</a></p>
+<p><a href="https://twitter.com/edog1203">Evan Doll</a> talked about something similar in his great talk about iOS Tools at Flipboard which he gave at NSConference 5 this year. You can get a video of Evan’s talk from <a href="http://nsconference.com/">the NSConference web site</a>. Evan’s approach is to actually change the icon’s image and add version information to it. This is a good idea if you don’t have version information available somewhere within the application itself.<br><a href="https://twitter.com/edog1203">Evan Doll</a> 在今年的NSConference 5大会上有谈论类似的关于iOS工具Flipboard。你可以从 <a href="http://nsconference.com/">NSConference 网站</a>找到关于Evan谈话的视频。Evan的方法是改变应用的图标并且添加版本信息。如果你没有可用的版本信息在应用程序里面的话，这将是一个好主意。</p>
+<hr>
+<h1 id="URL-Schemes"><a href="#URL-Schemes" class="headerlink" title="URL Schemes"></a>URL Schemes</h1><p>URL 方案<br><a href="http://www.harukizaemon.com/">Simon Harris</a> pointed out that if you implement custom URL schemes then you need to make sure that you include some way of differentiating between the app types.<br><a href="http://www.harukizaemon.com/">Simon Harris</a>指出如果你要实现自定义的URL方案，你需要确保你应用程序中包含有区分应用类型的方法。</p>
+<hr>
+<h1 id="Bootstrapping-with-KZBootstrap"><a href="#Bootstrapping-with-KZBootstrap" class="headerlink" title="Bootstrapping with KZBootstrap"></a>Bootstrapping with KZBootstrap</h1><p><a href="https://twitter.com/merowing_">Krzysztof Zabłocki</a> has created an open source project called <a href="https://github.com/krzysztofzablocki/KZBootstrap">KZBootstrap</a> which automates an awful lot of what I’ve talked about above and it is definitely worth a look.<br><a href="https://twitter.com/merowing_">Krzysztof Zabłocki</a> 创建了一个 <a href="https://github.com/krzysztofzablocki/KZBootstrap">KZBootstrap</a>的开源项目，它能够自动化很多我们上面提到的东西，它非常值得你一看。</p>
+<hr>
+<h1 id="Acknowledgements"><a href="#Acknowledgements" class="headerlink" title="Acknowledgements"></a>Acknowledgements</h1><p>感谢</p>
+<p>This article was based on two main sources:</p>
+<ul>
+<li><a href="http://support.hockeyapp.net/discussions/questions/1803-optimal-project-setup">Andreas Linde’s reply</a> to a HockeyApp support ticket.</li>
+<li>Chris Miles’s blog post <a href="http://blog.chrismiles.info/2011/04/ios-dev-beta-production-builds.html">iOS Dev, Beta &amp; Production builds installed side-by-side</a></li>
+</ul>
+<p>Additional thanks to:</p>
+<ul>
+<li><a href="http://stackoverflow.com/users/937822/lnafziger">Inafziger</a> for the build script.</li>
+</ul>
+<p>这篇文章主要参考：</p>
+<ul>
+<li> <a href="http://support.hockeyapp.net/discussions/questions/1803-optimal-project-setup">Andreas Linde’s reply</a>，HockeyApp支持方法。</li>
+<li>Chris Miles’s 博文 <a href="http://blog.chrismiles.info/2011/04/ios-dev-beta-production-builds.html">iOS Dev, Beta &amp; Production builds installed side-by-side</a></li>
+</ul>
+<p>另外还得感谢：</p>
+<ul>
+<li><a href="http://stackoverflow.com/users/937822/lnafziger">Inafziger</a> 编译脚本。</li>
+</ul>
+<hr>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>第一次翻译国外博文，感觉还是很吃力，大概花了两个晚上，5个小时左右的样子，oh！fuck！这效率貌似有点低哈，下次得加油。感觉回到了中学英语阅读理解的时代，不过现在是在自己熟悉的领域，其实很多东西我都不知道该怎么交，只知道大概个意思，像上面提到的scheme，我知道是方案的意思，就是你编译的时候选择不同的方案，但是用中文翻译成“方案”感觉不是很靠谱，后面在<a href="https://developer.apple.com/library/ios/featuredarticles/XcodeConcepts/Concept-Schemes.html#//apple_ref/doc/uid/TP40009328-CH8-SW1">Apple</a>上找到了。<br><code>An Xcode scheme defines a collection of targets to build, a configuration to use when building, and a collection of tests to execute.</code><br>原来Xcode Scheme它定义了一系列构建的target，编译时的配置，已经要执行的测试集合。</p>
+<p>WTF?! Scheme刚弄懂，target又来了…..<br><code>A target specifies a product to build and contains the instructions for building the product from a set of files in a project or workspace. A target defines a single product; it organizes the inputs into the build system—the source files and instructions for processing those source files—required to build that product. Projects can contain one or more targets, each of which produces one product.</code><br>target就是将目标构建好并包含指令，该指令用于从一个项目或工作区的一组文件的构建产品。一个项目可以有多个target，每个target生成一个产品。</p>
+<p>有时我们项目会有两个target，用于区分AppStore版本和企业版本，所以你创建文件的时候，你会勾选这两个target，其实他们的代码和资源都是一样的，只是证书不同，就像国外博文说的那样。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Xcode-Build/" rel="tag"># Xcode Build</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2015/06/26/A-way-of-implementation-for-adding-tag-to-photo/" rel="prev" title="图片打标签的一种实现方式">
+      <i class="fa fa-chevron-left"></i> 图片打标签的一种实现方式
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2015/07/26/new-skill-in-this-week-one/" rel="next" title="这周所学新技巧（1）">
+      这周所学新技巧（1） <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Concurrent-Debug-Beta-and-App-Store-Builds"><span class="nav-number">2.</span> <span class="nav-text">Concurrent Debug, Beta and App Store Builds</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#The-Theory"><span class="nav-number">3.</span> <span class="nav-text">The Theory</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Application-Identifiers-amp-Provisioning-Profiles"><span class="nav-number">4.</span> <span class="nav-text">Application Identifiers &amp; Provisioning Profiles</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Project-Configuration"><span class="nav-number">5.</span> <span class="nav-text">Project Configuration</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Schemes"><span class="nav-number">6.</span> <span class="nav-text">Schemes</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Build-Numbers"><span class="nav-number">7.</span> <span class="nav-text">Build Numbers</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Badging-The-Icon"><span class="nav-number">8.</span> <span class="nav-text">Badging The Icon</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#URL-Schemes"><span class="nav-number">9.</span> <span class="nav-text">URL Schemes</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Bootstrapping-with-KZBootstrap"><span class="nav-number">10.</span> <span class="nav-text">Bootstrapping with KZBootstrap</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Acknowledgements"><span class="nav-number">11.</span> <span class="nav-text">Acknowledgements</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">12.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">joakim.liu</p>
+  <div class="site-description" itemprop="description">你不解决问题，就会成为问题。iOS菜逗一枚。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/JoakimLiu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/JoakimLiu" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">joakim.liu</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://example.com/2015/07/01/Translate-The-Blog-Post-Concurrent-Debug-Beta-and-App-Store-Builds/";
+    this.page.identifier = "2015/07/01/Translate-The-Blog-Post-Concurrent-Debug-Beta-and-App-Store-Builds/";
+    this.page.title = "（译）Debug，Beta，App Store版本的同时构建";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://http-joakimliu-github-io.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

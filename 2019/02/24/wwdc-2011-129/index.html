@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="WWDCPractical Drawing for iOS Developers主要讲了怎样用 Core Graphic 相关 API ，开头讲了一些精美的App, eg:股市、天气、iBooks、YouTube 等等，着重讲怎么完成股市 App 的相关绘制效果：渐变背景、数据表格等，提到的相关技术点有">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Practical Drawing for iOS Developers(Quartz 2D Programming Guide)">
+<meta property="og:url" content="http://example.com/2019/02/24/wwdc-2011-129/index.html">
+<meta property="og:site_name" content="牛易疯先森的开发记录">
+<meta property="og:description" content="WWDCPractical Drawing for iOS Developers主要讲了怎样用 Core Graphic 相关 API ，开头讲了一些精美的App, eg:股市、天气、iBooks、YouTube 等等，着重讲怎么完成股市 App 的相关绘制效果：渐变背景、数据表格等，提到的相关技术点有">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2011/129/prototype.png?raw=true">
+<meta property="og:image" content="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2011/129/result.png?raw=true">
+<meta property="og:image" content="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2011/129/point.png?raw=true">
+<meta property="og:image" content="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2011/129/pixel.png?raw=true">
+<meta property="og:image" content="https://developer.apple.com/library/archive/documentation/2DDrawing/Conceptual/DrawingPrintingiOS/Art/pixel_alignment_2x.png">
+<meta property="og:image" content="https://developer.apple.com/library/archive/documentation/2DDrawing/Conceptual/DrawingPrintingiOS/Art/regular_vs_retina_2x.png">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4m09EaZfyl4a12xDCRUouRvuS31G5q-nJsojzx7VFcwTqxbMTgPaPHxxVcapC2gWuE5xzC3EhnxuZC7_7-GlGnclxRLS0De_NlwHR0ulsO_xlZe3FKaNFFeGIF_oKwKROT7bQZ2k7sRRADtbu_1xJjQBe0-1KWxWe0xVIPM0D4Rxa5S3aKrItgh8I_DKMZpHba?width=318&height=344&cropmode=none">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4mjcewn8vKvFJCYuRm3ANl-8OQPzL_SV8KiMUJZ_Ls00TU8awIvwJP1yichqZPLN8X0pbM9Hyf0vIEiJTZqIGhEDAs5nSl0LQP1TRr9yYPCRlKRu4qUXBtEhgnCSeoVNeDReJNJzvK-njU9SrIkjGhrfSspv7HmpbZYhRSLY-5ElFNGtbnal88dGZSNim0q45a?width=404&height=384&cropmode=none">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4m-Sn6xHEpozjGpIMFOk0O_k0YnYXlEmgzUWN3B63GuHsuT8-xr4P3m35ofo0uWQ9qtY3d3qrpigZN6CPELWHrIr_8Ii1P21d7NJbqqapBCdjoQuVLcqkN2pIC16y8frZOwAFF_VG7UvZ6WDywfvVELyb4H6upEibwe7F-A5KzxXHMJLyPP8E9FyPohC2OumSN?width=235&height=168&cropmode=none">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4mz9gVYtX2Pjghad-RtThLzTNLE9Qtfit0it5i0rLbCKzjR_MA2w-qwaIxJ45YNsCCH51U70-EeFEXJy-UkfkzQMTYU3mWDCyD-JWYAPSzay1KT9XiC-EWMGAi5Seys78T2y5zQyqVbEopUPiPiG8O2q6avic1GPw7ygt8_nx2rQy9-Hl5IdhlWByckxkwddB4?width=509&height=202&cropmode=none">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4mvL9zxZfXLveK3GYqwqGPIOwAFtAky2W0xYzzdgl2UHkBmOFA0PfbXTgJfYagDkssKFPKAvaq6mp8KDJRmxez3R1CtRavG2ryTtrVjgV5xVZW-VHB-umAjTS1o7HwbqAzMDnB9IW8gUgBmJd1ZaycHi1ijfYdtytwBdRicFEpCFLQU1Hb1w-bq6mC90hJIk-y?width=414&height=435&cropmode=none">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4m06v4jCo05x0Kcs5NmUz8G-UzCnsF5514ND7mInesSblBX8F7-VU0l2-il6UajOIO_-Pg5zzEqwcRd9y-Hpq5zRQI2yN6vC8ugzwhdOvrWGK3tCx4dg3i_kL0h4GWxSADBnyu2o5HRWAzOvZ6CD6ABiLMH17fl3q4fbrkLH5l0V42Pze04ZTFm6VwWBeV0gzO?width=309&height=224&cropmode=none">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4m4tgtfv2Ep9qCSSBKHjTd1rxkJQIKBvtspAp3CbH9oWN-y9cX5WA5K4_9hUsIW4xUPA2Mv0bI1Zw2B6CePhNERd21Aq7itEo7xpUCNcnUqNIgOhrGu92qHMJHySt7NEpeWsAdbTmknkI_niieIS25OL1JZdeXQVkWVWtB_WjMl2tQpJV-oiB7LG71rPAT7Tl8?width=369&height=90&cropmode=none">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4mIYSwvioabsFckbo2mnsgmYPUgNNmrDEVFNdrwKRTWr7LTPWiGsh-ypZZAh0ccMVIVgYWEHA8PdKhJ9S-nhPiq62hJNjdCXgd3K7dxsEnHdCpe9IZB3p1Lk62CmM6eOt9CSvASR3M9xroTMLDwMQ3Kt0evCPhX8ICElbgnEf1ceuFBF-MzQt5hGBmdqItgUuG?width=430&height=206&cropmode=none">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4mQ_R2vReAHk_CQMnFdzw4ZnJMYVVTopsDapeDs3O3wqSlLY68gegDmagcgjIg6epMAgfYHwyv5hVYK913wJRGCE5mxWaoevZTbmAw1eJZrOHp-ssxWPSxm4im5Qjroxn_qtait7SVryRAzIno-H1l9_UL08w-9U_g4CdI8Km5x48fGLpkSdRJNlL4GNbwe4DI?width=310&height=144&cropmode=none">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4m6y7_4aUXx5GZJwh476YlIJDL93LeqQ-fFN6AZYe0oDfdjfrHeiBuoh1CdQZsPGZdJdJqfx6uIb7cs2nFNAuxPJrehCm9DQxXMHf7IAScjaE40Q0rtnn_OlEX9ZYzugtjqwHnFsr9WTLC4KesGwD9aBohmIJZntY8YDLFhUTpCEuVAMsSWrn9Xo-5gVPnTaKh?width=354&height=265&cropmode=none">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4mAeYgUOUTPuS33lOXYheEk3Tad3Y7fvZVOqNY1bLpCP77WelgrBi6EgJtKg6UZw4hK1RJg73KwqOHfm7TGuiFUMFbHxtcM96uB_GELS_lD89yLmkDX2Rz7QfLZpbkMEY8gnl7jg53VO_4Cmi_y-VFmEQ5zYjOtwnEBcdVL8FdMlNUxGS3tednRr-5KJxa-1DS?width=171&height=166&cropmode=none">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4m9Y_1flxViLs8pQ1J0ZkmDG9htlxLNSbp2MKY8RCI8NXMhuwkrmy5S-BxD4pJUeCQyLvZg2p_7NWthtgAuKhf-wv9p4Bwz6JcrYPADr1jUONvbix4qsVS8Le5A_EtW_0c8KCk08sT2CJ-7UwlgUDhlOjaiUePR4VBSgN72cllFu1qSYA7h9L_8urmh41fXRY1?width=263&height=259&cropmode=none">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4mGBC88odCSVHL-xxZCaEVyr55q67QbqSjOXMmDgCT1fQii0prgjB0Msypx_n1X44Z1CNKV4vCStcEaHH2wf-QZ3voNiEgUwrSNEvwE9lWbQTVcGY4w3IF4_JHhIMlT5jCkqvSlSBYlqJ03m1hZy4cnZhCNWlEBvBBsZlM-yl8CmhrIb9F9OLR2pNP1KhDGfew?width=263&height=256&cropmode=none">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4m0jerQ9LfRQ23JhWkbRf9KvUW4jXhbxpWfKmg67nLTYDXnZI11a9JRx8qe9pVYkeRkHc2fxN9n8zI6OcwBsmAS_6LFnkzfosKUxRqeSSK1TMzb41dy8ZMeAQeyAHw6ZGgPYofhEfJKF-pX6OBiCGVl_zBMBhVQR-XzRfGUBEEow5RwARTZipcqT81eA6-sz6r?width=306&height=270&cropmode=none">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4mCldo9-3qMbPf0uu-I3bufDRdUiyhN98bivQHf2kbn20pSsSTObGql8KrLLeG4YGGJBPBESH47elofLDl6iR_RRmuYasDvBKRqzWE0vx6OprOIPKWkF5igGWb84WDmCwX1iayDylmrMgv35BtArKyeVZ9QO4_8g6I9Tq9yecWlDYpeupgEqGDuqLFdhz3yfli?width=480&height=356&cropmode=none">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4mZaU0RFWkaEI6Wr5vKpFW20dVU46ZK4gKN6Fn0k2tAzDsWSaFmUraUzOwnyKrcABG5S1GkaESG7WSBj6n_C_SVnOD8xevS4rym97mhGbGTTBZGiZY4eWcEZxPTeWVkWcwbih3Kddyo-ZxGl-H2vQKL1gpIEHl0--dUCYgCGwrXZ0zZZ65-xdF8N-qOA5xcjnX?width=249&height=101&cropmode=none">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4mmiItsl4XuVoV5vrOYPqv6Cxjbh2nJlcv08TLPAIFn0NxbPen5s3ziQjbFEJE5AeXNcA5m6MgEUAX7PqkvMMVaN0C4rHwUk8gCi_jgc7hJITkbxyapoVhohKEUj3YPHDlyBsm1XwQROQPB8E3ECgbiVuCwuZGuQZByd7dOwQYI8YOinhXqRCvOjn9g6K8OoGJ?width=585&height=273&cropmode=none">
+<meta property="article:published_time" content="2019-02-24T08:40:43.000Z">
+<meta property="article:modified_time" content="2021-05-24T15:33:13.504Z">
+<meta property="article:author" content="joakim.liu">
+<meta property="article:tag" content="WWDC">
+<meta property="article:tag" content="AppleDocument">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2011/129/prototype.png?raw=true">
+
+<link rel="canonical" href="http://example.com/2019/02/24/wwdc-2011-129/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Practical Drawing for iOS Developers(Quartz 2D Programming Guide) | 牛易疯先森的开发记录</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">牛易疯先森的开发记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/02/24/wwdc-2011-129/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Practical Drawing for iOS Developers(Quartz 2D Programming Guide)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-02-24 16:40:43" itemprop="dateCreated datePublished" datetime="2019-02-24T16:40:43+08:00">2019-02-24</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="WWDC"><a href="#WWDC" class="headerlink" title="WWDC"></a>WWDC</h1><p><a href="https://developer.apple.com/videos/play/wwdc2011/129/">Practical Drawing for iOS Developers</a>主要讲了怎样用 Core Graphic 相关 API ，开头讲了一些精美的App, eg:股市、天气、iBooks、YouTube 等等，着重讲怎么完成股市 App 的相关绘制效果：渐变背景、数据表格等，提到的相关技术点有</p>
+ <a id="more"></a>
+
+<ul>
+<li>Gradient</li>
+<li>Anti-aliasing</li>
+<li>Path(filling clipping)</li>
+<li>Shadow</li>
+<li>Transparency Layers</li>
+<li>UIImage draw</li>
+<li>Pattern</li>
+</ul>
+<p>可以用来当查看手册，具体的可以看。效果如下：</p>
+<p><img src="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2011/129/prototype.png?raw=true" alt="App 效果"><br><img src="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2011/129/result.png?raw=true" alt="demo 效果"></p>
+<p>两种细节上差距还是很大的，但是 demo 已经把大致的效果给做出来了，这里就主要讲讲点和像素的关系。</p>
+<p>先来说说 iOS 的坐标系，有三种</p>
+<ul>
+<li>drawing (user) coordinate system, 绘图坐标系，也就是 Core Graphic 发出绘制命令时的坐标系。</li>
+<li>view coordinate system (base space), 视图坐标系，是相对于视图的固定坐标系。</li>
+<li>(physical) device coordinate system, 设备坐标系，表示物理屏幕上的像素。</li>
+</ul>
+<p>绘图坐标系和视图坐标系都是逻辑坐标系，跟具体的设备没关系，它是抽象的，跟分辨率无关。我们绘制接触的是逻辑坐标系，以点表示(在开发中，10 个点的字体，44X44 的矩形是一个好的触摸大小)。那么从绘图坐标系怎么转换到设备坐标系呢？ Core Graphic 使用当前变换矩阵(CTM)来映射转换处理的。</p>
+<h2 id="Points-vs-Pixels"><a href="#Points-vs-Pixels" class="headerlink" title="Points vs Pixels"></a>Points vs Pixels</h2><p><img src="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2011/129/point.png?raw=true" alt="Points"></p>
+<p>如上图所示，点是两条线的交点。上图宽两个点，从左边的那个到右边的那个点画一条线。（一个覆盖八个点，因为宽是两个点，横穿四个点）<br>在设备上，显示效果如下：</p>
+<p><img src="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2011/129/pixel.png?raw=true" alt="Pixels"><br>像素，它是物理的，如果它存在的话，就代表一个颜色值（不能代表多个颜色值）。在 Retina 屏幕上，一个点等于两个像素，所以总共覆盖 32 个像素。(ps: 这里的等于两个像素，还有另外一种说法一个点的面积，等于 <code>2*2=4</code> 个像素的面积，这样应该更直观些)</p>
+<p>如果我们绘制一条宽为 1 point 的线条，上线两边各占 0.5 point, 在 retain 屏上显示就刚刚好，在 1 DPI 屏上，就会出现锯齿效果，因为只有一半的强度(不可能只渲染半个单元格撒)。为了防止这种问题出现，把点向上或者向下偏移 0.5 point(使得刚好占据一行 pixel) 。如果线宽是偶数，则不用去处理。</p>
+<p>如果，那如果我们要在 retain 屏上绘制一条 1 pixel 的线呢？只需把线条宽度置为 0.5 point, 同时偏移 0.25 point 。(具体的看下面的图吧，自己动手画一下会清楚很多)<br>Q: 那在 plus 设备上绘制一条 1 pixel 的线呢？<br>A: 线条宽度置为 0.5 point ，同时偏移 1/(3*2) point 。</p>
+<p><img src="https://developer.apple.com/library/archive/documentation/2DDrawing/Conceptual/DrawingPrintingiOS/Art/pixel_alignment_2x.png" alt="A one-point line centered at a whole-numbered point value"></p>
+<p><img src="https://developer.apple.com/library/archive/documentation/2DDrawing/Conceptual/DrawingPrintingiOS/Art/regular_vs_retina_2x.png" alt="Appearance of one-point-wide lines on standard and retina displays"></p>
+<p>注意，这些调整都是系统给我们调整的。如果在 xib 上设置 1 pixel 宽的线条，不起作用，请用纯代码设置。</p>
+<h2 id="Context"><a href="#Context" class="headerlink" title="Context"></a>Context</h2><ul>
+<li>要在有 Context 的情况下，调用相关 Core Graphic API;</li>
+<li>自己创建 Context 的方法有: CGBitmapContextCreate(没有自定义算法时，就使用) 和 UIGraphicsBeginImageContextWithOptions(当有自定义算法时，就使用)</li>
+</ul>
+<h1 id="Apple-Document"><a href="#Apple-Document" class="headerlink" title="Apple Document"></a>Apple Document</h1><p><a href="https://developer.apple.com/library/archive/documentation/GraphicsImaging/Conceptual/drawingwithquartz2d/Introduction/Introduction.html#//apple_ref/doc/uid/TP40007533-SW1">Quartz 2D Programming Guide</a></p>
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>Core Graphics 就是 Quart 2D ，是一种先进的二维绘图引擎，可用于 iOS tvOS macOS 应用程序开发。 Quartz 2D 提供低级，轻量级 2D 渲染，无论显示器或打印设备如何，都具有无与伦比的<strong>输出保真度</strong>。 Quartz 2D 与分辨率和设备无关。</p>
+<p>“The Quartz 2D API is easy to use and provides access to powerful features such as transparency layers, path-based drawing, offscreen rendering, advanced color management, anti-aliased rendering, and PDF document creation, display, and parsing.” Quartz 2D API 易于使用，并提供对强大功能的访问，如透明层，基于路径的绘图，离屏渲染，高级颜色管理，消除锯齿渲染以及 PDF 文档创建，显示和解析。</p>
+<h2 id="Overview-of-Quartz-2D"><a href="#Overview-of-Quartz-2D" class="headerlink" title="Overview of Quartz 2D"></a>Overview of Quartz 2D</h2><p>Quartz 2D 提供的功能，上面有提到。 Quartz 2D <strong>尽可能利用图形硬件的强大功能</strong>。 在 iOS 中，它可与所有可用的图形和动画技术<strong>配合使用</strong>，例如 Core Animation, OpenGL ES 和 UIKit 类。</p>
+<h3 id="The-Page"><a href="#The-Page" class="headerlink" title="The Page"></a>The Page</h3><p>Quartz 2D 使用 painter’s model 进行成像。 在 painter’s model 中，<strong>每个连续的绘图操作都将一层“绘画”应用于输出“画布”，通常称为页面</strong>。 可以通过在其他绘图操作中<strong>覆盖</strong>更多绘制来修改页面上的绘制。 <strong>除非覆盖，否则无法</strong>修改页面上绘制的对象。 此模型允许从少量强大的基元构造极其复杂的图像。(ps: 覆盖到画布上，来修改不同的内容)</p>
+<p><img src="https://sat02pap001files.storage.live.com/y4m09EaZfyl4a12xDCRUouRvuS31G5q-nJsojzx7VFcwTqxbMTgPaPHxxVcapC2gWuE5xzC3EhnxuZC7_7-GlGnclxRLS0De_NlwHR0ulsO_xlZe3FKaNFFeGIF_oKwKROT7bQZ2k7sRRADtbu_1xJjQBe0-1KWxWe0xVIPM0D4Rxa5S3aKrItgh8I_DKMZpHba?width=318&height=344&cropmode=none" alt="The painter’s model"><br>上图展示了不同绘制顺序的不同结果。</p>
+<p>页面可以是真正的纸张（如果输出设备是打印机）； 它可能是一张虚拟纸（如果输出设备是PDF文件）；它甚至可能是位图图像。 页面的性质<strong>取决于使用的特定图形上下文</strong>。 (ps: 应该就算后面说的 destination 吧)。</p>
+<h3 id="Drawing-Destinations-The-Graphics-Context"><a href="#Drawing-Destinations-The-Graphics-Context" class="headerlink" title="Drawing Destinations: The Graphics Context"></a>Drawing Destinations: The Graphics Context</h3><p>图形上下文是一种不透明的数据类型(CGContextRef)，它封装了 Quartz <strong>用于将图像绘制到输出设备的信息</strong>，例如 PDF 文件，位图或显示器上的窗口。 图形上下文中的信息<strong>包括</strong>图形绘制参数和页面上绘制的设备特定表示。Quartz 中的<strong>所有对象都被</strong>绘制到图形上下文中。</p>
+<p>可以将图形上下文视为绘图目标。</p>
+<p><img src="https://sat02pap001files.storage.live.com/y4mjcewn8vKvFJCYuRm3ANl-8OQPzL_SV8KiMUJZ_Ls00TU8awIvwJP1yichqZPLN8X0pbM9Hyf0vIEiJTZqIGhEDAs5nSl0LQP1TRr9yYPCRlKRu4qUXBtEhgnCSeoVNeDReJNJzvK-njU9SrIkjGhrfSspv7HmpbZYhRSLY-5ElFNGtbnal88dGZSNim0q45a?width=404&height=384&cropmode=none" alt="Quartz drawing destinations"><br>上图展示了，通过为相同的 Quartz 绘图例程序列<strong>提供不同的</strong>图形上下文，将相同的图像绘制到不同的设备；并且无需执行任何特定于设备的计算，Quartz 都做了。</p>
+<p>以下这些图形上下文可供应用程序使用：</p>
+<ul>
+<li>bitmap graphics context(位图图形上下文), 允许将 RGB 颜色， CMYK 颜色或灰度绘制到位图中。<strong>位图是像素的矩形阵列（或光栅），每个像素表示图像中的点</strong>。位图图像也称为采样图像。请参阅”#Creating a Bitmap Graphics Context#”。</li>
+<li>PDF graphics context (PDF图形上下文)， 允许创建PDF文件。具体的看 “#Creating a PDF Graphics Context#” </li>
+<li>window graphics context(窗口图形上下文), 是可用于绘制到窗口中的图形上下文。 具体的看 “#Creating a Window Graphics Context in Mac OS X#”</li>
+<li>layer context(图层上下文), 它是与另一个图形上下文关联的<strong>屏幕外(offscreen drawing)**绘图目标。它旨在将图层绘制到它创建的图形上下文时获得</strong>最佳性能<strong>。与位图图形上下文相比，图层上下文可以是</strong>屏幕外绘制的更好选择**。请参阅”# Core Graphics Layer Drawing#”。</li>
+<li>PostScript graphics context, OS X 上打印会用到的。</li>
+</ul>
+<h3 id="Quartz-2D-Opaque-Data-Types"><a href="#Quartz-2D-Opaque-Data-Types" class="headerlink" title="Quartz 2D Opaque Data Types"></a>Quartz 2D Opaque Data Types</h3><p>除了图形上下文之外， Quartz 2D API 还定义了各种不透明数据类型。由于 API 是 Core Graphics 框架的一部分，因此数据类型和对它们进行操作的例程(routine)<strong>使用 CG 前缀</strong>。 Quartz 2D 从应用程序操作的不透明数据类型创建对象，以实现特定的绘图输出。<br>并且例举了它提供的不透明数据类型，包括<strong>相关内容</strong>：(ps: 有需要的时候，具体再看)</p>
+<h3 id="Graphics-States"><a href="#Graphics-States" class="headerlink" title="Graphics States"></a>Graphics States</h3><p>Quartz <strong>根据当前图形状态中的参数修改绘制操作的结果</strong>。图形状态(graphics state)包含参数，然后这些参数将作为绘图例程的参数。绘制到图形上下文的例程<strong>会查询图形状态</strong>以确定如何呈现其结果。</p>
+<p>图形上下文包含一堆图形状态。当 Quartz 创建图形上下文时，堆栈为空。保存图形状态时， Quartz 会将当前图形状态的<strong>副本推送到</strong>堆栈中。当恢复图形状态时， Quartz 会将图形状态从堆栈顶部弹出，弹出状态变为当前图形状态。保存用 CGContextSaveGState ，恢复用 CGContextRestoreGState 。</p>
+<p>请注意，<strong>并非</strong>当前绘图环境的所有方面<strong>都是</strong>图形状态的元素。例如，the current path 就不是。 具体的请看文档的 “Parameters that are associated with the graphics state” 。</p>
+<h3 id="Quartz-2D-Coordinate-Systems"><a href="#Quartz-2D-Coordinate-Systems" class="headerlink" title="Quartz 2D Coordinate Systems"></a>Quartz 2D Coordinate Systems</h3><p>可以在<strong>用户空间</strong>(user space)坐标系中指定图形的位置和大小。 坐标定义为浮点值。</p>
+<p>Quartz 2D 的坐标系和 UIKit 中的还是有区别的， y 轴刚好相反。<br><img src="https://sat02pap001files.storage.live.com/y4m-Sn6xHEpozjGpIMFOk0O_k0YnYXlEmgzUWN3B63GuHsuT8-xr4P3m35ofo0uWQ9qtY3d3qrpigZN6CPELWHrIr_8Ii1P21d7NJbqqapBCdjoQuVLcqkN2pIC16y8frZOwAFF_VG7UvZ6WDywfvVELyb4H6upEibwe7F-A5KzxXHMJLyPP8E9FyPohC2OumSN?width=235&height=168&cropmode=none" alt="The Quartz coordinate system"></p>
+<p>由于不同的设备具有不同的底层成像功能，因此必须<strong>以与设备无关的方式</strong>定义图形的位置和大小。例如，屏幕显示设备可能能够显示每英寸不超过 96 个像素，而打印机可能能够显示每英寸300个像素。如果在设备级别定义坐标系（在此示例中为 96 像素或 300 像素），则在该空间中绘制的对象无法在其他设备上重现，而不会出现可见的失真。它们看起来太大或太小。</p>
+<p>Quartz 使用单独的坐标系 - 用户空间 - <strong>使用当前变换矩阵或 CTM 将其映射到输出设备</strong> - 设备空间的坐标系来实现设备独立性。<strong>矩阵是</strong>用于有效地描述一组相关方程的数学构造。当前变换矩阵(CTM)是称为仿射变换的特定类型的矩阵，其通过应用平移，旋转和缩放操作（移动，旋转和调整坐标系的大小的计算）将点从一个坐标空间映射到另一个坐标空间。</p>
+<p>一些技术使用与 Quartz 使用的默认坐标系<strong>不同的默认坐标系</strong>来设置其图形上下文。相对于 Quartz ，这样的坐标系是一个<strong>修改过的</strong>坐标系，<strong>必须在执行某些 Quartz 绘图操作时进行补偿</strong>。最常见的修改坐标系将原点放置在上下文的左上角，并将 y 轴更改为指向页面底部。可能会看到使用此特定坐标系的几个地方如下：</p>
+<ul>
+<li>在Mac OS X中，NSView的子类重写其isFlipped方法以返回YES。</li>
+<li>在 iOS 中，由 UIView 返回的绘图上下文。</li>
+<li>在 iOS 中，通过调用 UIGraphicsBeginImageContextWithOptions 函数创建的绘图上下文。</li>
+</ul>
+<p>如果应用程序想要使用相同的绘图例程来绘制 UIView 对象和 PDF 图形上下文（由 Quartz 创建并使用默认坐标系），则需要应用变换以便 PDF 图形上下文接收相同的修改坐标系。要执行此操作，请应用将原点转换为 PDF 上下文左上角的变换，并将 y 坐标缩放 -1 。翻转的效果如下图所示，就像镜子反射一样。</p>
+<p><img src="https://sat02pap001files.storage.live.com/y4mz9gVYtX2Pjghad-RtThLzTNLE9Qtfit0it5i0rLbCKzjR_MA2w-qwaIxJ45YNsCCH51U70-EeFEXJy-UkfkzQMTYU3mWDCyD-JWYAPSzay1KT9XiC-EWMGAi5Seys78T2y5zQyqVbEopUPiPiG8O2q6avic1GPw7ygt8_nx2rQy9-Hl5IdhlWByckxkwddB4?width=509&height=202&cropmode=none" alt="Modifying the coordinate system creates a mirrored image"></p>
+<p>应用程序可以<strong>调整</strong>它对已应用转换的上下文进行的任何 Quartz 调用。 例如，如果要将图像或 PDF 正确绘制到图形上下文中，则应用程序可能<strong>需要临时</strong>调整图形上下文的 CTM 。 在 iOS 中，如果使用 UIImage 对象来包装创建的 CGImage 对象，则<strong>无需修改CTM</strong>。 UIImage 对象<strong>自动补偿</strong> UIKit 应用的修改坐标系。 (ps: 在不同坐标系下使用相同绘制例程时，要记得处理坐标系补偿，当然用 UIKit 的相应类是不需要的，因为它会自动帮你处理。)</p>
+<p>重要提示：当 UIKit 为应用程序创建绘图上下文时，它还是会对上下文进行其他更改以匹配默认的 UIKit 约定。<strong>但是</strong>， patterns 和 shadows, 不受 CTM 的影响，所以还是得自己处理来匹配。</p>
+<h3 id="Memory-Management-Object-Ownership"><a href="#Memory-Management-Object-Ownership" class="headerlink" title="Memory Management: Object Ownership"></a>Memory Management: Object Ownership</h3><p>Quartz 使用 Core Foundation 内存管理模型，其中对象被<strong>引用计数</strong>。 </p>
+<h2 id="Graphics-Contexts"><a href="#Graphics-Contexts" class="headerlink" title="Graphics Contexts"></a>Graphics Contexts</h2><p>图形上下文表示绘图目标。图形上下文定义了基本的绘图属性，例如绘图时使用的颜色，剪裁区域，线宽和样式信息，字体信息，合成选项以及其他几种。</p>
+<p>可以使用 Quartz 上下文创建函数或使用 iOS 和 Mac OS 里面相关框架提供的更高级别函数来获取图形上下文。 Quartz 提供各种 Quartz 图形上下文的功能，包括位图和 PDF, 可以使用它们来创建自定义内容。</p>
+<p>本章介绍如何为各种绘图目标创建图形上下文。图形上下文在代码中由数据类型 <strong>CGContextRef</strong> 表示，它是一种不透明的数据类型。<strong>获取</strong>图形上下文后，可以使用 Quartz 2D 函数<strong>绘制上下文</strong>，对上下文执行操作（如位移），以及更改图形状态参数，如线宽和填充颜色。</p>
+<h3 id="Drawing-to-a-View-Graphics-Context-in-iOS"><a href="#Drawing-to-a-View-Graphics-Context-in-iOS" class="headerlink" title="Drawing to a View Graphics Context in iOS"></a>Drawing to a View Graphics Context in iOS</h3><p>要在 iOS 应用程序中绘制到屏幕，请设置 UIView 对象并实现其 <code>drawRect:</code> 方法以执行绘图。<strong>当视图在屏幕上可见并且其内容需要更新时</strong>，将调用视图的 <code>drawRect:</code> 方法。在调用自定义 <code>drawRect:</code> 方法之前，视图对象(UIView object)<strong>会自动</strong>配置其绘图环境，以便代码可以立即开始绘制。作为此配置的一部分， UIView 对象为当前绘图环境<strong>创建</strong>图形上下文（CGContextRef opaque类型）。可以通过调用 UIKit 函数 UIGraphicsGetCurrentContext 在 <code>drawRect:</code> 方法中获取此图形上下文。</p>
+<p>整个 UIKit 使用的默认坐标系与 Quartz 使用的坐标系不同。在 UIKit 中，原点位于左上角，正 y 值指向下方。 UIView 对象通过将原点转换为视图的左上角，并通过将其乘以 -1 来反转 y 轴，来修改 Quartz 图形上下文的 CTM 以匹配 UIKit 约定。有关修改坐标系的更多信息以及自己的绘图代码中的含义，请参阅”#Quartz 2D Coordinate Systems#”。</p>
+<p>UIView 对象在 <a href="https://developer.apple.com/library/archive/documentation/WindowsViews/Conceptual/ViewPG_iPhoneOS/Introduction/Introduction.html#//apple_ref/doc/uid/TP40009503">View Programming Guide for iOS</a> 中有详细描述。</p>
+<h3 id="Creating-a-Window-Graphics-Context-in-Mac-OS-X"><a href="#Creating-a-Window-Graphics-Context-in-Mac-OS-X" class="headerlink" title="Creating a Window Graphics Context in Mac OS X"></a>Creating a Window Graphics Context in Mac OS X</h3><p>先不管。</p>
+<h3 id="Creating-a-PDF-Graphics-Context"><a href="#Creating-a-PDF-Graphics-Context" class="headerlink" title="Creating a PDF Graphics Context"></a>Creating a PDF Graphics Context</h3><p>先不管。</p>
+<h3 id="Creating-a-Bitmap-Graphics-Context"><a href="#Creating-a-Bitmap-Graphics-Context" class="headerlink" title="Creating a Bitmap Graphics Context"></a>Creating a Bitmap Graphics Context</h3><p>位图图形上下文接收 指向<strong>包含</strong>位图存储空间的<strong>内存缓冲区</strong>的 指针。 当绘制到位图图形上下文时，缓冲区会更新。 释放图形上下文后，将<strong>以指定的像素格式获得完全更新的位图</strong>。</p>
+<p>注意：位图图形上下文有时用于绘制屏幕外。在决定使用位图图形上下文之前，请参阅”#Core Graphics Layer Drawing#”。 CGLayer对象（CGLayerRef）针对屏幕外绘制进行了优化，因为只要有可能， Quartz 就会在 video card 上缓存图层。</p>
+<p>iOS注意： iOS 应用程序<strong>应该使用</strong>函数 UIGraphicsBeginImageContextWithOptions <strong>而不是</strong>使用此处描述的低级 Quartz 函数。如果应用程序使用 Quartz 创建一个屏幕外位图，则位图图形上下文使用的坐标系是<strong>默认的</strong> Quartz 坐标系。相反，如果应用程序通过调用函数 UIGraphicsBeginImageContextWithOptions 来创建图像上下文，则 UIKit 将相同的变换应用于上下文的坐标系，就像对 UIView 对象的图形上下文一样。这允许应用程序使用相同的绘图代码，而无需担心不同的坐标系。虽然应用程序可以手动调整坐标转换矩阵以获得正确的结果，但实际上，这样做没有性能优势。(ps: 手动转换坐标系，虽然可以，但是没有性能优势。)</p>
+<p>可以使用函数 CGBitmapContextCreate 来创建位图图形上下文。此函数采用以下参数：</p>
+<ul>
+<li>data. 在内存中提供指向要渲染图形的目标的指针。此内存块的大小应至少为 (bytesPerRow * height) 字节(bytes)</li>
+<li>width. 指定位图的宽度（以像素为单位）。</li>
+<li>height. 指定位图的高度（以像素为单位）。</li>
+<li>bitsPerComponent. 指定内存中像素的每个组件<strong>使用的位数</strong> 。 例如，对于 32 位像素格式和 RGB 颜色空间，可以为每个组件指定 8 位的(bitsPerComponent = 8)值。请参阅”#Supported Pixel Formats#”。</li>
+<li>bytesPerRow. 指定每行位图使用的内存字节数。 提示：创建位图图形上下文时，如果<strong>确保</strong>数据和 bytesPerRow 是 16 字节对齐，则可以<strong>获得最佳性能</strong>。 </li>
+<li>colorspace. 用于位图上下文的颜色空间。创建位图图形上下文时，可以提供灰色，RGB，CMYK或NULL颜色空间。(ps: 官方文档有讲很多用到颜色什么的，请参阅哪里哪里，具体的看官方文档吧)</li>
+<li>bitmapInfo. 指定位图是否应包含 alpha 组件，像素中 alpha 组件（如果有）的相对位置，alpha 组件是否预乘，以及颜色分量是整数或浮点值。</li>
+</ul>
+<p>这里也有代码讲怎么样创建位图上下文(见下面) 和 怎么绘制到该位图上下文(去看文档)，重要的代码都有讲解。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; Creating a bitmap graphics context</span><br><span class="line"></span><br><span class="line">CGContextRef MyCreateBitmapContext (int pixelsWide,</span><br><span class="line">                            int pixelsHigh)</span><br><span class="line">&#123;</span><br><span class="line">    CGContextRef    context &#x3D; NULL;</span><br><span class="line">    CGColorSpaceRef colorSpace;</span><br><span class="line">    void *          bitmapData;</span><br><span class="line">    int             bitmapByteCount;</span><br><span class="line">    int             bitmapBytesPerRow;</span><br><span class="line"> </span><br><span class="line">    bitmapBytesPerRow   &#x3D; (pixelsWide * 4); &#x2F;&#x2F;  1 声明一个变量来表示每行的字节数。 本例中位图中的每个像素由4个字节(byte)表示; 红色，绿色，蓝色和 alpha 各 8 位(bit)。</span><br><span class="line">    bitmapByteCount     &#x3D; (bitmapBytesPerRow * pixelsHigh); &#x2F;&#x2F; 总的字节数</span><br><span class="line"> </span><br><span class="line">    colorSpace &#x3D; CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);&#x2F;&#x2F; 2 颜色空间</span><br><span class="line">    bitmapData &#x3D; calloc(bitmapByteCount, sizeof(uint8_t));&#x2F;&#x2F; 3 调用calloc函数来创建和清除用于存储位图数据的内存块。 此示例创建一个 32 位 RGBA 位图（即每像素 32 位的数组，每个像素包含红色，绿色，蓝色和 alpha 信息各 8 位 (4*8&#x3D;32)）。 位图中的每个像素占用4个字节的内存。 在Mac OS X 10.6和iOS 4中，可以省略此步骤 - 如果将NULL作为位图数据传递，Quartz会自动为位图分配空间。</span><br><span class="line">    if (bitmapData &#x3D;&#x3D; NULL)</span><br><span class="line">    &#123;</span><br><span class="line">        fprintf (stderr, &quot;Memory not allocated!&quot;);</span><br><span class="line">        return NULL;</span><br><span class="line">    &#125;</span><br><span class="line">    context &#x3D; CGBitmapContextCreate (bitmapData,&#x2F;&#x2F; 4</span><br><span class="line">                                    pixelsWide,</span><br><span class="line">                                    pixelsHigh,</span><br><span class="line">                                    8,      &#x2F;&#x2F; bits per component</span><br><span class="line">                                    bitmapBytesPerRow,</span><br><span class="line">                                    colorSpace,</span><br><span class="line">                                    kCGImageAlphaPremultipliedLast); &#x2F;&#x2F; 常量 kCGImageAlphaPremultipliedLast 表示 alpha 组件存储在每个像素的最后一个字节中，并且颜色组件已经乘以此 alpha 值。 有关预乘 alpha 的更多信息，请参阅&quot;#The Alpha Value#&quot;。</span><br><span class="line">    if (context&#x3D;&#x3D; NULL)</span><br><span class="line">    &#123;</span><br><span class="line">        free (bitmapData);&#x2F;&#x2F; 5</span><br><span class="line">        fprintf (stderr, &quot;Context not created!&quot;);</span><br><span class="line">        return NULL;</span><br><span class="line">    &#125;</span><br><span class="line">    CGColorSpaceRelease(colorSpace);&#x2F;&#x2F; 6</span><br><span class="line"> </span><br><span class="line">    return context;</span><br></pre></td></tr></table></figure>
+<h4 id="Supported-Pixel-Formats"><a href="#Supported-Pixel-Formats" class="headerlink" title="Supported Pixel Formats"></a>Supported Pixel Formats</h4><p>文档上有一个表，记录了不同颜色空间(color space, cs)下，像素格式的 bits per pixel (bpp) 和 bits per component (bpc) 和 bitmap information constant 。</p>
+<h4 id="Anti-Aliasing"><a href="#Anti-Aliasing" class="headerlink" title="Anti-Aliasing"></a>Anti-Aliasing</h4><p>位图图形上下文支持抗锯齿(anti-aliasing)，这是<strong>人工校正</strong>在绘制文本或形状时有时在位图图像中看到的锯齿(jagged or aliased)边缘的过程。<br>当位图的分辨率明显<strong>低于眼睛的分辨率时</strong>，会出现这些锯齿状边缘。为了使对象在位图中显得平滑，Quartz <strong>对</strong>围绕形状轮廓的像素使用不同的颜色。通过以这种方式混合颜色，形状看起来光滑。可以在下图中看到使用抗锯齿的效果。可以通过调用 CGContextSetShouldAntialias 函数来关闭<strong>特定</strong>位图图形上下文的抗锯齿。抗锯齿设置<strong>是</strong>图形状态的一部分。</p>
+<p>可以使用 CGContextSetAllowsAntialiasing 函数控制<strong>是否允许</strong>特定图形上下文的抗锯齿。 传 true 允许抗锯齿，反之则不允许。 此设置不是图形状态的一部分。当上下文和图形状态设置设置为 true 时， Quartz 会执行消除锯齿。 </p>
+<p><img src="https://sat02pap001files.storage.live.com/y4mvL9zxZfXLveK3GYqwqGPIOwAFtAky2W0xYzzdgl2UHkBmOFA0PfbXTgJfYagDkssKFPKAvaq6mp8KDJRmxez3R1CtRavG2ryTtrVjgV5xVZW-VHB-umAjTS1o7HwbqAzMDnB9IW8gUgBmJd1ZaycHi1ijfYdtytwBdRicFEpCFLQU1Hb1w-bq6mC90hJIk-y?width=414&height=435&cropmode=none" alt="A comparison of aliased and anti-aliasing drawing"></p>
+<h3 id="Obtaining-a-Graphics-Context-for-Printing"><a href="#Obtaining-a-Graphics-Context-for-Printing" class="headerlink" title="Obtaining a Graphics Context for Printing"></a>Obtaining a Graphics Context for Printing</h3><p>OS X 先不管。</p>
+<h2 id="Paths"><a href="#Paths" class="headerlink" title="Paths"></a>Paths</h2><p>路径(path)定义一个或多个形状(shapes)或子路径(subpaths)。 子路径可以由直线，曲线或两者组成。 它可以是开放的(open)或封闭(closed)的。 子路径可以是简单的形状，例如线，圆，矩形或星形，或更复杂的形状，例如山脉的轮廓(silhouette)或抽象涂鸦(doodle)。 下图显示了可以创建的一些路径。 直线（图中左上角）是虚线; 线条也可以是实心的。 波浪形的路径（在中间的顶部）由几条曲线组成，是一条开放的路径。 同心圆被填充，但没有被描边。 加利福尼亚州是一条封闭的道路，由许多曲线和线条组成，路径既有条纹也有填充。 星星说明了填充路径的两个选项，将在本章后面阅读这些选项。</p>
+<p><img src="https://sat02pap001files.storage.live.com/y4m06v4jCo05x0Kcs5NmUz8G-UzCnsF5514ND7mInesSblBX8F7-VU0l2-il6UajOIO_-Pg5zzEqwcRd9y-Hpq5zRQI2yN6vC8ugzwhdOvrWGK3tCx4dg3i_kL0h4GWxSADBnyu2o5HRWAzOvZ6CD6ABiLMH17fl3q4fbrkLH5l0V42Pze04ZTFm6VwWBeV0gzO?width=309&height=224&cropmode=none" alt="Quartz supports path-based drawing"></p>
+<h3 id="Path-Creation-and-Path-Painting"><a href="#Path-Creation-and-Path-Painting" class="headerlink" title="Path Creation and Path Painting"></a>Path Creation and Path Painting</h3><p>路径创建和路径绘制<strong>是单独的任务</strong>。 首先，创建一个路径。 当想要渲染路径时，请求 Quartz 去绘制它。</p>
+<ul>
+<li>stroke: 描边</li>
+<li>fill: 填充</li>
+</ul>
+<h3 id="The-Building-Blocks"><a href="#The-Building-Blocks" class="headerlink" title="The Building Blocks"></a>The Building Blocks</h3><p>子路径由线，弧和曲线构成。 Quartz 还提供了便捷功能，可通过单个函数调用添加矩形和椭圆。 点也是路径的基本构建块，因为点定义了形状的起始和结束位置。</p>
+<h4 id="Points"><a href="#Points" class="headerlink" title="Points"></a>Points</h4><p>点是 x 和 y 坐标，用于指定用户空间中的位置。 可以调用函数 CGContextMoveToPoint 来<strong>指定</strong>新子路径的起始位置。 Quartz <strong>跟踪当前点</strong>，这是用于路径构建的<strong>最后位置</strong>。</p>
+<h4 id="Lines"><a href="#Lines" class="headerlink" title="Lines"></a>Lines</h4><p>一条线由其终点定义。 它的起始点始终假定为当前点，因此在创建线时，只指定其终点。 使用函数 CGContextAddLineToPoint 将单行附加到子路径。 可以通过调用函数 CGContextAddLines 将一系列连接的行添加到路径中。将此函数传递给一系列点。 第一点<strong>必须是</strong>第一行的起点; 剩下的点是终点。</p>
+<h4 id="Arcs"><a href="#Arcs" class="headerlink" title="Arcs"></a>Arcs</h4><p>弧是圆弧段。  Quartz提供了两个创建弧的函数。(ps: 具体的见官方文档，都有图说明)</p>
+<ul>
+<li>CGContextAddArc, 从圆创建一个曲线段。 可以指定圆的中心，半径和径向角（以弧度表示）。</li>
+<li>CGContextAddArcToPoint, 圆角矩形的理想选择。</li>
+</ul>
+<p>如果当前路径已包含子路径，则 Quartz 会将当前点的直线段附加到弧的起始点。 如果当前路径为空，Quartz 会在弧的起始点创建一个新的子路径，并且不会添加初始直线段。</p>
+<h4 id="Curves"><a href="#Curves" class="headerlink" title="Curves"></a>Curves</h4><p>二次(Quadratic)和三次(cubic)贝塞尔曲线是代数曲线，可以指定任意数量的有趣曲线形状。函数有 CGContextAddCurveToPoint 和 CGContextAddQuadCurveToPoint 。 (ps: 具体的见官方文档，都有图说明)</p>
+<h4 id="Closing-a-Subpath"><a href="#Closing-a-Subpath" class="headerlink" title="Closing a Subpath"></a>Closing a Subpath</h4><p>要关闭当前子路径，应用程序应调用 CGContextClosePath 。 此函数添加从当前点到子路径<strong>起点的线段</strong>并关闭子路径。 以子路径起点结束的直线，圆弧和曲线实际上<strong>不会</strong>关闭子路径。 必须显式调用 CGContextClosePath 才能关闭子路径。</p>
+<p>关闭子路径后，如果应用程序进行额外调用以向路径添加直线，圆弧或曲线，Quartz 将从刚刚关闭的子路径的起点开始一个新的子路径。 所有移动都以顺时针(clockwise)方向定向。</p>
+<h4 id="Ellipses"><a href="#Ellipses" class="headerlink" title="Ellipses"></a>Ellipses</h4><p>椭圆基本上是一个压扁的圆。 CGContextAddEllipseInRect 函数。 所有移动都以逆时针(counter-clockwise)方向定向。</p>
+<h4 id="Rectangles"><a href="#Rectangles" class="headerlink" title="Rectangles"></a>Rectangles</h4><p>可以通过调用函数 CGContextAddRect 将矩形添加到当前路径。 </p>
+<h3 id="Creating-a-Path"><a href="#Creating-a-Path" class="headerlink" title="Creating a Path"></a>Creating a Path</h3><p>如果要在图形上下文中构造路径，可以通过调用函数 CGContextBeginPath 来发出 Quartz 信号。 接下来，通过调用函数 CGContextMoveToPoint ，在路径中设置第一个形状或子路径的起点。 建立第一个点后，可以在路径中添加直线，圆弧和曲线，请记住以下内容：(ps: 具体的见官方文档，这里只讲了最重要的。)</p>
+<ul>
+<li>……</li>
+<li><strong>必须</strong>调用绘制函数来填充或描边路径，因为<strong>创建路径不会绘制路径</strong>。有关详细信息，请参阅”#Painting a Path#”。</li>
+</ul>
+<p>绘制路径后，将从图形上下文中刷新(flush)它。可能不希望如此轻易地<strong>丢失</strong>路径，特别是如果它描绘了想要反复使用的复杂场景。因此， Quartz 提供了两种用于<strong>创建可重用路径</strong>的数据类型 CGPathRef 和 CGMutablePathRef 。  Quartz 提供了一组 CGPath 函数，这些函数与”#The Building Blocks#”中讨论的相关函数并行 。路径函数在 CGPath 对象上运行，而不是在图形上下文上运行。(ps: 具体的相关函数见官方文档)</p>
+<p>如果要将路径附加到图形上下文，请调用函数 CGContextAddPath 。路径保留在图形上下文中，直到 Quartz 绘制它。可以通过调用 CGContextAddPath 再次添加路径。</p>
+<p>注意：可以通过调用函数 CGContextReplacePathWithStrokedPath 将图形上下文中的路径替换为路径的描边版本。</p>
+<h3 id="Painting-a-Path"><a href="#Painting-a-Path" class="headerlink" title="Painting a Path"></a>Painting a Path</h3><p>可以通过描边或填充或两者来绘制当前路径。 描边画一条跨越路径的线。 填充绘制路径中包含的区域。 Quartz 具有允许描边路径，填充路径或者描边和填充路径的功能。 描边线的特征（宽度，颜色等），填充颜色以及 Quartz 用于计算填充区域的方法都是图形状态的一部分（参见”#Graphics States#”）。</p>
+<h4 id="Parameters-That-Affect-Stroking"><a href="#Parameters-That-Affect-Stroking" class="headerlink" title="Parameters That Affect Stroking"></a>Parameters That Affect Stroking</h4><p>可以通过修改表3-1中列出的参数来影响路径的描述方式。 这些参数是<strong>图形状态</strong>的一部分，这<strong>意味着</strong>为参数设置的值<strong>会影响所有后续描边，直到将参数设置为另一个值</strong>。参数有：</p>
+<ul>
+<li>Line width</li>
+<li>Line join</li>
+<li>Line cap</li>
+<li>Miter limit</li>
+<li>Line dash pattern</li>
+<li>Stroke color space</li>
+<li>Stroke color</li>
+<li>Stroke pattern</li>
+</ul>
+<p>(ps: 具体的详情就看官方文档吧)</p>
+<h4 id="Functions-for-Stroking-a-Path"><a href="#Functions-for-Stroking-a-Path" class="headerlink" title="Functions for Stroking a Path"></a>Functions for Stroking a Path</h4><p>Quartz提供表3-4中所示的功能，用于描绘当前路径。 一些是用于描边矩形或椭圆的便利功能。<br>(ps: 具体的详情就看官方文档吧) </p>
+<h4 id="Filling-a-Path"><a href="#Filling-a-Path" class="headerlink" title="Filling a Path"></a>Filling a Path</h4><p>填充当前路径时， Quartz 就像关闭路径中包含的每个子路径一样处理。 然后它使用这些封闭的子路径并计算要填充的像素。 Quartz 可以通过两种方式计算填充区域。 椭圆形和矩形等简单路径具有明确的区域。 但是，如果路径由重叠的段组成，或者路径包含多个子路径，例如图3-12中所示的同心圆，则可以使用两个规则来确定填充区域。</p>
+<ul>
+<li>nonzero winding number rule</li>
+<li>even-odd rule</li>
+</ul>
+<p>(ps: 具体的详情就看官方文档吧) </p>
+<h4 id="Setting-Blend-Modes"><a href="#Setting-Blend-Modes" class="headerlink" title="Setting Blend Modes"></a>Setting Blend Modes</h4><p>混合模式指定 Quartz如 何在背景上应用绘画。 Quartz 默认使用普通混合模式，它使用以下公式将前景绘画与背景绘画相结合：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">result &#x3D; (alpha * foreground) + (1 - alpha) * background</span><br></pre></td></tr></table></figure>
+<p>“#Color and Color Spaces#”提供了颜色的 alpha 组件的详细讨论，它指定颜色的不透明度。 对于本节中的示例，可以假设颜色完全不透明（alpha = 1.0）。 对于不透明的颜色，当使用普通混合模式进行绘制时，在背景上绘制的任何内容都会完全遮盖背景。</p>
+<p>(ps: 具体的详情就看官方文档吧，每种不同的混合模式，都有例子说明)</p>
+<h3 id="Clipping-to-a-Path"><a href="#Clipping-to-a-Path" class="headerlink" title="Clipping to a Path"></a>Clipping to a Path</h3><p>当前剪切区域(current clipping area)是从<strong>用作蒙版(mask)**的路径创建的，允许阻止不想绘制的页面部分。例如，如果有一个非常大的位图图像并且</strong>只想**显示它的一小部分，则可以将剪切区域设置为仅显示想要显示的部分。</p>
+<p>绘制时， Quartz <strong>仅在剪切区域内</strong>渲染绘制。在剪切区域的封闭子路径内发生的绘制是可见的；在剪切区域的闭合子路径之外发生的绘制不是。</p>
+<p>当<strong>最初创建</strong>图形上下文时，剪切区域包括上下文的<strong>所有</strong>可绘制区域（例如，PDF上下文的媒体框）。可以通过设置当前路径，然后使用剪切功能而不是绘图功能<strong>来更改</strong>剪切区域。剪切功能将当前路径的填充区域与现有剪切区域<strong>相交</strong>。因此，可以与剪切区域相交，缩小图片的可见区域，但<strong>不能增加</strong>剪裁区域的面积。</p>
+<p>(ps: 具体的详情就看官方文档吧)</p>
+<h1 id="Color-and-Color-Spaces"><a href="#Color-and-Color-Spaces" class="headerlink" title="Color and Color Spaces"></a>Color and Color Spaces</h1><p>设备（显示器，打印机，扫描仪，照相机）<strong>不会以</strong>同样的方式处理颜色，每个都有自己的颜色范围。 在一台设备上生成的颜色<strong>可能无法在其</strong>他设备上生成。</p>
+<p>要有效地处理颜色并理解使用颜色空间和颜色的 Quartz 2D 函数，应该熟悉<a href="https://developer.apple.com/library/archive/documentation/GraphicsImaging/Conceptual/csintro/csintro_intro/csintro_intro.html#//apple_ref/doc/uid/TP30001148">Color Management Overview</a>中讨论的术语。 该文档讨论了颜色感知(perception)，颜色值，设备无关和设备颜色空间，颜色匹配问题，渲染意图(rendering intent)，颜色管理模块和ColorSync。</p>
+<h2 id="About-Color-and-Color-Spaces"><a href="#About-Color-and-Color-Spaces" class="headerlink" title="About Color and Color Spaces"></a>About Color and Color Spaces</h2><p>Quartz 中的颜色由一组值表示。 <strong>没有指示如何解释颜色信息的颜色空间，这些值是没有意义的</strong>。 例如，表4-1中的值均表示全强度时的蓝色。 但是，如果不知道每个颜色空间的颜色空间或允许的值范围，无法知道每组值所代表的颜色。</p>
+<h2 id="The-Alpha-Value"><a href="#The-Alpha-Value" class="headerlink" title="The Alpha Value"></a>The Alpha Value</h2><p>alpha 值是 Quartz 用于确定<strong>如何将</strong>新绘制的对象<strong>合成到</strong>现有页面的图形状态参数。 在完全强度下，新绘制的物体是不透明的。 在零强度下，新绘制的对象是不可见的。</p>
+<p><img src="https://sat02pap001files.storage.live.com/y4m4tgtfv2Ep9qCSSBKHjTd1rxkJQIKBvtspAp3CbH9oWN-y9cX5WA5K4_9hUsIW4xUPA2Mv0bI1Zw2B6CePhNERd21Aq7itEo7xpUCNcnUqNIgOhrGu92qHMJHySt7NEpeWsAdbTmknkI_niieIS25OL1JZdeXQVkWVWtB_WjMl2tQpJV-oiB7LG71rPAT7Tl8?width=369&height=90&cropmode=none" alt="A comparison of large rectangles painted using various alpha values"></p>
+<p>通过在绘制之前在图形上下文中<strong>全局</strong>设置 alpha 值，可以使页面上的对象和页面本身都透明。</p>
+<p>在普通混合模式（这是图形状态的默认模式）中， Quartz 通过使用以下公式将源颜色的组件与目标颜色的组件组合来执行 Alpha 混合 (ps: 前面 “#Setting Blend Modes#” 也有提到)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">destination &#x3D; (alpha * source) + (1 - alpha) * destination</span><br></pre></td></tr></table></figure>
+<p>其中 source 是新颜色的一个组件， destination 是背景颜色的一个组件。对于每个新绘制的形状或图像执行该公式。 </p>
+<p>可以为所有接收颜色的例程提供 alpha 值作为最后一个颜色组件。还可以使用 CGContextSetAlpha 函数设置全局 Alpha 值。请记住，如果<strong>同时设置两者</strong>，Quartz 会将 alpha 颜色组件乘以全局 alpha 值。</p>
+<p>要允许页面本身<strong>完全透明</strong>，只要图形上下文是窗口或位图图形上下文，就可以使用 CGContextClearRect 函数显式清除图形上下文的 Alpha 通道。</p>
+<h2 id="Creating-Color-Spaces"><a href="#Creating-Color-Spaces" class="headerlink" title="Creating Color Spaces"></a>Creating Color Spaces</h2><p>Quartz 支持颜色管理系统，用于设备无关颜色空间的标准颜色空间，并且还支持通用，索引和图案颜色空间。 与设备无关的颜色空间以可在设备之间移植的方式表示颜色。 它们用于将颜色数据从一个设备的原生颜色空间交换到另一个设备的原生颜色空间。 与设备无关的颜色空间中的颜色在不同设备上显示时显示相同，达到设备功能允许的程度。 因此，与设备无关的色彩空间是表示色彩的最佳选择。</p>
+<p>具有精确颜色要求的应用程序应始终使用与设备无关的颜色空间。 常见的设备无关颜色空间是通用颜色空间。 通用色彩空间让操作系统为您的应用程序提供最佳色彩空间。 绘制到显示器看起来与将相同内容打印到打印机一样好。</p>
+<p>重要提示：<strong>iOS 不支持</strong>与设备无关或通用的颜色空间。 iOS应用程序必须使用设备颜色空间。</p>
+<h3 id="Creating-Device-Independent-Color-Spaces"><a href="#Creating-Device-Independent-Color-Spaces" class="headerlink" title="Creating Device-Independent Color Spaces"></a>Creating Device-Independent Color Spaces</h3><h3 id="Creating-Generic-Color-Spaces"><a href="#Creating-Generic-Color-Spaces" class="headerlink" title="Creating Generic Color Spaces"></a>Creating Generic Color Spaces</h3><h3 id="Creating-Device-Color-Spaces"><a href="#Creating-Device-Color-Spaces" class="headerlink" title="Creating Device Color Spaces"></a>Creating Device Color Spaces</h3><h3 id="Creating-Indexed-and-Pattern-Color-Spaces"><a href="#Creating-Indexed-and-Pattern-Color-Spaces" class="headerlink" title="Creating Indexed and Pattern Color Spaces"></a>Creating Indexed and Pattern Color Spaces</h3><h2 id="Setting-and-Creating-Colors"><a href="#Setting-and-Creating-Colors" class="headerlink" title="Setting and Creating Colors"></a>Setting and Creating Colors</h2><p>Quartz 提供了一套用于设置填充颜色，描边颜色，颜色空间和 alpha 的功能。 这些颜色参数中的每一个都适用于<strong>图形状态</strong>，这<strong>意味着</strong>一旦设置，该设置将保持有效直到设置为另一个值。</p>
+<p><strong>颜色必须具有关联的颜色空间。否则，Quartz 将不知道如何解释颜色值</strong>。 此外，需要为绘图目标提供适当的颜色空间。 比如下图左侧的蓝色填充颜色，即 CMYK 填充颜色，右侧显示蓝色，这是 RGB 填充颜色。 如果查看此文档的屏幕版本，将看到填充颜色之间的巨大差异。 <strong>颜色在理论上是相同的，但只有当 RGB 颜色用于 RGB 设备并且 CMYK 颜色用于 CMYK 设备时才显示相同</strong>。</p>
+<p><img src="https://sat02pap001files.storage.live.com/y4mIYSwvioabsFckbo2mnsgmYPUgNNmrDEVFNdrwKRTWr7LTPWiGsh-ypZZAh0ccMVIVgYWEHA8PdKhJ9S-nhPiq62hJNjdCXgd3K7dxsEnHdCpe9IZB3p1Lk62CmM6eOt9CSvASR3M9xroTMLDwMQ3Kt0evCPhX8ICElbgnEf1ceuFBF-MzQt5hGBmdqItgUuG?width=430&height=206&cropmode=none" alt="A CMYK fill color and an RGB fill color"></p>
+<p>可以使用 CGContextSetFillColorSpace 和 CGContextSetStrokeColorSpace 函数来设置填充和描边颜色空间，也可以使用为设备颜色空间设置颜色的便捷功能之一（在表4-2中列出）。</p>
+<p>“You can improve your application’s performance by using CGColor objects directly.”<br>(ps: 具体的详情就看官方文档吧)</p>
+<h2 id="Setting-Rendering-Intent"><a href="#Setting-Rendering-Intent" class="headerlink" title="Setting Rendering Intent"></a>Setting Rendering Intent</h2><p>渲染意图(rendering intent)指定 Quartz 如何将颜色从源颜色空间<strong>映射到</strong>图形上下文的目标颜色空间的色域(color space)内。如果未明确设置渲染意图， Quartz 会对<strong>除</strong>位图（采样）图像<strong>之外的</strong>所有绘图使用相对色度渲染意图。 Quartz 使用感知(perceptual)渲染意图。</p>
+<p>要设置渲染意图，请调用函数 CGContextSetRenderingIntent ，传递图形上下文和以下常量之一：</p>
+<h2 id="Transforms"><a href="#Transforms" class="headerlink" title="Transforms"></a>Transforms</h2><p>Quartz 2D 绘图模型定义了两个完全独立的坐标空间：用户空间（代表文档页面）和设备空间（代表设备的原始分辨率）。用户空间坐标是与设备空间中像素分辨率<strong>无关的</strong>浮点数。当想要打印或显示文档时， Quartz <strong>会将</strong>用户空间坐标映射到设备空间坐标。因此，<strong>无需重写</strong>应用程序或编写其他代码来调整应用程序的输出，以便在不同设备上实现最佳显示。</p>
+<p>可以通过在当前转换矩阵(<strong>CTM</strong>)上操作来修改默认<strong>用户空间</strong>。创建图形上下文后， CTM 是单位矩阵。可以使用 Quartz 转换函数来修改 CTM ，从而修改用户空间中的绘图。</p>
+<h3 id="About-Quartz-Transformation-Functions"><a href="#About-Quartz-Transformation-Functions" class="headerlink" title="About Quartz Transformation Functions"></a>About Quartz Transformation Functions</h3><p>可以使用 Quartz 2D 内置转换功能轻松地平移(translate)，缩放(scale)和旋转(rotate)绘图。 只需几行代码，就可以按任何顺序和任意组合应用这些转换。 下图说明了缩放和旋转图像的效果。 应用的每个转换<strong>都会</strong>更新CTM。 <strong>CTM 始终表示用户空间和设备空间之间的当前映射</strong>。 此映射可确保应用程序的输出在任何显示屏或打印机上都很好看。</p>
+<p><img src="https://sat02pap001files.storage.live.com/y4mQ_R2vReAHk_CQMnFdzw4ZnJMYVVTopsDapeDs3O3wqSlLY68gegDmagcgjIg6epMAgfYHwyv5hVYK913wJRGCE5mxWaoevZTbmAw1eJZrOHp-ssxWPSxm4im5Qjroxn_qtait7SVryRAzIno-H1l9_UL08w-9U_g4CdI8Km5x48fGLpkSdRJNlL4GNbwe4DI?width=310&height=144&cropmode=none" alt="Applying scaling and rotation"></p>
+<h3 id="Modifying-the-Current-Transformation-Matrix"><a href="#Modifying-the-Current-Transformation-Matrix" class="headerlink" title="Modifying the Current Transformation Matrix"></a>Modifying the Current Transformation Matrix</h3><p>讲了一系列平移(translate)，缩放(scale)和旋转(rotate) CTM 后，公鸡图案显示的例子。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 角度和弧度之间的转换</span><br><span class="line">static inline double radians (double degrees) &#123;return degrees * M_PI&#x2F;180;&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Creating-Affine-Transforms"><a href="#Creating-Affine-Transforms" class="headerlink" title="Creating Affine Transforms"></a>Creating Affine Transforms</h3><p>Quartz 中可用的仿射变换函数<strong>在矩阵上</strong>运行，而不是在 CTM 上运行。 可以使用这些函数构造一个矩阵，稍后通过调用 CGContextConcatCTM 函数将其应用于CTM。 仿射变换函数可以操作或返回 CGAffineTransform 数据结构。 可以构造可重用的简单或复杂仿射变换。 (ps: 矩阵操作)</p>
+<h3 id="Evaluating-Affine-Transforms"><a href="#Evaluating-Affine-Transforms" class="headerlink" title="Evaluating Affine Transforms"></a>Evaluating Affine Transforms</h3><p>可以通过调用函数 CGAffineTransformEqualToTransform 来确定一个仿射变换是否等于另一个仿射变换。 如果传递给它的两个变换是相等的，则此函数返回 true ，否则返回 false 。</p>
+<p>函数 CGAffineTransformIsIdentity 是用于检查变换是否是标识变换(identity transform)的有用函数。标识变换不执行转换，缩放或旋转。 将此变换应用于输入坐标<strong>始终返回</strong>输入坐标。 Quartz 常量 CGAffineTransformIdentity 表示身份转换。</p>
+<h3 id="Getting-the-User-to-Device-Space-Transform"><a href="#Getting-the-User-to-Device-Space-Transform" class="headerlink" title="Getting the User to Device Space Transform"></a>Getting the User to Device Space Transform</h3><p>通常，当使用 Quartz 2D 绘图时，<strong>只能在</strong>用户空间中工作。 Quartz 负责为转换用户和设备空间。如果应用程序需要获取 Quartz 用于在用户和设备空间之间进行转换的仿射变换，则可以调用函数 CGContextGetUserSpaceToDeviceSpaceTransform 。</p>
+<ul>
+<li>Points. CGContextConvertPointToDeviceSpace  CGContextConvertPointToUserSpace</li>
+<li>Sizes. CGContextConvertSizeToDeviceSpace  CGContextConvertSizeToUserSpace</li>
+<li>Rectangles. CGContextConvertRectToDeviceSpace  CGContextConvertRectToUserSpace</li>
+</ul>
+<h3 id="The-Math-Behind-the-Matrices"><a href="#The-Math-Behind-the-Matrices" class="headerlink" title="The Math Behind the Matrices"></a>The Math Behind the Matrices</h3><p>矩阵运算。值得仔细一看。 反正就是行*列。</p>
+<p>请注意，连接矩阵的顺序很重要 - 矩阵乘法<strong>不是可交换</strong>的。也就是说，矩阵A乘以矩阵B的结果<strong>不一定等</strong>于矩阵B乘以矩阵A的结果。</p>
+<p>如前所述，连接是仿射变换矩阵包含具有常数值 0,0,1 的第三列的原因。为了将一个矩阵与另一个矩阵相乘，一个矩阵的列数<strong>必须与</strong>另一个矩阵的行数相匹配。 。这意味着2 x 3矩阵不能与2 x 3矩阵相乘。因此，我们需要包含<strong>常量值的额外列</strong>。</p>
+<p>反转操作从转换的坐标产生原始坐标。给定坐标（x，y），其已经由给定矩阵A变换为新坐标（x’，y’），将坐标（x’，y’）变换为矩阵<strong>A的逆矩阵</strong>产生原始坐标（x，y）。当矩阵乘以其逆时，结果是单位矩阵。</p>
+<h2 id="Patterns"><a href="#Patterns" class="headerlink" title="Patterns"></a>Patterns</h2><p>模式(pattern)是一系列绘制操作，重复绘制到图形上下文。 可以使用与使用颜色相同的方式使用图案。 当使用图案进行绘制时，Quartz 将页面划分为一组图案单元格，每个单元格都是图案图像的大小，并使用我们提供的回调绘制每个单元格。 下图显示了绘制到窗口图形上下文的模式。 (ps: 这一节，其他的就不讲了，具体用到再说，只讲”#How Patterns Work#”。)</p>
+<p><img src="https://sat02pap001files.storage.live.com/y4m6y7_4aUXx5GZJwh476YlIJDL93LeqQ-fFN6AZYe0oDfdjfrHeiBuoh1CdQZsPGZdJdJqfx6uIb7cs2nFNAuxPJrehCm9DQxXMHf7IAScjaE40Q0rtnn_OlEX9ZYzugtjqwHnFsr9WTLC4KesGwD9aBohmIJZntY8YDLFhUTpCEuVAMsSWrn9Xo-5gVPnTaKh?width=354&height=265&cropmode=none" alt="A pattern drawn to a window"></p>
+<p>这里讲到绘制五角星的 demo 。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">### The Anatomy of a Pattern</span><br><span class="line">### Colored Patterns and Stencil (Uncolored) Patterns</span><br><span class="line">### Tiling</span><br></pre></td></tr></table></figure>
+<h3 id="How-Patterns-Work"><a href="#How-Patterns-Work" class="headerlink" title="How Patterns Work"></a>How Patterns Work</h3><p>用 CTM 位移处理，像打字机一样，一行一行的打。(ps: 记住，绘制之前要保存图形状态，完成之后要恢复图形状态)</p>
+<ul>
+<li>保存图形状态。</li>
+<li>将当前变换矩阵转换为模式单元的原点。 </li>
+<li>将 CTM 与模式矩阵连接在一起。</li>
+<li>剪辑到模式单元格的边界矩形。</li>
+<li>调用绘图回调来绘制模式单元格。</li>
+<li>恢复图形状态。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">### Painting Colored Patterns</span><br><span class="line">#### Write a Callback Function That Draws a Colored Pattern Cell</span><br><span class="line">#### Set Up the Colored Pattern Color Space</span><br><span class="line">#### Set Up the Anatomy of the Colored Pattern</span><br><span class="line">#### Specify the Colored Pattern as a Fill or Stroke Pattern</span><br><span class="line">#### Draw With the Colored Pattern</span><br><span class="line">#### A Complete Colored Pattern Painting Function</span><br><span class="line"></span><br><span class="line">### Painting Stencil Patterns</span><br><span class="line">#### Write a Callback Function That Draws a Stencil Pattern Cell</span><br><span class="line">#### Set Up the Stencil Pattern Color Space</span><br><span class="line">#### Set Up the Anatomy of the Stencil Pattern</span><br><span class="line">#### Specify the Stencil Pattern as a Fill or Stroke Pattern</span><br><span class="line">#### Drawing with the Stencil Pattern</span><br><span class="line">#### A Complete Stencil Pattern Painting Function</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="Shadows"><a href="#Shadows" class="headerlink" title="Shadows"></a>Shadows</h2><p>阴影是在图形对象下面绘制并偏移<strong>的图像</strong>，使得阴影<strong>模仿</strong>投射在图形对象上的光源的效果，如下图所示。 文本也可以被遮蔽。 阴影可以使图像看起来是三维的，或者就像浮动一样。</p>
+<p><img src="https://sat02pap001files.storage.live.com/y4mAeYgUOUTPuS33lOXYheEk3Tad3Y7fvZVOqNY1bLpCP77WelgrBi6EgJtKg6UZw4hK1RJg73KwqOHfm7TGuiFUMFbHxtcM96uB_GELS_lD89yLmkDX2Rz7QfLZpbkMEY8gnl7jg53VO_4Cmi_y-VFmEQ5zYjOtwnEBcdVL8FdMlNUxGS3tednRr-5KJxa-1DS?width=171&height=166&cropmode=none" alt="A shadow"></p>
+<h3 id="How-Shadows-Work"><a href="#How-Shadows-Work" class="headerlink" title="How Shadows Work"></a>How Shadows Work</h3><p>Quartz 中的阴影是<strong>图形状态的一部分</strong>。 调用函数 CGContextSetShadow ，传递图形上下文，偏移值和模糊值。 设置阴影后，绘制的任何对象都会使用<strong>黑色</strong>绘制阴影，该颜色在设备 RGB 颜色空间中具有 1/3 alpha值。 换句话说，使用设置为 {0,0,0,1.0 / 3.0} 的 RGBA 值绘制阴影。</p>
+<p>可以通过调用 CGContextSetShadowWithColor 函数绘制彩色阴影，传递图形上下文，偏移值，模糊值和 CGColor 对象。 要为颜色提供的值取决于要绘制的颜色空间。</p>
+<p>如果在调用 CGContextSetShadow 或 CGContextSetShadowWithColor 之前保存图形状态，则可以通过恢复图形状态来关闭阴影。 还可以通过将阴影颜色<strong>设置为NULL</strong>来禁用阴影。</p>
+<h3 id="Shadow-Drawing-Conventions-Vary-Based-on-the-Context"><a href="#Shadow-Drawing-Conventions-Vary-Based-on-the-Context" class="headerlink" title="Shadow Drawing Conventions Vary Based on the Context"></a>Shadow Drawing Conventions Vary Based on the Context</h3><p>阴影绘制约定不受当前转换矩阵的影响。</p>
+<h3 id="Painting-with-Shadows"><a href="#Painting-with-Shadows" class="headerlink" title="Painting with Shadows"></a>Painting with Shadows</h3><p>讲了怎么绘制阴影。<br>(ps: 记住，绘制之前要保存图形状态，完成之后要恢复图形状态)</p>
+<h2 id="Gradients"><a href="#Gradients" class="headerlink" title="Gradients"></a>Gradients</h2><p>Quartz提供了两种不透明的数据类型来创建渐变 -  CGShadingRef 和 CGGradientRef 。可以使用其中任何一个来创建轴向(axial)或径向(radial)渐变。渐变是从一种颜色到另一种颜色不同的填充。</p>
+<p>轴向渐变（也称为线性渐变）沿着两个限定的端点之间的轴变化。位于<strong>垂直于轴</strong>的直线上的所有点<strong>具有相同</strong>的颜色值。</p>
+<p>径向梯度是沿两个限定端之间的轴径向变化的填充，其通常是两个圆。如果点位于中心点落在轴上的<strong>圆周</strong>上，则它们共享相同的颜色值。梯度的圆形截面的半径由端圆的半径限定，每个中间圆的半径从一端到另一端线性变化。</p>
+<p>本章提供了可以使用Quartz创建的各种线性和径向渐变的示例，比较了绘制渐变时可以采用的两种方法，然后展示了如何使用每种不透明数据类型来创建渐变。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">### Axial and Radial Gradient Examples</span><br><span class="line">### A Comparison of CGShading and CGGradient Objects</span><br><span class="line">### Extending Color Beyond the End of a Gradient</span><br><span class="line">### Using a CGGradient Object</span><br><span class="line">### Using a CGShading Object</span><br><span class="line">#### Painting an Axial Gradient Using a CGShading Object</span><br><span class="line">#### Painting a Radial Gradient Using a CGShading Object</span><br><span class="line">### See Also</span><br></pre></td></tr></table></figure>
+
+<h2 id="Transparency-Layers"><a href="#Transparency-Layers" class="headerlink" title="Transparency Layers"></a>Transparency Layers</h2><p>透明层由两个或多个对象组成，这些对象<strong>组合在一起</strong>以生成复合图形。 生成的复合材料被视为<strong>单个对象</strong>。 当想要将效果应用于一组对象时，透明度层很有用。</p>
+<p><img src="https://sat02pap001files.storage.live.com/y4m9Y_1flxViLs8pQ1J0ZkmDG9htlxLNSbp2MKY8RCI8NXMhuwkrmy5S-BxD4pJUeCQyLvZg2p_7NWthtgAuKhf-wv9p4Bwz6JcrYPADr1jUONvbix4qsVS8Le5A_EtW_0c8KCk08sT2CJ-7UwlgUDhlOjaiUePR4VBSgN72cllFu1qSYA7h9L_8urmh41fXRY1?width=263&height=259&cropmode=none" alt="Three circles as a composite in a transparency layer"></p>
+<p><img src="https://sat02pap001files.storage.live.com/y4mGBC88odCSVHL-xxZCaEVyr55q67QbqSjOXMmDgCT1fQii0prgjB0Msypx_n1X44Z1CNKV4vCStcEaHH2wf-QZ3voNiEgUwrSNEvwE9lWbQTVcGY4w3IF4_JHhIMlT5jCkqvSlSBYlqJ03m1hZy4cnZhCNWlEBvBBsZlM-yl8CmhrIb9F9OLR2pNP1KhDGfew?width=263&height=256&cropmode=none" alt="Three circles painted as separate entities"></p>
+<h3 id="How-Transparency-Layers-Work"><a href="#How-Transparency-Layers-Work" class="headerlink" title="How Transparency Layers Work"></a>How Transparency Layers Work</h3><p>Quartz 透明层与许多流行的图形应用程序中可用的层类似。 图层是独立的实体。 <strong>Quartz 为每个上下文维护一个透明层栈，并且可以嵌套透明层</strong>。但由于图层始终是堆栈的一部分，因此无法独立操作它们。</p>
+<p>通过调用 CGContextBeginTransparencyLayer 函数来指示透明层的开始，该函数将图形上下文和 CFDictionary 对象作为参数。字典允许提供选项以指定有关图层的其他信息，但由于 Quartz 2D API 尚未使用该字典，因此您传递 NULL 。在此调用之后，图形状态参数保持不变，除了 alpha（设置为1），阴影（关闭），混合模式（设置为正常）以及影响最终复合的其他参数。</p>
+<p>开始透明图层后，执行要在该图层中显示的任何图形。指定上下文中的绘制操作将作为复合绘制到完全透明的<strong>背景中</strong>。此背景被视为与上下文分离的<strong>目标缓冲区</strong>。</p>
+<p>完成绘制后，调用 CGContextEndTransparencyLayer 函数。 Quartz 使用上下文的全局 alpha 值和阴影状态将结果<strong>合成到</strong>上下文中，并遵循上下文的剪切区域。<br>(ps: 现在外面绘制，然后合成处理)</p>
+<h3 id="Painting-to-a-Transparency-Layer"><a href="#Painting-to-a-Transparency-Layer" class="headerlink" title="Painting to a Transparency Layer"></a>Painting to a Transparency Layer</h3><p>demo 就去看官方文档吧。</p>
+<h2 id="Data-Management-in-Quartz-2D"><a href="#Data-Management-in-Quartz-2D" class="headerlink" title="Data Management in Quartz 2D"></a>Data Management in Quartz 2D</h2><p>管理数据是每个图形应用程序需要执行的任务。 对于 Quartz ，数据管理是指向 Quartz 2D 例程提供数据，或从 Quartz 2D 例程接收数据。 一些 Quartz 2D 例程将数据移动到Quartz 中，例如从文件或应用程序的其他部分获取图像或PDF数据的那些。 其他例程接受 Quartz 数据，例如将图像或PDF数据写入文件或将数据提供给应用程序的其他部分的数据。</p>
+<p>Quartz提供了各种用于管理数据的功能。 通过阅读本章，应该能够确定哪种功能最适合您的应用。 (ps: 具体的就去看官方文档吧。)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">### Moving Data into Quartz 2D</span><br><span class="line">### Moving Data out of Quartz 2D</span><br><span class="line">### Moving Data Between Quartz 2D and Core Image in Mac OS X</span><br></pre></td></tr></table></figure>
+
+<h2 id="Bitmap-Images-and-Image-Masks"><a href="#Bitmap-Images-and-Image-Masks" class="headerlink" title="Bitmap Images and Image Masks"></a>Bitmap Images and Image Masks</h2><p>位图图像(Bitmap images)和图像蒙版(image masks)就像 Quart 中的任何绘图基元一样。 Quartz 中的图像和图像蒙版<strong>都由</strong> CGImageRef 数据类型表示。 正如将在本章后面看到的那样，可以使用各种功能来创建图像。 其中一些需要数据提供者或图像源来提供位图数据。 其他功能通过复制图像或对图像应用操作从现有图像创建图像。 <strong>无论</strong>如何在 Quartz 中创建位图图像，<strong>都可以将</strong>图像绘制到任何风格的图形上下文中。 请记住，<strong>位图图像是特定分辨率的位数组</strong>(“Keep in mind that a bitmap image is an array of bits at a specific resolution.”)。 如果将位图图像绘制为与分辨率无关的图形上下文（例如PDF图形上下文），则位图受创建它的分辨率<strong>限制</strong>。</p>
+<h3 id="About-Bitmap-Images-and-Image-Masks"><a href="#About-Bitmap-Images-and-Image-Masks" class="headerlink" title="About Bitmap Images and Image Masks"></a>About Bitmap Images and Image Masks</h3><p>“A bitmap image (or sampled image) is an array of pixels (or samples). Each pixel represents a single point in the image.”<br>位图图像（或采样图像）是像素（或样本）的数组。 每个像素代表图像中的单个点。 JPEG ， TIFF 和 PNG 图形文件是位图图像的示例。 应用程序图标是位图图像。 <strong>位图图像仅限于矩形</strong>。 但是通过使用 alpha 组件，它们可以呈现各种形状，并且可以旋转和修剪，如下图所示。 </p>
+<p><img src="https://sat02pap001files.storage.live.com/y4m0jerQ9LfRQ23JhWkbRf9KvUW4jXhbxpWfKmg67nLTYDXnZI11a9JRx8qe9pVYkeRkHc2fxN9n8zI6OcwBsmAS_6LFnkzfosKUxRqeSSK1TMzb41dy8ZMeAQeyAHw6ZGgPYofhEfJKF-pX6OBiCGVl_zBMBhVQR-XzRfGUBEEow5RwARTZipcqT81eA6-sz6r?width=306&height=270&cropmode=none" alt="Bitmap images"></p>
+<p>位图中的每个样本<strong>都包含</strong>指定颜色空间中的一个或多个颜色组件，以及一个指定 alpha 值以指示透明度的其他组件。每个组件可以是 1 到 32 位。</p>
+<p>Quartz 还支持图像蒙版。图像蒙版是一个位图，<strong>用于指定要绘制的区域，但不指定颜色</strong>。实际上，图像蒙版充当模板(stencil)以指定在页面上放置颜色的<strong>位置</strong>。 Quartz 使用当前填充颜色来绘制图像蒙版。图像蒙版可以具有 1-8 位的深度。</p>
+<h3 id="Bitmap-Image-Information"><a href="#Bitmap-Image-Information" class="headerlink" title="Bitmap Image Information"></a>Bitmap Image Information</h3><p>Quartz 支持各种图像格式，并具有几种流行格式的内置知识。在 iOS 中，格式包括JPEG，GIF，PNG，TIF，ICO，GMP，XBM和CUR 。其他位图图像格式或专有格式，要求我们向 Quartz <strong>指定</strong>有关图像格式的详细信息，以确保正确解释图像。提供给函数 CGImageCreate 的图像数据<strong>必须基于每个像素而不是每个扫描行进行交错</strong>。 Quartz 不支持平面数据(planar data)。</p>
+<p>本节介绍与位图图像关联的信息。当创建和使用 Quartz 图像（使用 CGImageRef 数据类型）时，会看到一些 Quartz 图像创建功能要求指定所有这些信息，而其他功能需要此信息的子集。我们提供的内容<strong>取决于</strong>用于位图数据的编码，以及位图是表示图像还是图像蒙版。</p>
+<p>注意：<strong>为了</strong>在处理原始图像数据时获得<strong>最佳性能</strong>，请使用 vImage 框架。可以使用 vImageBuffer_InitWithCGImage 函数从 CGImageRef 引用将图像数据导入 vImage。有关详细信息，请参阅<a href="https://developer.apple.com/library/archive/releasenotes/Performance/RN-vecLib/index.html#//apple_ref/doc/uid/TP40001049">Accelerate Release Notes</a>。</p>
+<p>Quartz 在创建位图图像（CGImageRef）时使用以下信息：</p>
+<ul>
+<li>A bitmap data source, 可以是 Quartz 数据提供程序或 Quartz 图像源。 “#Data Management in Quartz 2D#”描述了两者并讨论了提供位图数据源的功能。</li>
+<li>An optional decode array</li>
+<li>An interpolation setting, 是一个布尔值，指定 Quartz 在调整图像大小时<strong>是否应该</strong>应用插值算法。</li>
+<li>A rendering intent, 指定如何映射位于图形上下文的目标颜色空间内的颜色。图像蒙版不需要此信息。有关更多信息，请参阅”#Setting Rendering Intent#”。</li>
+<li>The image dimensions</li>
+<li>The pixel format, which includes bits per component, bits per pixel, and bytes per row (Pixel Format) 。包括每个组件的比特，每像素的比特和每行的字节数（像素格式）。</li>
+<li>对于图像，颜色空间和位图布局（”#Color Spaces and Bitmap Layout#”）信息，用于<strong>描述</strong> alpha 的位置以及位图是否使用浮点值。 图像蒙版不需要此信息。</li>
+</ul>
+<h4 id="Decode-Array"><a href="#Decode-Array" class="headerlink" title="Decode Array"></a>Decode Array</h4><p><strong>解码数组将图像颜色值映射到其他颜色值，这对于去饱和图像或反转颜色等任务非常有用</strong>。 该数组包含每个颜色组件的一对数字。 当 Quartz 渲染图像时，它应用线性变换将原始组件值<strong>映射到</strong>适合目标颜色空间的指定范围内的相对数字。 例如， RGB 颜色空间中的图像的解码阵列包含六个条目，每个红色，绿色和蓝色分量一对。</p>
+<h4 id="Pixel-Format"><a href="#Pixel-Format" class="headerlink" title="Pixel Format"></a>Pixel Format</h4><p>像素格式包含以下信息：</p>
+<ul>
+<li>Bits per component, 即像素中每个单独颜色组件中的位数。 对于图像掩码，该值是源像素中的重要掩蔽位的数量。 例如，如果源图像是 8 位掩码，则为每个组件指定8位。</li>
+<li>Bits per pixel, 即源像素中的总位数。 该值必须至少为 Bits per component 乘以 components per pixel 。 // (ps: pixel 包含 components ， components 包含 Bits)</li>
+<li>Bytes per row, 图像中每个水平行的字节数。</li>
+</ul>
+<h4 id="Color-Spaces-and-Bitmap-Layout"><a href="#Color-Spaces-and-Bitmap-Layout" class="headerlink" title="Color Spaces and Bitmap Layout"></a>Color Spaces and Bitmap Layout</h4><p>为确保 Quartz 正确解释每个像素的位，必须指定：</p>
+<ul>
+<li>位图是否包含 Alpha 通道。 Quartz支持RGB，CMYK和灰色空间。它还支持 alpha 或透明度，但 alpha 信息<strong>并非在</strong>所有位图图像格式中都可用。当它可用时， alpha 组件可以位于像素的最高有效位或最低有效位。</li>
+<li>对于具有 alpha 组件的位图，颜色组件是否已经乘以 alpha 值。预乘(Premultiplied) alpha 描述了一种源颜色，其组件已经乘以 alpha 值。预乘通过<strong>消除</strong>每个颜色组件的额外乘法<strong>运算来加速</strong>图像的渲染。例如，在 RGB 颜色空间中，渲染具有预乘 alpha 的图像消除了图像中每个像素的三个乘法运算（RGB 三种的 alpha）。</li>
+<li>样本的数据格式 - 整数或浮点值。</li>
+</ul>
+<p>使用 CGImageCreate 函数创建图像时，提供 CGImageBitmapInfo 类型的 bitmapInfo 参数以指定位图布局信息。以下常量指定 alpha 组件的位置以及颜色组件是否预乘：</p>
+<ul>
+<li>kCGImageAlphaLast- alpha 组件存储在每个像素的最低有效位中，例如RGBA。</li>
+<li>kCGImageAlphaFirst- alpha分量存储在每个像素的最高有效位中，例如ARGB。</li>
+<li>kCGImageAlphaPremultipliedLast- alpha分量存储在每个像素的最低有效位中，颜色分量已经乘以此alpha值。</li>
+<li>kCGImageAlphaPremultipliedFirst-alpha分量存储在每个像素的最高有效位中，颜色分量已经乘以此alpha值。</li>
+<li>kCGImageAlphaNoneSkipLast-没有alpha分量。如果像素的总大小大于颜色空间中的颜色分量的数量所需的空间，则忽略最低有效位。</li>
+<li>kCGImageAlphaNoneSkipFirst-没有alpha组件。如果像素的总大小大于颜色空间中颜色分量的数量所需的空间，则忽略最高有效位。</li>
+<li>kCGImageAlphaNone-相当于kCGImageAlphaNoneSkipLast。</li>
+</ul>
+<p>使用常量 kCGBitmapFloatComponents 指示使用浮点值的位图格式。对于浮点格式，可以使用上一个列表中的相应常量对此常量进行逻辑 OR 运算。例如，对于使用预乘 alpha 的每像素 128 位浮点格式，alpha 位于每个像素的最低有效位，可以向Quartz提供以下信息：</p>
+<p><code>kCGImageAlphaPremultipliedLast | kCGBitmapFloatComponents</code></p>
+<p>下图直观地描述了在使用 16 位或 32 位整数格式的 CMYK 和 RGB 颜色空间中如何表示像素。 32 位整数像素格式每个组件使用 8 位(8 bits per component)。 16 位整数格式每个组件使用 5 位(5 bits per component)。 Quartz 2D 还支持 128 位浮点像素格式，每个组件使用 32 位。 128位格式未在图中显示。</p>
+<p><img src="https://sat02pap001files.storage.live.com/y4mCldo9-3qMbPf0uu-I3bufDRdUiyhN98bivQHf2kbn20pSsSTObGql8KrLLeG4YGGJBPBESH47elofLDl6iR_RRmuYasDvBKRqzWE0vx6OprOIPKWkF5igGWb84WDmCwX1iayDylmrMgv35BtArKyeVZ9QO4_8g6I9Tq9yecWlDYpeupgEqGDuqLFdhz3yfli?width=480&height=356&cropmode=none" alt="32-bit and 16-bit pixel formats for CMYK and RGB color spaces in Quartz 2D"></p>
+<h3 id="Creating-Images"><a href="#Creating-Images" class="headerlink" title="Creating Images"></a>Creating Images</h3><p>讲了各种创建图片的方法。方法的选择取决于图片数据源。最灵活的是 CGImageCreate ，但同时也是最复杂的，因为要指定布局信息，详见”#Color Spaces and Bitmap Layout#”</p>
+<h4 id="Creating-an-Image-From-Part-of-a-Larger-Image"><a href="#Creating-an-Image-From-Part-of-a-Larger-Image" class="headerlink" title="Creating an Image From Part of a Larger Image"></a>Creating an Image From Part of a Larger Image</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#### Creating an Image from a Bitmap Graphics Context</span><br></pre></td></tr></table></figure>
+
+<h3 id="Creating-an-Image-Mask"><a href="#Creating-an-Image-Mask" class="headerlink" title="Creating an Image Mask"></a>Creating an Image Mask</h3><p>Quartz 位图图像蒙版的使用方式与艺术家使用丝网(silkscreen)印刷的方式相同。位图图像蒙版确定<strong>如何传输</strong>颜色，而不是使用哪种颜色。图像蒙版中的每个样本值(sample value)指定在特定位置<strong>屏蔽</strong>当前填充颜色的量。样本值指定蒙版的不透明度。较大的值表示较大的不透明度，并指定 Quartz 绘制<strong>较少</strong>颜色的位置。 可以将样本值视为<strong>反 alpha 值</strong>。值 1 是透明的，0 是不透明的。</p>
+<h3 id="Masking-Images"><a href="#Masking-Images" class="headerlink" title="Masking Images"></a>Masking Images</h3><p>(ps: 具体的见官方文档，都有图说明)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#### Masking an Image with an Image Mask</span><br><span class="line">#### Masking an Image with an Image</span><br><span class="line">#### Masking an Image with Color</span><br><span class="line">&quot;Chroma key masking&quot; 把图片的背景颜色给去掉了。</span><br><span class="line"></span><br><span class="line">#### Masking an Image by Clipping the Context</span><br></pre></td></tr></table></figure>
+<h3 id="Using-Blend-Modes-with-Images"><a href="#Using-Blend-Modes-with-Images" class="headerlink" title="Using Blend Modes with Images"></a>Using Blend Modes with Images</h3><p>您可以使用 Quartz 2D 混合模式（请参阅”#Setting Blend Modes#”）来合成两个图像，或者将图像合成到已经绘制到图形上下文的任何内容上。 本节讨论在背景图上合成图像。<br>(ps: 具体的见官方文档，都有图说明)</p>
+<h2 id="Core-Graphics-Layer-Drawing"><a href="#Core-Graphics-Layer-Drawing" class="headerlink" title="Core Graphics Layer Drawing"></a>Core Graphics Layer Drawing</h2><p>CGLayer 对象（CGLayerRef 数据类型）允许应用程序使用图层进行绘制。 图层适用于以下内容：</p>
+<ul>
+<li>计划重复使用的高质量的绘图离线渲染。例如，可能正在构建场景并计划重用相同的背景。将背景场景绘制到图层，然后在需要时绘制图层。一个额外的好处是不需要知道绘制到图层的颜色空间或设备相关信息。</li>
+<li>重复绘图。例如，可能希望创建一个由反复绘制的相同项组成的模式。将项目绘制到图层，然后重复绘制图层，如下图所示。重复绘制的任何 Quartz 对象（包括CGPath，CGShading和CGPDFPage对象）都可以从将其绘制到 CGLayer 中时<strong>提高性能</strong>。请注意，图层不仅适​​用于屏幕绘图; 可以将它用于非面向屏幕的图形上下文，例如PDF图形上下文。</li>
+<li>缓冲。虽然可以为此目的使用图层，但不需要这样做，因为 Quartz Compositor 不需要缓冲。如果<strong>必须绘制到</strong>缓冲区，<strong>请使用</strong>图层而不是位图图形上下文。</li>
+</ul>
+<p><img src="https://sat02pap001files.storage.live.com/y4mZaU0RFWkaEI6Wr5vKpFW20dVU46ZK4gKN6Fn0k2tAzDsWSaFmUraUzOwnyKrcABG5S1GkaESG7WSBj6n_C_SVnOD8xevS4rym97mhGbGTTBZGiZY4eWcEZxPTeWVkWcwbih3Kddyo-ZxGl-H2vQKL1gpIEHl0--dUCYgCGwrXZ0zZZ65-xdF8N-qOA5xcjnX?width=249&height=101&cropmode=none" alt="Repeatedly painting the same butterfly image"></p>
+<p>CGLayer 对象和透明层，与 CGContext 函数创建的 CGPath 对象和路径并行。 对于 CGLayer 或 CGPath 对象，可以绘制到抽象目标，然后可以将完整的绘制绘制到另一个目标，例如显示或PDF。 当绘制透明图层或使用绘制路径的 CGContext 函数时，可以直接绘制到图形上下文所表示的目标。 没有用于组装绘画的中间抽象目的地。 (ps: CGLayer 和 CGPath 有中间抽象目的地，可以用存储下来，下次再用。)</p>
+<h3 id="How-Layer-Drawing-Works"><a href="#How-Layer-Drawing-Works" class="headerlink" title="How Layer Drawing Works"></a>How Layer Drawing Works</h3><p>由 CGLayerRef 数据类型表示的层(Layer)旨在实现<strong>最佳性能</strong>。如果可能， Quartz 使用<strong>适合</strong>与其关联的 Quartz 图形上下文类型的机制<strong>来缓存</strong> CGLayer 对象。例如，与 video card 相关联的图形上下文可以缓存 video card 上的图层，这使得绘制图层中的内容比渲染从位图图形上下文构造的类似图像快得多。因此，与位图图形上下文相比，图层通常是<strong>屏幕外绘图</strong>的更好选择。</p>
+<p>所有 Quartz 绘图函数<strong>都绘制</strong>到图形上下文。图形上下文提供了<strong>目标的抽象</strong>，使我们可以从目标的详细信息中解放出来，例如其分辨率。在用户空间中工作，Quartz 执行必要的转换以将绘图正确呈现到目标。使用 CGLayer 对象进行绘制时，还可以绘制到图形上下文。下图说明了图层绘制的必要步骤。</p>
+<p><img src="https://sat02pap001files.storage.live.com/y4mmiItsl4XuVoV5vrOYPqv6Cxjbh2nJlcv08TLPAIFn0NxbPen5s3ziQjbFEJE5AeXNcA5m6MgEUAX7PqkvMMVaN0C4rHwUk8gCi_jgc7hJITkbxyapoVhohKEUj3YPHDlyBsm1XwQROQPB8E3ECgbiVuCwuZGuQZByd7dOwQYI8YOinhXqRCvOjn9g6K8OoGJ?width=585&height=273&cropmode=none" alt="12-2 Layer drawing"></p>
+<p>所有图层绘制都以图形上下文开始，可以使用 CGLayerCreateWithContext 函数从该图形上下文创建 CGLayer 对象。用于创建 CGLayer 对象的图形上下文<strong>通常是</strong>窗口图形上下。 Quartz 创建一个图层，使其<strong>具有</strong>图形上下文的所有特征 - 分辨率，颜色空间和图形状态设置。如果想使用图形上下文的大小，则可以为图层提供大小。在图12-2中，左侧显示了用于创建图层的图形上下文。右侧框中标有CGLayer对象的灰色部分表示新创建的图层。</p>
+<p>在绘制到图层之前，<strong>必须</strong>通过调用函数 CGLayerGetContext 来获取与图层关联的图形上下文。此图形上下文与用于创建图层的图形上下文相同。只要用于创建图层的图形上下文是窗口图形上下文，如果可能的话，CGLayer 图形上下文将缓存到 GPU 。图12-2右侧框的白色部分表示新创建的图层图形上下文。</p>
+<p>可以绘制到图层的图形上下文，就像绘制到任何图形上下文一样，将图层的图形上下文传递给绘图函数。图12-2显示了绘制到图层上下文的叶子形状。</p>
+<p>当准备使用图层的内容时，可以调用函数 CGContextDrawLayerInRect 或 CGContextDrawLayerAtPoint ，将图层绘制到图形上下文中。通常，将绘制到用于创建图层对象的相同图形上下文，但是不需要。将图层绘制到任何图形上下文，请记住图层绘制<strong>具有用于创建</strong>图层对象的图形上下文的特征，这可能会施加某些约束（例如，性能或分辨率）。例如，与屏幕相关联的层可以高速缓存在视频硬件(video hardware)中。如果目标上下文是打印或PDF上下文，则可能需要将其从图形硬件提取到内存，从而导致性能不佳。</p>
+<p>图12-2显示了图层的内容 - 重复绘制的叶子到用于创建图层对象的图形上下文。在释放 CGLayer 对象之前，可以多次重复使用图层中的图形。</p>
+<p>提示：如果要合成图形的某些部分以实现遮蔽一组对象等效果，请使用透明度图层。 （请参阅”#Transparency Layers#”）如果要在<strong>屏幕外</strong>绘制或需要重复绘制相同的内容时，请使用 CGLayer 对象。</p>
+<h3 id="Drawing-with-a-Layer"><a href="#Drawing-with-a-Layer" class="headerlink" title="Drawing with a Layer"></a>Drawing with a Layer</h3><p>(ps: demo 见官方文档吧)</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#### Create a CGLayer Object Initialized with an Existing Graphics Context</span><br><span class="line">#### Get a Graphics Context for the Layer</span><br><span class="line">#### Draw to the CGLayer Graphics Context</span><br><span class="line">#### Draw the Layer to the Destination Graphics Context</span><br></pre></td></tr></table></figure>
+<h3 id="Example-Using-Multiple-CGLayer-Objects-to-Draw-a-Flag"><a href="#Example-Using-Multiple-CGLayer-Objects-to-Draw-a-Flag" class="headerlink" title="Example: Using Multiple CGLayer Objects to Draw a Flag"></a>Example: Using Multiple CGLayer Objects to Draw a Flag</h3><p>(ps: demo 见官方文档吧，有图有代码，讲了怎么绘制一个美国国旗)</p>
+<h2 id="PDF-Document-Creation-Viewing-and-Transforming"><a href="#PDF-Document-Creation-Viewing-and-Transforming" class="headerlink" title="PDF Document Creation, Viewing, and Transforming"></a>PDF Document Creation, Viewing, and Transforming</h2><p>暂时用不到，先不管。</p>
+<h2 id="PDF-Document-Parsing"><a href="#PDF-Document-Parsing" class="headerlink" title="PDF Document Parsing"></a>PDF Document Parsing</h2><p>暂时用不到，先不管。</p>
+<h2 id="PostScript-Conversion"><a href="#PostScript-Conversion" class="headerlink" title="PostScript Conversion"></a>PostScript Conversion</h2><p>暂时用不到，先不管。</p>
+<h2 id="Text"><a href="#Text" class="headerlink" title="Text"></a>Text</h2><p>本章先前描述了 Quartz 提供的基本文本支持。 但是， Quartz 提供的低级支持已经被 Core Text 弃用并取代，Core Text 是一种用于布局文本和处理字体的高级低级技术。 Core Text 旨在实现高性能和易用性，并允许将 Unicode 文本直接绘制到图形上下文中。 如果你正在编写需要精确控制文本显示方式的应用程序，请参阅<a href="https://developer.apple.com/library/archive/documentation/StringsTextFonts/Conceptual/CoreText_Programming/Introduction/Introduction.html#//apple_ref/doc/uid/TP40005533">Core Text Programming Guide</a>。</p>
+<p>如果正在为iOS开发文本应用程序的话，请首先查看<a href="https://developer.apple.com/library/archive/documentation/StringsTextFonts/Conceptual/TextAndWebiPhoneOS/Introduction/Introduction.html#//apple_ref/doc/uid/TP40009542">Text Programming Guide for iOS</a>，其中介绍了iOS中的文本支持。 特别是，UIKit提供了实现常见任务的类，可以轻松地向应用程序添加文本。</p>
+<h2 id="Glossary"><a href="#Glossary" class="headerlink" title="Glossary"></a>Glossary</h2><ul>
+<li>alpha value (Quartz 用于确定如何将新绘制的对象合成到现有页面的图形状态参数。在全强度（alpha = 1.0）时，新绘制的对象是不透明的。在零强度下，新绘制的对象是不可见的（alpha = 0.0）。)</li>
+<li>axial gradient (渐变沿两个定义的端点之间的轴变化的填充。位于垂直于轴的直线上的所有点具有相同的颜色值。也称为线性渐变。)</li>
+<li>bitmap (像素的矩形数组（或栅格），每个像素代表图像中的一个点。位图图像也称为采样图像。)</li>
+<li>blend mode (指定Quartz如何将前景绘画与背景绘画相结合。)</li>
+<li>clipping area (剪切区域用于约束其边界内其他对象的绘制的路径。)</li>
+<li>color space (一维，二维，三维或四维环境，其组成部分（或通道）代表强度值。)</li>
+<li>concatenation (连接通过将两个矩阵相乘来组合两个矩阵的操作。)</li>
+<li>current graphics state (确定 Quartz 在绘制时如何呈现结果的参数值。)</li>
+<li>current point (Quartz在绘制路径时使用的最后位置。)</li>
+<li>current transformation matrix (Quartz 用于将点从一个坐标空间映射到另一个坐标空间的仿射变换。)</li>
+<li>device color space (设备颜色空间与特定设备的颜色表示系统相关联的颜色空间。这种类型的色彩空间不适合在不同设备之间交换颜色数据。)</li>
+<li>device-independent color space (与设备无关的颜色空间可在设备之间移植的颜色表示，用于将颜色数据从一个设备的本机颜色空间交换到另一个设备的本机颜色空间。与设备无关的颜色空间中的颜色在不同设备上显示时显示相同，达到设备功能允许的程度。)</li>
+<li>even-odd rule (确定何时绘制像素的填充规则。结果不依赖于绘制路径段的方向。与 nonzero winding number rule 比较。)</li>
+<li>fill (绘制路径中区域的操作。)</li>
+<li>generic color space (Mac OS X自动选择与设备无关的颜色空间，以便为绘图目标生成最佳颜色。)</li>
+<li>gradient (填充因颜色而异。另请参见轴向梯度和径向梯度。)</li>
+<li>graphics context (一种不透明的数据类型（CGContextRef），它封装了 Quartz 用于将图像绘制到输出设备的信息，例如PDF文件，位图或显示器上的窗口。图形上下文中的信息包括图形绘制参数和页面上绘制的设备特定表示。)</li>
+<li>identity transform (一种仿射变换，当应用于输入坐标时，始终返回输入坐标。)</li>
+<li>image mask (一种位图，指定要绘制的区域，但不指定颜色。图像蒙版的作用类似于模板，用于指定在页面上放置颜色的位置。)</li>
+<li>inversion (从转换的坐标生成原始坐标的操作。)</li>
+<li>layer context (为实现最佳性能而设计的屏幕外绘图目标（CGLayerRef）。对于屏幕外绘制而言，图层上下文是比位图图形上下文更好的选择。)</li>
+<li>line cap (Quartz用于绘制线对接，圆形或投影方块的端点的样式。)</li>
+<li>line dash pattern (用于绘制虚线的重复的线段和空格系列。)</li>
+<li>line join (Quartz用于绘制连接线段之间的连接的样式 - 斜接，圆形或斜角。)</li>
+<li>line width (一行的总宽度，以用户空间单位表示。)</li>
+<li>linear gradient (See axial gradient.)</li>
+<li>nonzero winding number rule (确定何时绘制像素的填充规则。结果取决于绘制路径段的方向。与 even-odd rule 相比。)</li>
+<li>page (Quartz绘制的虚拟画布。)</li>
+<li>painter’s model  (一种绘图模型，其中每个连续的绘图操作都将一层绘制应用于页面。)</li>
+<li>path (Quartz作为一个单元绘制的一个或多个形状（称为子路径）。 子路径可以由直线，曲线或两者组成。 它可以是开放的或封闭的。)</li>
+<li>pattern (Quartz可以重复绘制到图形上下文的一系列绘制操作。)</li>
+<li>pattern space (通过创建模式时指定的变换矩阵（模式矩阵）映射到默认用户空间的抽象空间。 模式空间与用户空间分开。 无论当前转换矩阵的状态如何，未转换的模式空间都映射到基本（未转换的）用户空间。)</li>
+<li>premultiplied alpha (一种源颜色，其组件已经乘以一个alpha值。 预乘通过消除额外的乘法来加速图像的渲染)</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/WWDC/" rel="tag"># WWDC</a>
+              <a href="/tags/AppleDocument/" rel="tag"># AppleDocument</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/02/24/wwdc-2011-421/" rel="prev" title="Core Animation Essentials(Core Animation Programming Guide)">
+      <i class="fa fa-chevron-left"></i> Core Animation Essentials(Core Animation Programming Guide)
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/03/01/Drawing-and-Printing-Guide-for-iOS/" rel="next" title="Drawing and Printing Guide for iOS">
+      Drawing and Printing Guide for iOS <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#WWDC"><span class="nav-number">1.</span> <span class="nav-text">WWDC</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Points-vs-Pixels"><span class="nav-number">1.1.</span> <span class="nav-text">Points vs Pixels</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Context"><span class="nav-number">1.2.</span> <span class="nav-text">Context</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Apple-Document"><span class="nav-number">2.</span> <span class="nav-text">Apple Document</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Introduction"><span class="nav-number">2.1.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Overview-of-Quartz-2D"><span class="nav-number">2.2.</span> <span class="nav-text">Overview of Quartz 2D</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#The-Page"><span class="nav-number">2.2.1.</span> <span class="nav-text">The Page</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Drawing-Destinations-The-Graphics-Context"><span class="nav-number">2.2.2.</span> <span class="nav-text">Drawing Destinations: The Graphics Context</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Quartz-2D-Opaque-Data-Types"><span class="nav-number">2.2.3.</span> <span class="nav-text">Quartz 2D Opaque Data Types</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Graphics-States"><span class="nav-number">2.2.4.</span> <span class="nav-text">Graphics States</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Quartz-2D-Coordinate-Systems"><span class="nav-number">2.2.5.</span> <span class="nav-text">Quartz 2D Coordinate Systems</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Memory-Management-Object-Ownership"><span class="nav-number">2.2.6.</span> <span class="nav-text">Memory Management: Object Ownership</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Graphics-Contexts"><span class="nav-number">2.3.</span> <span class="nav-text">Graphics Contexts</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Drawing-to-a-View-Graphics-Context-in-iOS"><span class="nav-number">2.3.1.</span> <span class="nav-text">Drawing to a View Graphics Context in iOS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Creating-a-Window-Graphics-Context-in-Mac-OS-X"><span class="nav-number">2.3.2.</span> <span class="nav-text">Creating a Window Graphics Context in Mac OS X</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Creating-a-PDF-Graphics-Context"><span class="nav-number">2.3.3.</span> <span class="nav-text">Creating a PDF Graphics Context</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Creating-a-Bitmap-Graphics-Context"><span class="nav-number">2.3.4.</span> <span class="nav-text">Creating a Bitmap Graphics Context</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Supported-Pixel-Formats"><span class="nav-number">2.3.4.1.</span> <span class="nav-text">Supported Pixel Formats</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Anti-Aliasing"><span class="nav-number">2.3.4.2.</span> <span class="nav-text">Anti-Aliasing</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Obtaining-a-Graphics-Context-for-Printing"><span class="nav-number">2.3.5.</span> <span class="nav-text">Obtaining a Graphics Context for Printing</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Paths"><span class="nav-number">2.4.</span> <span class="nav-text">Paths</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Path-Creation-and-Path-Painting"><span class="nav-number">2.4.1.</span> <span class="nav-text">Path Creation and Path Painting</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#The-Building-Blocks"><span class="nav-number">2.4.2.</span> <span class="nav-text">The Building Blocks</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Points"><span class="nav-number">2.4.2.1.</span> <span class="nav-text">Points</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Lines"><span class="nav-number">2.4.2.2.</span> <span class="nav-text">Lines</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Arcs"><span class="nav-number">2.4.2.3.</span> <span class="nav-text">Arcs</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Curves"><span class="nav-number">2.4.2.4.</span> <span class="nav-text">Curves</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Closing-a-Subpath"><span class="nav-number">2.4.2.5.</span> <span class="nav-text">Closing a Subpath</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Ellipses"><span class="nav-number">2.4.2.6.</span> <span class="nav-text">Ellipses</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Rectangles"><span class="nav-number">2.4.2.7.</span> <span class="nav-text">Rectangles</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Creating-a-Path"><span class="nav-number">2.4.3.</span> <span class="nav-text">Creating a Path</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Painting-a-Path"><span class="nav-number">2.4.4.</span> <span class="nav-text">Painting a Path</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Parameters-That-Affect-Stroking"><span class="nav-number">2.4.4.1.</span> <span class="nav-text">Parameters That Affect Stroking</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Functions-for-Stroking-a-Path"><span class="nav-number">2.4.4.2.</span> <span class="nav-text">Functions for Stroking a Path</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Filling-a-Path"><span class="nav-number">2.4.4.3.</span> <span class="nav-text">Filling a Path</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Setting-Blend-Modes"><span class="nav-number">2.4.4.4.</span> <span class="nav-text">Setting Blend Modes</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Clipping-to-a-Path"><span class="nav-number">2.4.5.</span> <span class="nav-text">Clipping to a Path</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Color-and-Color-Spaces"><span class="nav-number">3.</span> <span class="nav-text">Color and Color Spaces</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#About-Color-and-Color-Spaces"><span class="nav-number">3.1.</span> <span class="nav-text">About Color and Color Spaces</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#The-Alpha-Value"><span class="nav-number">3.2.</span> <span class="nav-text">The Alpha Value</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Creating-Color-Spaces"><span class="nav-number">3.3.</span> <span class="nav-text">Creating Color Spaces</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Creating-Device-Independent-Color-Spaces"><span class="nav-number">3.3.1.</span> <span class="nav-text">Creating Device-Independent Color Spaces</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Creating-Generic-Color-Spaces"><span class="nav-number">3.3.2.</span> <span class="nav-text">Creating Generic Color Spaces</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Creating-Device-Color-Spaces"><span class="nav-number">3.3.3.</span> <span class="nav-text">Creating Device Color Spaces</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Creating-Indexed-and-Pattern-Color-Spaces"><span class="nav-number">3.3.4.</span> <span class="nav-text">Creating Indexed and Pattern Color Spaces</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Setting-and-Creating-Colors"><span class="nav-number">3.4.</span> <span class="nav-text">Setting and Creating Colors</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Setting-Rendering-Intent"><span class="nav-number">3.5.</span> <span class="nav-text">Setting Rendering Intent</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Transforms"><span class="nav-number">3.6.</span> <span class="nav-text">Transforms</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#About-Quartz-Transformation-Functions"><span class="nav-number">3.6.1.</span> <span class="nav-text">About Quartz Transformation Functions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Modifying-the-Current-Transformation-Matrix"><span class="nav-number">3.6.2.</span> <span class="nav-text">Modifying the Current Transformation Matrix</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Creating-Affine-Transforms"><span class="nav-number">3.6.3.</span> <span class="nav-text">Creating Affine Transforms</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Evaluating-Affine-Transforms"><span class="nav-number">3.6.4.</span> <span class="nav-text">Evaluating Affine Transforms</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Getting-the-User-to-Device-Space-Transform"><span class="nav-number">3.6.5.</span> <span class="nav-text">Getting the User to Device Space Transform</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#The-Math-Behind-the-Matrices"><span class="nav-number">3.6.6.</span> <span class="nav-text">The Math Behind the Matrices</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Patterns"><span class="nav-number">3.7.</span> <span class="nav-text">Patterns</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#How-Patterns-Work"><span class="nav-number">3.7.1.</span> <span class="nav-text">How Patterns Work</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Shadows"><span class="nav-number">3.8.</span> <span class="nav-text">Shadows</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#How-Shadows-Work"><span class="nav-number">3.8.1.</span> <span class="nav-text">How Shadows Work</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Shadow-Drawing-Conventions-Vary-Based-on-the-Context"><span class="nav-number">3.8.2.</span> <span class="nav-text">Shadow Drawing Conventions Vary Based on the Context</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Painting-with-Shadows"><span class="nav-number">3.8.3.</span> <span class="nav-text">Painting with Shadows</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Gradients"><span class="nav-number">3.9.</span> <span class="nav-text">Gradients</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Transparency-Layers"><span class="nav-number">3.10.</span> <span class="nav-text">Transparency Layers</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#How-Transparency-Layers-Work"><span class="nav-number">3.10.1.</span> <span class="nav-text">How Transparency Layers Work</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Painting-to-a-Transparency-Layer"><span class="nav-number">3.10.2.</span> <span class="nav-text">Painting to a Transparency Layer</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Data-Management-in-Quartz-2D"><span class="nav-number">3.11.</span> <span class="nav-text">Data Management in Quartz 2D</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Bitmap-Images-and-Image-Masks"><span class="nav-number">3.12.</span> <span class="nav-text">Bitmap Images and Image Masks</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#About-Bitmap-Images-and-Image-Masks"><span class="nav-number">3.12.1.</span> <span class="nav-text">About Bitmap Images and Image Masks</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Bitmap-Image-Information"><span class="nav-number">3.12.2.</span> <span class="nav-text">Bitmap Image Information</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Decode-Array"><span class="nav-number">3.12.2.1.</span> <span class="nav-text">Decode Array</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Pixel-Format"><span class="nav-number">3.12.2.2.</span> <span class="nav-text">Pixel Format</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Color-Spaces-and-Bitmap-Layout"><span class="nav-number">3.12.2.3.</span> <span class="nav-text">Color Spaces and Bitmap Layout</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Creating-Images"><span class="nav-number">3.12.3.</span> <span class="nav-text">Creating Images</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Creating-an-Image-From-Part-of-a-Larger-Image"><span class="nav-number">3.12.3.1.</span> <span class="nav-text">Creating an Image From Part of a Larger Image</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Creating-an-Image-Mask"><span class="nav-number">3.12.4.</span> <span class="nav-text">Creating an Image Mask</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Masking-Images"><span class="nav-number">3.12.5.</span> <span class="nav-text">Masking Images</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Using-Blend-Modes-with-Images"><span class="nav-number">3.12.6.</span> <span class="nav-text">Using Blend Modes with Images</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Core-Graphics-Layer-Drawing"><span class="nav-number">3.13.</span> <span class="nav-text">Core Graphics Layer Drawing</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#How-Layer-Drawing-Works"><span class="nav-number">3.13.1.</span> <span class="nav-text">How Layer Drawing Works</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Drawing-with-a-Layer"><span class="nav-number">3.13.2.</span> <span class="nav-text">Drawing with a Layer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Example-Using-Multiple-CGLayer-Objects-to-Draw-a-Flag"><span class="nav-number">3.13.3.</span> <span class="nav-text">Example: Using Multiple CGLayer Objects to Draw a Flag</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PDF-Document-Creation-Viewing-and-Transforming"><span class="nav-number">3.14.</span> <span class="nav-text">PDF Document Creation, Viewing, and Transforming</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PDF-Document-Parsing"><span class="nav-number">3.15.</span> <span class="nav-text">PDF Document Parsing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PostScript-Conversion"><span class="nav-number">3.16.</span> <span class="nav-text">PostScript Conversion</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Text"><span class="nav-number">3.17.</span> <span class="nav-text">Text</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Glossary"><span class="nav-number">3.18.</span> <span class="nav-text">Glossary</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">joakim.liu</p>
+  <div class="site-description" itemprop="description">你不解决问题，就会成为问题。iOS菜逗一枚。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/JoakimLiu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/JoakimLiu" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">joakim.liu</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://example.com/2019/02/24/wwdc-2011-129/";
+    this.page.identifier = "2019/02/24/wwdc-2011-129/";
+    this.page.title = "Practical Drawing for iOS Developers(Quartz 2D Programming Guide)";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://http-joakimliu-github-io.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

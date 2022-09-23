@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="2017年了，今天把以前的文章看了下，不禁笑了笑，感觉自己还是蛮逗逼的，尽吹牛逼、放卫星，难怪别人叫我逼哥，哈哈哈，不过高中的外号，大学断了，竟然又在工作中出现了，硬却失挺。今天把 hexo 又折腾了下，换了主题even，感谢这位大三的作者(大三😯)，码字的激情又上来了。把评论由多说更换成了disqus，所以很有可能需要FQ才能看到相关评论，我猜想评论的人应该比较少吧。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2016-&gt;2017">
+<meta property="og:url" content="http://example.com/2017/01/02/2016-2017/index.html">
+<meta property="og:site_name" content="牛易疯先森的开发记录">
+<meta property="og:description" content="2017年了，今天把以前的文章看了下，不禁笑了笑，感觉自己还是蛮逗逼的，尽吹牛逼、放卫星，难怪别人叫我逼哥，哈哈哈，不过高中的外号，大学断了，竟然又在工作中出现了，硬却失挺。今天把 hexo 又折腾了下，换了主题even，感谢这位大三的作者(大三😯)，码字的激情又上来了。把评论由多说更换成了disqus，所以很有可能需要FQ才能看到相关评论，我猜想评论的人应该比较少吧。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-01-02T04:13:57.000Z">
+<meta property="article:modified_time" content="2021-03-02T15:35:30.529Z">
+<meta property="article:author" content="joakim.liu">
+<meta property="article:tag" content="总结">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2017/01/02/2016-2017/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>2016->2017 | 牛易疯先森的开发记录</title><meta name="robots" content="noindex">
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">牛易疯先森的开发记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2017/01/02/2016-2017/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          2016->2017
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-01-02 12:13:57" itemprop="dateCreated datePublished" datetime="2017-01-02T12:13:57+08:00">2017-01-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%94%9F%E6%B4%BB%E6%84%9F%E6%83%B3/" itemprop="url" rel="index"><span itemprop="name">生活感想</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>2017年了，今天把以前的文章看了下，不禁笑了笑，感觉自己还是蛮逗逼的，尽吹牛逼、放卫星，难怪别人叫我逼哥，哈哈哈，不过高中的外号，大学断了，竟然又在工作中出现了，硬却失挺。今天把 hexo 又折腾了下，换了主题<a href="https://github.com/ahonn/hexo-theme-even">even</a>，感谢这位大三的<a href="http://www.ahonn.me/">作者</a>(大三😯)，码字的激情又上来了。把评论由多说更换成了disqus，所以很有可能需要FQ才能看到相关评论，我猜想评论的人应该比较少吧。</p>
+<a id="more"></a>
+<p>#2016<br>2016年，总的来说还是挺失望的，因为这一年，我真的有努力的花时间去学习过，但是效果却不明显。</p>
+<p>##关于加班<br>2016年元旦那天搞到凌晨4点多才下班，尽管说是要上线，所以就作死的赶着上线，其实当时貌似自己心里也没啥底，呵呵。昨天看了纯银的<a href="http://www.jianshu.com/p/b012b690aee0">去你妈的996</a>，我不记得是哪个大V以前在微博上说过，”一切的加班都是领导的无能”，原话是不是这样的，我记得不是很清楚了，反正大致意思就是这样。个人非常赞同纯银的观点，合理常态加班。其实，对加班的态度可以看出一个员工对工作、上司领导、产品、公司前途等的满意度。如果经常加班，又特么没搞出什么成绩来，那员工的激情肯定会下降（个人觉得激情是非常重要的东西）。如果没事做，也要加班的话，会导致工作效率降低，反正要加班的，那我还不如留到下班后弄啊，这样对员工自己的发展是有弊端的，因为你会养成这样的习惯。一个习惯坏习惯的养成很容易，而一个好习惯的养成…呵呵。2016年加班貌似跟2015年差不多，然而所属的项目也没作出啥成绩了。2016年底被分到另外一个项目组，听项目管理的描述，其实对整个产品还是充满憧憬，希望能够干出一点成绩来。所以2016年底，我都会加班做一下项目底层的事情，可以把它理解为”架构”咯，其实，自己有几斤几两，自己心里还是清楚的。作为iOS端的负责人，心里非常想把这个产品做好的（以后出去吹牛都底一点不，哈哈哈哈），而困难的事则是怎么让团队的同事同样有激情，我觉得用行动感染最合适。</p>
+<p>##关于离职<br>在公司待了快两年了，我们部门离职率很低的，今年身边经常沟通合作的同事走了3个（酿哥，zzp表哥，尹哥），都是回老家发展了。前段时间，跟尹哥聊天，得知在长沙现在他的工作状态，很惊讶！竟然晚上加班还可以调休，周末加半天就可以调休一天，WTF？！！！现在的我肯定不愿过这样的生活的，我还想好好折腾下自己。</p>
+<p>##关于压力<br>今年，经常看到一些创业公司死了，员工讨薪等新闻。iOS目前就业情景非常不好，貌似现在培训结构都不培训iOS，都大量培训前端了。我还经常担心，如果自己特么某天被裁了，该怎么玩？一些比较重要的底层东西不是很懂，swift也没实践过，react native、weex也只是听过，js也不会。。。。。。感觉最近自己危机感比较严重。而唯一的途径出路，都心里有底哈，问题就看自己的实践了。</p>
+<p>##关于提升<br>今年博客写的比较少，大部分是自己工作中遇到的坑，纵向、横向也没啥扩展。认真看过几个开源项目了，提了几个issue、pr，完成了工作中几个技术难点。Apple document 也有看几篇，但是没有全部看懂，笔记做的比较low。没写过轮子。总体来说，2016年相对于2015年有所提升，但效果不是很明显。值得高兴的是，年底的时候貌似隐隐约约找到了一种比较适合自己的学习方法（还没有大量实践）。</p>
+<p>#2017<br>2017年是毕业后的第三年，人生第三个轮回的开始。工作后的这两年，工作能力没有得到大幅度的提升。事不过三，希望2017年，能够运用适合自己的学习方法提升效率。能够在非常重要的时间段看到耗子叔的这篇文章<a href="http://coolshell.cn/articles/17583.html">技术人员的发展之路</a>，非常感谢！展望一下，大概有下面几个方面吧。</p>
+<p>##提升效率<br>昨天老妹看我在刷技术相关的微博，就跟我开玩笑说，就知道每天搞学习，又没啥成长，还好在你们公司你是算好的，不然就……哈哈哈哈哈哈。当时我无语以对。对于我来说，如何提升效率就很重要了，不然吹牛逼说在学习，结果还是一坨屎，那就尴尬了。怎么样在有效的时间里提升自己，在其他的时间里，能够好好的玩，去了解一下其他方法的知识。上班前让自己提前进入工作状态很重要，可以看看peak君的<a href="http://mrpeak.cn/blog/daily-practice/">一个让脑子快速进入编程状态的小Tip</a>。</p>
+<p>##做好笔记<br>我记得8月份左右那段时间，下班时间、周末时间，都会看 <a href="https://developer.apple.com/library/prerelease/content/documentation/Swift/Conceptual/Swift_Programming_Language/GuidedTour.html#//apple_ref/doc/uid/TP40014097-CH2-ID1">The Swift Programming Language (Swift 3)</a>、<a href="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/ViewPG_iPhoneOS/Introduction/Introduction.html#//apple_ref/doc/uid/TP40009503">View Programming Guide for iOS</a>等苹果官方文档，笔记有做，但是感觉都是笔记肤浅的比较，并且看完一篇就完了，没有第二次深入做笔记。在工作中，遇到的问题，其解决办法以及相关的知识点，都要做好笔记，最好是能够描述下上下文，尽量避免以后再踩类似的坑。</p>
+<p>##实践练习<br>上面提到有看Apple document，但是没有运用到实践中，增加理解（尽管apple都会有相关的代码示例）。主动学习一个知识点以后，应该要考虑到实际情况中。看<a href="https://blog.yeatse.com/">废土</a>的博文，他做的非常好，貌似一些大牛都是这样子的，只不过最近看了他的博文，印象比较深刻。</p>
+<p>##纵向深挖<br>泛泛知道几种东西和深入了解掌握一种东西，这其他的区别都知道的。看 Apple document 其实也算是吧，Apple document 里面说的很清楚，它会介绍由来、原因等，但同时有非常广泛，这个点同时又牵扯到其他的知识点，到这里，你就得自己好好把握了（在纵向和横向要有个权衡）。当然，如果你时间够，你也可以把整个知识体系都了解完的。</p>
+<p>##横向扩展<br>专业技能需要纵向深挖，但是其他的还是得大概知道是怎么回事的。</p>
+<p>##注意身体<br>身体是革命的本钱，以后争取每周跑步 2-3 次，不然就浪费了深圳这么好的环境。</p>
+<p>##干干干干<br>说了这么多，最重要的就是干！作死的干！！希望能够完成心里的几个小目标。争取明年写总结的时候，不会像今天这么无赖。</p>
+<!-- flag of hidden posts -->
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%80%BB%E7%BB%93/" rel="tag"># 总结</a>
+          </div>
+
+        
+
+
+        
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">joakim.liu</p>
+  <div class="site-description" itemprop="description">你不解决问题，就会成为问题。iOS菜逗一枚。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/JoakimLiu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/JoakimLiu" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">joakim.liu</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://example.com/2017/01/02/2016-2017/";
+    this.page.identifier = "2017/01/02/2016-2017/";
+    this.page.title = "2016->2017";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://http-joakimliu-github-io.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

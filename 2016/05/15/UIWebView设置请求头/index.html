@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="这篇文章所说的东西是错的，只是一个过程记录，设置请求头请移步NSURLProtocol学习笔记-UIWebView-设置请求头 最近在做内置浏览器的时候遇到了设置请求头的问题，我们项目中要兼容iOS7，所以用的是UIWebView，UIWebView能满足我们的需求，虽然WKWebView性能上比UIWebView要强很多。 设置请求头的方法比较简单，在需要调用loadRequest:方法时，设置">
+<meta property="og:type" content="article">
+<meta property="og:title" content="UIWebView 设置请求头">
+<meta property="og:url" content="http://example.com/2016/05/15/UIWebView%E8%AE%BE%E7%BD%AE%E8%AF%B7%E6%B1%82%E5%A4%B4/index.html">
+<meta property="og:site_name" content="牛易疯先森的开发记录">
+<meta property="og:description" content="这篇文章所说的东西是错的，只是一个过程记录，设置请求头请移步NSURLProtocol学习笔记-UIWebView-设置请求头 最近在做内置浏览器的时候遇到了设置请求头的问题，我们项目中要兼容iOS7，所以用的是UIWebView，UIWebView能满足我们的需求，虽然WKWebView性能上比UIWebView要强很多。 设置请求头的方法比较简单，在需要调用loadRequest:方法时，设置">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-05-15T12:33:27.000Z">
+<meta property="article:modified_time" content="2021-01-22T14:55:23.850Z">
+<meta property="article:author" content="joakim.liu">
+<meta property="article:tag" content="UIWebView">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2016/05/15/UIWebView%E8%AE%BE%E7%BD%AE%E8%AF%B7%E6%B1%82%E5%A4%B4/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>UIWebView 设置请求头 | 牛易疯先森的开发记录</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">牛易疯先森的开发记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2016/05/15/UIWebView%E8%AE%BE%E7%BD%AE%E8%AF%B7%E6%B1%82%E5%A4%B4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          UIWebView 设置请求头
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2016-05-15 20:33:27" itemprop="dateCreated datePublished" datetime="2016-05-15T20:33:27+08:00">2016-05-15</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index"><span itemprop="name">经验分享</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><em>这篇文章所说的东西是错的，只是一个过程记录，设置请求头请移步<a href="http://joakimliu.github.io/2016/06/26/NSURLProtocol%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-UIWebView-%E8%AE%BE%E7%BD%AE%E8%AF%B7%E6%B1%82%E5%A4%B4/">NSURLProtocol学习笔记-UIWebView-设置请求头</a></em></p>
+<p>最近在做内置浏览器的时候遇到了设置请求头的问题，我们项目中要兼容iOS7，所以用的是<a href="https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIWebView_Class/">UIWebView</a>，UIWebView能满足我们的需求，虽然WKWebView性能上比UIWebView要强很多。</p>
+<p>设置请求头的方法比较简单，在需要调用<code>loadRequest:</code>方法时，设置<code>NSMutableURLRequest</code>的<code>allHTTPHeaderFields</code>的property即可。在<code>webViewDidFinishLoad:</code>代理里面将<code>webView.request.allHTTPHeaderFields</code>的打印出来，该代理第一次执行的时候里面有设置的请求头信息，但是在webView里面点击跳转到另外一个webView里面的时候，会发现<code>webView.request.allHTTPHeaderFields</code>里面是没有第一次设置的请求头信息的。我觉得应该是我<code>loadRequest:</code>的姿势不对，然后把<a href="https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIWebView_Class/">UIWebView Class</a>看了几片，结果里面没有我要的，WTF！</p>
+<a id="more"></a>
+
+<p>在<a href="http://stackoverflow.com/questions/12844598/send-custom-headers-with-uiwebview-loadrequest">so</a>上面搜了下<code>（keyword: ios webview set global HTTPHeaderField）</code>，结果发现可以这样解决</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType</span><br></pre></td></tr></table></figure>
+<p>里面去判断请求头里面是否包含你的请求头，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">BOOL headerIsPresent &#x3D; [[request allHTTPHeaderFields] objectForKey:@&quot;my custom header&quot;]!&#x3D;nil;</span><br><span class="line">if(headerIsPresent) return YES;</span><br><span class="line">dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^&#123;</span><br><span class="line">    dispatch_async(dispatch_get_main_queue(), ^&#123;</span><br><span class="line">        NSURL *url &#x3D; [request URL];</span><br><span class="line">        NSMutableURLRequest* request &#x3D; [NSMutableURLRequest requestWithURL:url cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:60.0];</span><br><span class="line">        &#x2F;&#x2F; set the new headers</span><br><span class="line">        for(NSString *key in [self.customHeaders allKeys])&#123;</span><br><span class="line">            [request addValue:[self.customHeaders objectForKey:key] forHTTPHeaderField:key];</span><br><span class="line">        &#125;</span><br><span class="line">        &#x2F;&#x2F; reload the request</span><br><span class="line">        [self loadRequest:request];</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br><span class="line">return NO;</span><br></pre></td></tr></table></figure>
+<p>上面代理方法的作用是<code>Sent before a web view begins loading a frame. YES if the web view should begin loading content; otherwise, NO .</code> 即webView加载之前都会走这个代理，需要加载该url内容的话返回YES，否则返回NO。其实我们在这个里面可以做很多事情，比如webView与App原生界面的跳转，js的处理等，我们可以根据自定义url的scheme来判断做响应的处理。其实上面的代码有点逻辑不严谨，在执行GCD之前得判断该url是否为http或者https协议，如果是我们自定义协议的话就没有必要处理，即<code>[request.URL.scheme hasPrefix:@&quot;http&quot;]</code>。</p>
+<p>好了，这样处理貌似可以解决请求头的问题了，但是当网页里面嵌套url需要显示时（web端称之为<a href="https://zh.wikipedia.org/wiki/Comet_(web%E6%8A%80%E6%9C%AF)">iFrame</a><br><code>- webView:shouldStartLoadWithRequest:navigationType:</code>代理方法也会调用那么上面的方法就会造成一个bug，即本来要加载A界面的，结果确保A界面的某个子元素加载处理了。具体的可以下面的两个url，第二个url即为第一个url的iframe。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;bajjk.baoan.edu.cn&#x2F;Default.aspx</span><br><span class="line">http:&#x2F;&#x2F;bajjk.baoan.edu.cn&#x2F;wnl.html</span><br></pre></td></tr></table></figure>
+<p>嗯，那我是不是可以判断该url是不是iFrame，如果不是的话则手动添加请求头。于是又在<a href="http://stackoverflow.com/questions/1218493/how-to-tell-the-difference-between-an-iframe-loading-vs-entire-page-loading-in">so</a> <code>(keyword:iOS uiwebview  prevent load iframe)</code>找到了方法<br>在开始加载url那个代理里面通过以下方法判断</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">BOOL isFrame &#x3D; ![[[request URL] absoluteString] isEqualToString:[[request mainDocumentURL] absoluteString]];</span><br></pre></td></tr></table></figure>
+<p>大功告成，可是又来了个问题，假如：A页面有事件可以链接到B页面，B界面也链接到A界面。简单点，在内置webView里面点击导航栏的返回按钮，一般我们是调用<code>- goBack</code>方法返回到上个浏览的页面吧，但是返回的时候上个界面不是iFrame，那么你是不是又要reloadquest一次啊，问题就出在这里啊，<code>canGoBack</code>永远为NO，所以你永远不会离开这个控制器。我们可以在webView的控制器里面增加一个数组，用来在<code>- webViewDidFinishLoad:</code>方法存储已经load的url.absoluteString，在<code>- webView:shouldStartLoadWithRequest:navigationType:</code>里面根据数组里面的url判断是否要重新reloadquest。</p>
+<p>好了，经过三个步骤，webView设置请求头已经解决了。哦，==，貌似这方法治标不治本啊，仔细想想，问题不应该是在webView里面，maybe request or url？</p>
+<p>在看<a href="https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIWebView_Class/">UIWebView Class Document</a>的时候，学到了新的几点知识。</p>
+<h5 id="dataDetectorTypes"><a href="#dataDetectorTypes" class="headerlink" title="dataDetectorTypes"></a>dataDetectorTypes</h5><p><code>By default, a web view automatically converts telephone numbers that appear in web content to Phone links. When a Phone link is tapped, the Phone app launches and dials the number. To turn off this default behavior, set the dataDetectorTypes property with a UIDataDetectorTypes bitfield that does not contain the UIDataDetectorTypePhoneNumber flag.</code><br>在webView里面自动识别电话号码，点击后拨打电话，其实我们只要设置webView的dataDetectorTypes属性即可，无需自定义协议。</p>
+<h5 id="State-Preservation"><a href="#State-Preservation" class="headerlink" title="State Preservation"></a>State Preservation</h5><p><code>In iOS 6 and later, if you assign a value to this view’s restorationIdentifier property, it attempts to preserve its URL history, the scaling and scrolling positions for each page, and information about which page is currently being viewed. During restoration, the view restores these values so that the web content appears just as it did before.</code><br>很多App会记录webView上次浏览的位置，其实我们可以用viewController的restorationIdentifier属性来处理，appDelegate里面有响应的代理方法<br><a href="https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIApplicationDelegate_Protocol/#//apple_ref/occ/intfm/UIApplicationDelegate/application:shouldRestoreApplicationState:">- application:shouldRestoreApplicationState:</a>来处理。我记得以前看到有博客说根据id什么之类的来存储contentOffset来处理该情景，因为没有实践过，不敢乱评论。</p>
+<h5 id="allowsLinkPreview"><a href="#allowsLinkPreview" class="headerlink" title="allowsLinkPreview"></a>allowsLinkPreview</h5><p><code>A Boolean value that determines whether pressing on a link displays a preview of the destination for the link.</code><br>原来很多App在webView里面长按链接会预览peek，原来是应用了该property啊，当然这样子peep会跳转到Safari，如果想在自己的App里面处理，则需使用<a href="https://developer.apple.com/library/ios/documentation/SafariServices/Reference/SFSafariViewController_Ref/index.html#//apple_ref/occ/cl/SFSafariViewController">SFSafariViewController</a></p>
+<h5 id="stringByEvaluatingJavaScriptFromString"><a href="#stringByEvaluatingJavaScriptFromString" class="headerlink" title="stringByEvaluatingJavaScriptFromString:"></a>stringByEvaluatingJavaScriptFromString:</h5><p><code>The stringByEvaluatingJavaScriptFromString: method waits synchronously for JavaScript evaluation to complete. If you load web content whose JavaScript code you have not vetted, invoking this method could hang your app. Best practice is to adopt the WKWebView class and use its evaluateJavaScript:completionHandler: method instead.</code><br>原来该方法会等待JavaScript调用完成， 难怪以前在so上面找到方法都是要塞在GCD的异步里面执行。</p>
+<h5 id="Managing-Media-Playback-amp-Managing-Pages"><a href="#Managing-Media-Playback-amp-Managing-Pages" class="headerlink" title="Managing Media Playback &amp; Managing Pages"></a>Managing Media Playback &amp; Managing Pages</h5><p>虽然这两方面，在项目中没有遇到过，也得知道不，webView在媒体播放以及页面处理中也可以设置相关的属性。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/UIWebView/" rel="tag"># UIWebView</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2016/04/18/%E9%93%BE%E6%8E%A5%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/" rel="prev" title="链接正则表达式">
+      <i class="fa fa-chevron-left"></i> 链接正则表达式
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2016/06/03/%E4%B8%80%E4%BA%9B%E6%9C%89%E8%B6%A3%E7%9A%84%E4%BA%8B/" rel="next" title="一些有趣的事">
+      一些有趣的事 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#dataDetectorTypes"><span class="nav-number">1.</span> <span class="nav-text">dataDetectorTypes</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#State-Preservation"><span class="nav-number">2.</span> <span class="nav-text">State Preservation</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#allowsLinkPreview"><span class="nav-number">3.</span> <span class="nav-text">allowsLinkPreview</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#stringByEvaluatingJavaScriptFromString"><span class="nav-number">4.</span> <span class="nav-text">stringByEvaluatingJavaScriptFromString:</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Managing-Media-Playback-amp-Managing-Pages"><span class="nav-number">5.</span> <span class="nav-text">Managing Media Playback &amp; Managing Pages</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">joakim.liu</p>
+  <div class="site-description" itemprop="description">你不解决问题，就会成为问题。iOS菜逗一枚。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/JoakimLiu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/JoakimLiu" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">joakim.liu</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://example.com/2016/05/15/UIWebView%E8%AE%BE%E7%BD%AE%E8%AF%B7%E6%B1%82%E5%A4%B4/";
+    this.page.identifier = "2016/05/15/UIWebView设置请求头/";
+    this.page.title = "UIWebView 设置请求头";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://http-joakimliu-github-io.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

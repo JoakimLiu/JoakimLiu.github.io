@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1. 概述使用下面 demo 来探究 main 函数干了啥。 123456789101112131415161718192021void main() &amp;#123;  &#x2F;&#x2F; 见 [2.1]  runApp(    materialApp(),  );&amp;#125;class MyApp extends StatefulWidget &amp;#123;  @override  _MyAppState cre">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS Flutter Main runApp">
+<meta property="og:url" content="http://example.com/2021/04/09/flutter-main-runApp/index.html">
+<meta property="og:site_name" content="牛易疯先森的开发记录">
+<meta property="og:description" content="1. 概述使用下面 demo 来探究 main 函数干了啥。 123456789101112131415161718192021void main() &amp;#123;  &#x2F;&#x2F; 见 [2.1]  runApp(    materialApp(),  );&amp;#125;class MyApp extends StatefulWidget &amp;#123;  @override  _MyAppState cre">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4m87hRH1uo3ATjkTReKsStkU1r_iq_9l6gH1KZllL1didR5PF6jQ2eCN87_h45A2rWRMwC4zeigiNRm-_ey3jiSNCtHkHiMb-7jlhM_q6UXec8l1uVyvSEbHKzvLLtUaxFVM8Q_5Ti9paHc40DDrHDfrdRh0w23Cpj0uaMaNhoCgiEWZyvpJ5cVP8UMlw1SzKX?width=2494&height=818&cropmode=none">
+<meta property="article:published_time" content="2021-04-09T10:15:05.000Z">
+<meta property="article:modified_time" content="2021-05-31T14:03:40.883Z">
+<meta property="article:author" content="joakim.liu">
+<meta property="article:tag" content="flutter">
+<meta property="article:tag" content="源码">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://sat02pap001files.storage.live.com/y4m87hRH1uo3ATjkTReKsStkU1r_iq_9l6gH1KZllL1didR5PF6jQ2eCN87_h45A2rWRMwC4zeigiNRm-_ey3jiSNCtHkHiMb-7jlhM_q6UXec8l1uVyvSEbHKzvLLtUaxFVM8Q_5Ti9paHc40DDrHDfrdRh0w23Cpj0uaMaNhoCgiEWZyvpJ5cVP8UMlw1SzKX?width=2494&height=818&cropmode=none">
+
+<link rel="canonical" href="http://example.com/2021/04/09/flutter-main-runApp/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>iOS Flutter Main runApp | 牛易疯先森的开发记录</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">牛易疯先森的开发记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/04/09/flutter-main-runApp/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          iOS Flutter Main runApp
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-04-09 18:15:05" itemprop="dateCreated datePublished" datetime="2021-04-09T18:15:05+08:00">2021-04-09</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/flutter/" itemprop="url" rel="index"><span itemprop="name">flutter</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="1-概述"><a href="#1-概述" class="headerlink" title="1. 概述"></a>1. 概述</h1><p>使用下面 demo 来探究 main 函数干了啥。</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> main() &#123;</span><br><span class="line">  <span class="comment">// 见 [2.1]</span></span><br><span class="line">  runApp(</span><br><span class="line">    materialApp(),</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyApp</span> <span class="keyword">extends</span> <span class="title">StatefulWidget</span> </span>&#123;</span><br><span class="line">  <span class="meta">@override</span></span><br><span class="line">  _MyAppState createState() =&gt; _MyAppState();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">_MyAppState</span> <span class="keyword">extends</span> <span class="title">State</span>&lt;<span class="title">MyApp</span>&gt; </span>&#123;</span><br><span class="line">    Widget build(BuildContext context) &#123;</span><br><span class="line">        <span class="keyword">return</span> Container();</span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        // 因为 MaterialApp 里面的逻辑比较多，所以直接上 Container.</span></span><br><span class="line"><span class="comment">        return MaterialApp(home: Container(),);</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="2-启动流程"><a href="#2-启动流程" class="headerlink" title="2. 启动流程"></a>2. 启动流程</h1><p>调试堆栈如下</p>
+<p><img src="https://sat02pap001files.storage.live.com/y4m87hRH1uo3ATjkTReKsStkU1r_iq_9l6gH1KZllL1didR5PF6jQ2eCN87_h45A2rWRMwC4zeigiNRm-_ey3jiSNCtHkHiMb-7jlhM_q6UXec8l1uVyvSEbHKzvLLtUaxFVM8Q_5Ti9paHc40DDrHDfrdRh0w23Cpj0uaMaNhoCgiEWZyvpJ5cVP8UMlw1SzKX?width=2494&height=818&cropmode=none" alt="-w1247"></p>
+<h2 id="2-1-runApp"><a href="#2-1-runApp" class="headerlink" title="2.1 runApp"></a>2.1 runApp</h2><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// scr/widgets/binding.dart</span></span><br><span class="line"><span class="keyword">void</span> runApp(Widget app) &#123;</span><br><span class="line">  WidgetsFlutterBinding.ensureInitialized() <span class="comment">// 见 [2.2]</span></span><br><span class="line">    ..scheduleAttachRootWidget(app) <span class="comment">// 见 [2.4]</span></span><br><span class="line">    ..scheduleWarmUpFrame(); <span class="comment">// 见 [2.10]</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="2-2-ensureInitialized"><a href="#2-2-ensureInitialized" class="headerlink" title="2.2 ensureInitialized"></a>2.2 ensureInitialized</h2><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// scr/widgets/binding.dart</span></span><br><span class="line"><span class="comment">/// <span class="markdown">A concrete binding for applications based on the Widgets framework.</span></span></span><br><span class="line"><span class="comment">///</span></span><br><span class="line"><span class="comment">/// <span class="markdown">This is the glue that binds the framework to the Flutter engine.</span></span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">WidgetsFlutterBinding</span> <span class="keyword">extends</span> <span class="title">BindingBase</span> <span class="title">with</span> <span class="title">GestureBinding</span>, <span class="title">SchedulerBinding</span>, <span class="title">ServicesBinding</span>, <span class="title">PaintingBinding</span>, <span class="title">SemanticsBinding</span>, <span class="title">RendererBinding</span>, <span class="title">WidgetsBinding</span> </span>&#123;</span><br><span class="line">  <span class="keyword">static</span> WidgetsBinding ensureInitialized() &#123;</span><br><span class="line">    <span class="keyword">if</span> (WidgetsBinding.instance == <span class="keyword">null</span>)</span><br><span class="line">      WidgetsFlutterBinding(); <span class="comment">// 见 [2.2.1]</span></span><br><span class="line">    <span class="keyword">return</span> WidgetsBinding.instance;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-2-1-BindingBase-初始化"><a href="#2-2-1-BindingBase-初始化" class="headerlink" title="2.2.1 BindingBase 初始化"></a>2.2.1 BindingBase 初始化</h3><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">BindingBase() &#123;</span><br><span class="line">    <span class="comment">// 见 [2.3]</span></span><br><span class="line">    initInstances();</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    </span><br><span class="line">    initServiceExtensions();</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<h2 id="2-3-initInstances"><a href="#2-3-initInstances" class="headerlink" title="2.3 initInstances"></a>2.3 initInstances</h2><p><code>initInstances</code> 方法的调用顺序是从右到左的，即 </p>
+<ol>
+<li>WidgetsBinding: The glue between the widgets layer and the Flutter engine.</li>
+<li>RendererBinding: The glue between the render tree and the Flutter engine.</li>
+<li>SemanticsBinding: The glue between the semantics layer and the Flutter engine.</li>
+<li>PaintingBinding: Binding for the painting library.</li>
+<li>ServicesBinding: Listens for platform messages and directs them to the [defaultBinaryMessenger].</li>
+<li>SchedulerBinding: Scheduler for running the following: xxx.</li>
+<li>GestureBinding: A binding for the gesture subsystem.</li>
+</ol>
+<p>按照上面的顺序执行完 <code>initInstances</code> 中的 <code>super.initInstances()</code>, 再按照上面的逆序执行各个 <code>Binding</code> 类 <code>initInstances</code> 中剩余逻辑，然后执行 <code>initServiceExtensions</code>。</p>
+<h3 id="2-3-1-GestureBinding"><a href="#2-3-1-GestureBinding" class="headerlink" title="2.3.1 GestureBinding"></a>2.3.1 GestureBinding</h3><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// scr/gestures/binding.dart</span></span><br><span class="line"><span class="keyword">void</span> initInstances() &#123;</span><br><span class="line">    <span class="keyword">super</span>.initInstances();</span><br><span class="line">    _instance = <span class="keyword">this</span>;</span><br><span class="line">    <span class="comment">// 设置 window 的 `onPointerDataPacket` 回调方法，在该回调方法中处理手势等交互逻辑。</span></span><br><span class="line">    <span class="built_in">window</span>.onPointerDataPacket = _handlePointerDataPacket;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-3-2-SchedulerBinding"><a href="#2-3-2-SchedulerBinding" class="headerlink" title="2.3.2 SchedulerBinding"></a>2.3.2 SchedulerBinding</h3><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// scr/scheduler/binding.dart</span></span><br><span class="line"><span class="keyword">void</span> initInstances() &#123;</span><br><span class="line">    <span class="keyword">super</span>.initInstances();</span><br><span class="line">    _instance = <span class="keyword">this</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 非 `kReleaseMode` 模式下，添加 `addTimingsCallback` 回调，用来记录 frame 等相关信息。</span></span><br><span class="line">    <span class="keyword">if</span> (!kReleaseMode) &#123;</span><br><span class="line">      <span class="built_in">int</span> frameNumber = <span class="number">0</span>;</span><br><span class="line">      addTimingsCallback((<span class="built_in">List</span>&lt;FrameTiming&gt; timings) &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">final</span> FrameTiming frameTiming <span class="keyword">in</span> timings) &#123;</span><br><span class="line">          frameNumber += <span class="number">1</span>;</span><br><span class="line">          _profileFramePostEvent(frameNumber, frameTiming);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-3-3-ServicesBinding"><a href="#2-3-3-ServicesBinding" class="headerlink" title="2.3.3 ServicesBinding"></a>2.3.3 ServicesBinding</h3><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// scr/services/binding.dart</span></span><br><span class="line"><span class="keyword">void</span> initInstances() &#123;</span><br><span class="line">    <span class="keyword">super</span>.initInstances();</span><br><span class="line">    _instance = <span class="keyword">this</span>;</span><br><span class="line">    _defaultBinaryMessenger = createBinaryMessenger();</span><br><span class="line">    _restorationManager = createRestorationManager();</span><br><span class="line">    <span class="built_in">window</span>.onPlatformMessage = defaultBinaryMessenger.handlePlatformMessage;</span><br><span class="line">    initLicenses();</span><br><span class="line">    SystemChannels.system.setMessageHandler((<span class="built_in">dynamic</span> message) =&gt; handleSystemMessage(message <span class="keyword">as</span> <span class="built_in">Object</span>));</span><br><span class="line">    SystemChannels.lifecycle.setMessageHandler(_handleLifecycleMessage);</span><br><span class="line">    readInitialLifecycleStateFromNativeWindow();</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>创建 <code>_defaultBinaryMessenger</code>，用来处理 platform channel 消息，<a href="http://joakimliu.github.io/2021/04/07/flutter-source-code-ios-platform-channels/">iOS Flutter Platform Channel</a> 有讲到。</p>
+<h3 id="2-3-4-PaintingBinding"><a href="#2-3-4-PaintingBinding" class="headerlink" title="2.3.4 PaintingBinding"></a>2.3.4 PaintingBinding</h3><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// scr/painting/binding.dart</span></span><br><span class="line"><span class="keyword">void</span> initInstances() &#123;</span><br><span class="line">    <span class="keyword">super</span>.initInstances();</span><br><span class="line">    _instance = <span class="keyword">this</span>;</span><br><span class="line">    <span class="comment">// 创建 image chache.</span></span><br><span class="line">    _imageCache = createImageCache();</span><br><span class="line">    shaderWarmUp?.execute();</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-3-5-SemanticsBinding"><a href="#2-3-5-SemanticsBinding" class="headerlink" title="2.3.5 SemanticsBinding"></a>2.3.5 SemanticsBinding</h3><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// scr/semantics/binding.dart</span></span><br><span class="line"><span class="keyword">void</span> initInstances() &#123;</span><br><span class="line">    <span class="keyword">super</span>.initInstances();</span><br><span class="line">    _instance = <span class="keyword">this</span>;</span><br><span class="line">    <span class="comment">// 给 _accessibilityFeatures 赋值</span></span><br><span class="line">    _accessibilityFeatures = <span class="built_in">window</span>.accessibilityFeatures;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-3-6-RendererBinding"><a href="#2-3-6-RendererBinding" class="headerlink" title="2.3.6 RendererBinding"></a>2.3.6 RendererBinding</h3><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// scr/rendering/binding.dart</span></span><br><span class="line"><span class="keyword">void</span> initInstances() &#123;</span><br><span class="line">    <span class="keyword">super</span>.initInstances();</span><br><span class="line">    _instance = <span class="keyword">this</span>;</span><br><span class="line">    <span class="comment">// 见 [2.3.6.1]</span></span><br><span class="line">    _pipelineOwner = PipelineOwner(</span><br><span class="line">      onNeedVisualUpdate: ensureVisualUpdate,</span><br><span class="line">      onSemanticsOwnerCreated: _handleSemanticsOwnerCreated,</span><br><span class="line">      onSemanticsOwnerDisposed: _handleSemanticsOwnerDisposed,</span><br><span class="line">    );</span><br><span class="line">    <span class="comment">// 设置 window 的相关回调</span></span><br><span class="line">    <span class="built_in">window</span></span><br><span class="line">      ..onMetricsChanged = handleMetricsChanged</span><br><span class="line">      ..onTextScaleFactorChanged = handleTextScaleFactorChanged</span><br><span class="line">      ..onPlatformBrightnessChanged = handlePlatformBrightnessChanged</span><br><span class="line">      ..onSemanticsEnabledChanged = _handleSemanticsEnabledChanged</span><br><span class="line">      ..onSemanticsAction = _handleSemanticsAction;</span><br><span class="line">    <span class="comment">// 见 [2.3.6.2] </span></span><br><span class="line">    initRenderView();</span><br><span class="line">    _handleSemanticsEnabledChanged();</span><br><span class="line">    <span class="keyword">assert</span>(renderView != <span class="keyword">null</span>);</span><br><span class="line">    <span class="comment">// 添加 addPersistentFrameCallback 回调</span></span><br><span class="line">    addPersistentFrameCallback(_handlePersistentFrameCallback);</span><br><span class="line">    initMouseTracker();</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<h4 id="2-3-6-1-PipelineOwner-初始化"><a href="#2-3-6-1-PipelineOwner-初始化" class="headerlink" title="2.3.6.1 PipelineOwner 初始化"></a>2.3.6.1 PipelineOwner 初始化</h4><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// The pipeline owner manages the rendering pipeline.</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PipelineOwner</span> </span>&#123;</span><br><span class="line">    PipelineOwner(&#123;</span><br><span class="line">        <span class="keyword">this</span>.onNeedVisualUpdate,</span><br><span class="line">        <span class="keyword">this</span>.onSemanticsOwnerCreated,</span><br><span class="line">        <span class="keyword">this</span>.onSemanticsOwnerDisposed,</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>用来管理 rendering pipeline 的类，在 rendering pipeline 过程中，会按序执行以下方法(这几个阶段的操作对象都是 <code>render objects</code>)</p>
+<ol>
+<li>flushLayout</li>
+<li>flushCompositingBits</li>
+<li>flushPaint</li>
+<li>flushSemantics</li>
+</ol>
+<h4 id="2-3-6-2-initRenderView"><a href="#2-3-6-2-initRenderView" class="headerlink" title="2.3.6.2 initRenderView"></a>2.3.6.2 initRenderView</h4><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> initRenderView() &#123;</span><br><span class="line">    <span class="keyword">assert</span>(!_debugIsRenderViewInitialized);</span><br><span class="line">    <span class="keyword">assert</span>(() &#123;</span><br><span class="line">      _debugIsRenderViewInitialized = <span class="keyword">true</span>;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;());</span><br><span class="line">    <span class="comment">// 创建 RenderView 对象，并赋值给 renderView, 见 [2.3.6.3]</span></span><br><span class="line">    renderView = RenderView(configuration: createViewConfiguration(), <span class="built_in">window</span>: <span class="built_in">window</span>);</span><br><span class="line">    <span class="comment">// 准备首帧</span></span><br><span class="line">    renderView.prepareInitialFrame();</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<h4 id="2-3-6-3-set-renderView"><a href="#2-3-6-3-set-renderView" class="headerlink" title="2.3.6.3 set renderView"></a>2.3.6.3 set renderView</h4><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// The root of the render tree.</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">RenderView</span> <span class="keyword">extends</span> <span class="title">RenderObject</span> <span class="title">with</span> <span class="title">RenderObjectWithChildMixin</span>&lt;<span class="title">RenderBox</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">set</span> renderView(RenderView value) &#123;</span><br><span class="line">        <span class="keyword">assert</span>(value != <span class="keyword">null</span>);</span><br><span class="line">        <span class="comment">// 见 [2.3.6.4]</span></span><br><span class="line">        _pipelineOwner.rootNode = value;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="2-3-6-4-set-rootNode"><a href="#2-3-6-4-set-rootNode" class="headerlink" title="2.3.6.4 set rootNode"></a>2.3.6.4 set rootNode</h4><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PipelineOwner</span> </span>&#123;</span><br><span class="line">    <span class="keyword">set</span> rootNode(AbstractNode? value) &#123;</span><br><span class="line">        <span class="keyword">if</span> (_rootNode == value)</span><br><span class="line">          <span class="keyword">return</span>;</span><br><span class="line">        _rootNode?.detach();</span><br><span class="line">        _rootNode = value;</span><br><span class="line">        _rootNode?.attach(<span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;  </span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AbstractNode</span> </span>&#123;</span><br><span class="line">    <span class="meta">@mustCallSuper</span></span><br><span class="line">    <span class="keyword">void</span> detach() &#123;</span><br><span class="line">        <span class="keyword">assert</span>(_owner != <span class="keyword">null</span>);</span><br><span class="line">        _owner = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">assert</span>(parent == <span class="keyword">null</span> || attached == parent!.attached);</span><br><span class="line">    &#125; </span><br><span class="line">    </span><br><span class="line">    <span class="meta">@mustCallSuper</span></span><br><span class="line">    <span class="keyword">void</span> attach(<span class="keyword">covariant</span> <span class="built_in">Object</span> owner) &#123;</span><br><span class="line">        <span class="keyword">assert</span>(owner != <span class="keyword">null</span>);</span><br><span class="line">        <span class="keyword">assert</span>(_owner == <span class="keyword">null</span>);</span><br><span class="line">        _owner = owner;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>_owner 和 _rootNode 的赋值。</p>
+<ul>
+<li>将 RenderView 对象赋值给 _pipelineOwner 的 rootNode 成员变量</li>
+<li>将 _pipelineOwner 赋值给 RenderView 对象的 _owner 成员变量</li>
+</ul>
+<h3 id="2-3-7-WidgetsBinding"><a href="#2-3-7-WidgetsBinding" class="headerlink" title="2.3.7 WidgetsBinding"></a>2.3.7 WidgetsBinding</h3><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// scr/widgets/binding.dart</span></span><br><span class="line"><span class="keyword">void</span> initInstances() &#123;</span><br><span class="line">    <span class="keyword">super</span>.initInstances();</span><br><span class="line">    _instance = <span class="keyword">this</span>;</span><br><span class="line">    <span class="comment">// Initialization of [_buildOwner] has to be done after</span></span><br><span class="line">    <span class="comment">// [super.initInstances] is called, as it requires [ServicesBinding] to</span></span><br><span class="line">    <span class="comment">// properly setup the [defaultBinaryMessenger] instance.</span></span><br><span class="line">    _buildOwner = BuildOwner(); <span class="comment">// 见 [2.3.7.1]</span></span><br><span class="line">    buildOwner.onBuildScheduled = _handleBuildScheduled;</span><br><span class="line">    <span class="built_in">window</span>.onLocaleChanged = handleLocaleChanged;</span><br><span class="line">    <span class="built_in">window</span>.onAccessibilityFeaturesChanged = handleAccessibilityFeaturesChanged;</span><br><span class="line">    SystemChannels.navigation.setMethodCallHandler(_handleNavigationInvocation);</span><br><span class="line">    FlutterErrorDetails.propertiesTransformers.add(transformDebugCreator);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<h4 id="2-3-7-1-BuildOwner-初始化"><a href="#2-3-7-1-BuildOwner-初始化" class="headerlink" title="2.3.7.1 BuildOwner 初始化"></a>2.3.7.1 BuildOwner 初始化</h4><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// scr/widgets/framework.dart</span></span><br><span class="line"><span class="comment">/// <span class="markdown">Manager class for the widgets framework.</span></span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BuildOwner</span> </span>&#123;</span><br><span class="line">    BuildOwner(&#123; <span class="keyword">this</span>.onBuildScheduled &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="2-4-scheduleAttachRootWidget"><a href="#2-4-scheduleAttachRootWidget" class="headerlink" title="2.4 scheduleAttachRootWidget"></a>2.4 scheduleAttachRootWidget</h2><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> scheduleAttachRootWidget(Widget rootWidget) &#123;</span><br><span class="line">    <span class="comment">// 异步执行</span></span><br><span class="line">    Timer.run(() &#123;</span><br><span class="line">      <span class="comment">// 见 [2.4.1]</span></span><br><span class="line">      attachRootWidget(rootWidget);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-4-1-attachRootWidget"><a href="#2-4-1-attachRootWidget" class="headerlink" title="2.4.1 attachRootWidget"></a>2.4.1 attachRootWidget</h3><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> attachRootWidget(Widget rootWidget) &#123;</span><br><span class="line">    _readyToProduceFrames = <span class="keyword">true</span>;</span><br><span class="line">    <span class="comment">// 见 [2.4.2]</span></span><br><span class="line">    _renderViewElement = RenderObjectToWidgetAdapter&lt;RenderBox&gt;(</span><br><span class="line">      container: renderView, </span><br><span class="line">      debugShortDescription: <span class="string">&#x27;[root]&#x27;</span>, <span class="comment">// debug 描述信息</span></span><br><span class="line">      child: rootWidget,  </span><br><span class="line">    ).attachToRenderTree(buildOwner, renderViewElement <span class="keyword">as</span> RenderObjectToWidgetElement&lt;RenderBox&gt;); <span class="comment">// 见 [2.5]</span></span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>该方法的主要参数</p>
+<ul>
+<li>renderView: 见 [2.3.6.2]</li>
+<li>rootWidget: 见 [1] 中的 demo, materialApp widget, 就是我们的 root widget</li>
+<li>buildOwner: 见 [2.3.7.1]</li>
+<li>_renderViewElement: 执行 attachToRenderTree 方法后，返回的 Element 类型的对象，可通过 <code>WidgetsBinding.renderViewElement</code> 获取，是 Element tree 的根节点(通过注释 <code>The [Element] that is at the root of the hierarchy (and which wraps the [RenderView] object at the root of the rendering hierarchy).</code>)。</li>
+</ul>
+<h3 id="2-4-2-RenderObjectToWidgetAdapter-初始化"><a href="#2-4-2-RenderObjectToWidgetAdapter-初始化" class="headerlink" title="2.4.2 RenderObjectToWidgetAdapter 初始化"></a>2.4.2 RenderObjectToWidgetAdapter 初始化</h3><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// A bridge from a [RenderObject] to an [Element] tree.</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">RenderObjectToWidgetAdapter</span>&lt;<span class="title">T</span> <span class="keyword">extends</span> <span class="title">RenderObject</span>&gt; <span class="keyword">extends</span> <span class="title">RenderObjectWidget</span> </span>&#123;</span><br><span class="line">    RenderObjectToWidgetAdapter(&#123;</span><br><span class="line">    <span class="keyword">this</span>.child, <span class="comment">// widget tree 中的对象</span></span><br><span class="line">    <span class="keyword">this</span>.container, <span class="comment">// The [RenderObject] that is the parent of the [Element] created by this widget.</span></span><br><span class="line">    <span class="keyword">this</span>.debugShortDescription,</span><br><span class="line">  &#125;) : <span class="keyword">super</span>(key: GlobalObjectKey(container));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>RenderObjectToWidgetAdapter 是一个从 <code>[RenderObject]</code>(root of render tree) 到 <code>[Element]</code>(root of element tree) 的桥接类，该类的主要方法有</p>
+<ul>
+<li>createElement: 返回 RenderObjectToWidgetElement 对象, 见 [2.5.1]</li>
+<li>createRenderObject: 返回 [2.3.6.2] 的 renderView, 见 [2.7]</li>
+<li>attachToRenderTree: 创建 element, 见 [2.5]</li>
+</ul>
+<h2 id="2-5-attachToRenderTree"><a href="#2-5-attachToRenderTree" class="headerlink" title="2.5 attachToRenderTree"></a>2.5 attachToRenderTree</h2><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">RenderObjectToWidgetElement&lt;T&gt; attachToRenderTree(BuildOwner owner, [ RenderObjectToWidgetElement&lt;T&gt; element ]) &#123;</span><br><span class="line">    <span class="keyword">if</span> (element == <span class="keyword">null</span>) &#123;</span><br><span class="line">      owner.lockState(() &#123;</span><br><span class="line">        <span class="comment">// 见 [2.5.1]</span></span><br><span class="line">        element = createElement();</span><br><span class="line">        <span class="keyword">assert</span>(element != <span class="keyword">null</span>);</span><br><span class="line">        <span class="comment">// 见 [2.5.2]</span></span><br><span class="line">        element.assignOwner(owner);</span><br><span class="line">      &#125;);</span><br><span class="line">      <span class="comment">// 见 [2.5.3]</span></span><br><span class="line">      owner.buildScope(element, () &#123;</span><br><span class="line">        <span class="comment">// 见 [2.5.4]</span></span><br><span class="line">        element.mount(<span class="keyword">null</span>, <span class="keyword">null</span>);</span><br><span class="line">      &#125;);</span><br><span class="line">      SchedulerBinding.instance.ensureVisualUpdate();</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      element._newWidget = <span class="keyword">this</span>;</span><br><span class="line">      element.markNeedsBuild();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> element;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>首次调用 attachToRenderTree 方法时，入参 element 为空，会创建 element 对象(RenderObjectToWidgetElement 类型)，然后赋值给 [2.4.1] 的 <code>_renderViewElement</code> 成员变量。 </p>
+<h3 id="2-5-1-createElement"><a href="#2-5-1-createElement" class="headerlink" title="2.5.1 createElement"></a>2.5.1 createElement</h3><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">RenderObjectToWidgetAdapter(&#123;</span><br><span class="line">    <span class="keyword">this</span>.child,</span><br><span class="line">    <span class="keyword">this</span>.container,</span><br><span class="line">    <span class="keyword">this</span>.debugShortDescription,</span><br><span class="line">&#125;) : <span class="keyword">super</span>(key: GlobalObjectKey(container));</span><br><span class="line">  </span><br><span class="line">RenderObjectToWidgetElement&lt;T&gt; createElement() =&gt; RenderObjectToWidgetElement&lt;T&gt;(<span class="keyword">this</span>);</span><br></pre></td></tr></table></figure>
+<p>返回 RenderObjectToWidgetElement 类型的对象。</p>
+<h3 id="2-5-2-assignOwner"><a href="#2-5-2-assignOwner" class="headerlink" title="2.5.2 assignOwner"></a>2.5.2 assignOwner</h3><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// The element at the root of the tree.</span></span><br><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">RootRenderObjectElement</span> <span class="keyword">extends</span> <span class="title">RenderObjectElement</span> </span>&#123;</span><br><span class="line">    <span class="keyword">void</span> assignOwner(BuildOwner owner) &#123;</span><br><span class="line">        _owner = owner;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>跟 [2.3.6.4] 类似，都是将 <code>_pipelineOwner</code> 赋值给 <code>_owner</code> 成员变量，<code>_pipelineOwner</code> 不亏是一个管理类。</p>
+<h3 id="2-5-3-buildScope"><a href="#2-5-3-buildScope" class="headerlink" title="2.5.3 buildScope"></a>2.5.3 buildScope</h3><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> buildScope(<span class="built_in">Element</span> context, [ VoidCallback callback ]) &#123;</span><br><span class="line">  <span class="keyword">if</span> (callback == <span class="keyword">null</span> &amp;&amp; _dirtyElements.isEmpty)</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  <span class="comment">// ...  </span></span><br><span class="line">  Timeline.startSync(<span class="string">&#x27;Build&#x27;</span>, arguments: timelineArgumentsIndicatingLandmarkEvent);</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    _scheduledFlushDirtyElements = <span class="keyword">true</span>;</span><br><span class="line">    <span class="keyword">if</span> (callback != <span class="keyword">null</span>) &#123;</span><br><span class="line">      <span class="comment">// ...</span></span><br><span class="line">      _dirtyElementsNeedsResorting = <span class="keyword">false</span>;</span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">        callback(); <span class="comment">// 见 [2.5.4]</span></span><br><span class="line">      &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 对脏 elements 进行排序</span></span><br><span class="line">    _dirtyElements.sort(<span class="built_in">Element</span>._sort);</span><br><span class="line">    _dirtyElementsNeedsResorting = <span class="keyword">false</span>;</span><br><span class="line">    <span class="built_in">int</span> dirtyCount = _dirtyElements.length;</span><br><span class="line">    <span class="built_in">int</span> index = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (index &lt; dirtyCount) &#123;</span><br><span class="line">      <span class="comment">// ...</span></span><br><span class="line">      <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// 执行脏 element 的 rebuild 方法</span></span><br><span class="line">        _dirtyElements[index].rebuild();</span><br><span class="line">      &#125; <span class="keyword">catch</span> (e, stack) &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">      &#125;</span><br><span class="line">      index += <span class="number">1</span>;</span><br><span class="line">      <span class="keyword">if</span> (dirtyCount &lt; _dirtyElements.length || _dirtyElementsNeedsResorting) &#123;</span><br><span class="line">        _dirtyElements.sort(<span class="built_in">Element</span>._sort);</span><br><span class="line">        _dirtyElementsNeedsResorting = <span class="keyword">false</span>;</span><br><span class="line">        dirtyCount = _dirtyElements.length;</span><br><span class="line">        <span class="keyword">while</span> (index &gt; <span class="number">0</span> &amp;&amp; _dirtyElements[index - <span class="number">1</span>].dirty) &#123;</span><br><span class="line">          index -= <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-5-4-RenderObjectToWidgetElement-mount"><a href="#2-5-4-RenderObjectToWidgetElement-mount" class="headerlink" title="2.5.4 RenderObjectToWidgetElement.mount"></a>2.5.4 RenderObjectToWidgetElement.mount</h3><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> mount(<span class="built_in">Element</span> parent, <span class="built_in">dynamic</span> newSlot) &#123;</span><br><span class="line">    <span class="keyword">assert</span>(parent == <span class="keyword">null</span>);</span><br><span class="line">    <span class="comment">// 见 [2.5.4.1]</span></span><br><span class="line">    <span class="keyword">super</span>.mount(parent, newSlot);</span><br><span class="line">    <span class="comment">// 见 [2.9]</span></span><br><span class="line">    _rebuild();</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>因为 RenderObjectToWidgetElement 对象是 element tree 的根节点，所以这里 parent 为 null.</p>
+<h4 id="2-5-4-1-RootRenderObjectElement-mount"><a href="#2-5-4-1-RootRenderObjectElement-mount" class="headerlink" title="2.5.4.1 RootRenderObjectElement.mount"></a>2.5.4.1 RootRenderObjectElement.mount</h4><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> mount(<span class="built_in">Element</span> parent, <span class="built_in">dynamic</span> newSlot) &#123;</span><br><span class="line">    <span class="comment">// Root elements should never have parents.</span></span><br><span class="line">    <span class="keyword">assert</span>(parent == <span class="keyword">null</span>);</span><br><span class="line">    <span class="keyword">assert</span>(newSlot == <span class="keyword">null</span>);</span><br><span class="line">    <span class="comment">// 见 [2.5.4.2]</span></span><br><span class="line">    <span class="keyword">super</span>.mount(parent, newSlot);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<h4 id="2-5-4-2-RenderObjectElement-mount"><a href="#2-5-4-2-RenderObjectElement-mount" class="headerlink" title="2.5.4.2 RenderObjectElement.mount"></a>2.5.4.2 RenderObjectElement.mount</h4><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> mount(<span class="built_in">Element</span> parent, <span class="built_in">dynamic</span> newSlot) &#123;</span><br><span class="line">  <span class="comment">// 见 [2.5.4.3]</span></span><br><span class="line">  <span class="keyword">super</span>.mount(parent, newSlot);</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="comment">// 见 [2.7]</span></span><br><span class="line">  _renderObject = widget.createRenderObject(<span class="keyword">this</span>);</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="comment">// 见 [2.8]</span></span><br><span class="line">  attachRenderObject(newSlot);</span><br><span class="line">  _dirty = <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="2-5-4-3-Element-mount"><a href="#2-5-4-3-Element-mount" class="headerlink" title="2.5.4.3 Element.mount"></a>2.5.4.3 Element.mount</h4><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Element</span>(Widget widget)</span><br><span class="line">    : <span class="keyword">assert</span>(widget != <span class="keyword">null</span>),</span><br><span class="line">      _widget = widget;</span><br><span class="line">      </span><br><span class="line"><span class="keyword">void</span> mount(<span class="built_in">Element</span> parent, <span class="built_in">dynamic</span> newSlot) &#123;</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">  <span class="comment">// 父 element</span></span><br><span class="line">  _parent = parent;</span><br><span class="line">  <span class="comment">// 当前 element 的 slot</span></span><br><span class="line">  _slot = newSlot;</span><br><span class="line">  <span class="comment">// root element 的 _depth 为 1，子 element 依次 +1</span></span><br><span class="line">  _depth = _parent != <span class="keyword">null</span> ? _parent.depth + <span class="number">1</span> : <span class="number">1</span>;</span><br><span class="line">  <span class="comment">// 处于激活状态</span></span><br><span class="line">  _active = <span class="keyword">true</span>;</span><br><span class="line">  <span class="comment">// 只用 parent 的 _owner, 也就是说所有 element tree 的上节点公用一个 _owner</span></span><br><span class="line">  <span class="keyword">if</span> (parent != <span class="keyword">null</span>) <span class="comment">// Only assign ownership if the parent is non-null</span></span><br><span class="line">    _owner = parent.owner;</span><br><span class="line">  <span class="comment">// widget 是构造方法中赋值的，也就是 [2.5.1] 中的 RenderObjectToWidgetAdapter, 所以 key 就是 [2.5.1] 中的 GlobalObjectKey(container), 见 [2.6]</span></span><br><span class="line">  <span class="keyword">final</span> Key key = widget.key;</span><br><span class="line">  <span class="keyword">if</span> (key <span class="keyword">is</span> GlobalKey) &#123;</span><br><span class="line">    <span class="comment">// 见 [2.6]</span></span><br><span class="line">    key._register(<span class="keyword">this</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  _updateInheritance();</span><br><span class="line">  <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="2-6-GlobalKey-register"><a href="#2-6-GlobalKey-register" class="headerlink" title="2.6 GlobalKey._register"></a>2.6 GlobalKey._register</h2><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/widgets/framework.dart</span></span><br><span class="line"><span class="meta">@optionalTypeArgs</span></span><br><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">GlobalKey</span>&lt;<span class="title">T</span> <span class="keyword">extends</span> <span class="title">State</span>&lt;<span class="title">StatefulWidget</span>&gt;&gt; <span class="keyword">extends</span> <span class="title">Key</span> </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> GlobalKey.constructor() : <span class="keyword">super</span>.empty();</span><br><span class="line">  <span class="keyword">static</span> <span class="keyword">final</span> <span class="built_in">Map</span>&lt;GlobalKey, <span class="built_in">Element</span>&gt; _registry = &lt;GlobalKey, <span class="built_in">Element</span>&gt;&#123;&#125;;</span><br><span class="line">  </span><br><span class="line">  <span class="comment">// 将当前 Key 对象和 Element 对象关联起来，this 就是当前 key 对象</span></span><br><span class="line">  <span class="keyword">void</span> _register(<span class="built_in">Element</span> element) &#123;</span><br><span class="line">    _registry[<span class="keyword">this</span>] = element;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">void</span> _unregister(<span class="built_in">Element</span> element) &#123;</span><br><span class="line">    <span class="keyword">if</span> (_registry[<span class="keyword">this</span>] == element)</span><br><span class="line">      _registry.remove(<span class="keyword">this</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>由 [2.5.4.3] 可知，这里是 GlobalObjectKey 类型的对象。</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/widgets/framework.dart</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">GlobalObjectKey</span>&lt;<span class="title">T</span> <span class="keyword">extends</span> <span class="title">State</span>&lt;<span class="title">StatefulWidget</span>&gt;&gt; <span class="keyword">extends</span> <span class="title">GlobalKey</span>&lt;<span class="title">T</span>&gt; </span>&#123;</span><br><span class="line">  <span class="comment">/// <span class="markdown">Creates a global key that uses [identical] on [value] for its [operator==].</span></span></span><br><span class="line">  <span class="keyword">const</span> GlobalObjectKey(<span class="keyword">this</span>.value) : <span class="keyword">super</span>.constructor();</span><br><span class="line"></span><br><span class="line">  <span class="comment">/// <span class="markdown">The object whose identity is used by this key&#x27;s [operator==].</span></span></span><br><span class="line">  <span class="keyword">final</span> <span class="built_in">Object</span> value;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@override</span></span><br><span class="line">  <span class="built_in">bool</span> <span class="keyword">operator</span> ==(<span class="built_in">Object</span> other) &#123;</span><br><span class="line">    <span class="keyword">if</span> (other.runtimeType != runtimeType)</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">return</span> other <span class="keyword">is</span> GlobalObjectKey&lt;T&gt;</span><br><span class="line">        &amp;&amp; identical(other.value, value);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@override</span></span><br><span class="line">  <span class="built_in">int</span> <span class="keyword">get</span> hashCode =&gt; identityHashCode(value);</span><br><span class="line">  <span class="comment">// ... </span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>由 [2.5.1] 可知，value 就是 [2.3.3.2] 的 renderView 对象，说明 GlobalObjectKey 是用来处理 render tree 和 element tree 之间的节点关系。</p>
+<h2 id="2-7-createRenderObject"><a href="#2-7-createRenderObject" class="headerlink" title="2.7 createRenderObject"></a>2.7 createRenderObject</h2><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">RenderObjectWithChildMixin&lt;T&gt; createRenderObject(BuildContext context) =&gt; container;</span><br></pre></td></tr></table></figure>
+<p>将 [2.3.6.2] 的 renderView 对象赋值给 <code>_renderObject</code> 。</p>
+<h2 id="2-8-attachRenderObject"><a href="#2-8-attachRenderObject" class="headerlink" title="2.8 attachRenderObject"></a>2.8 attachRenderObject</h2><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> attachRenderObject(<span class="built_in">dynamic</span> newSlot) &#123;</span><br><span class="line">    <span class="keyword">assert</span>(_ancestorRenderObjectElement == <span class="keyword">null</span>);</span><br><span class="line">    _slot = newSlot;</span><br><span class="line">    <span class="comment">// 选择此 element tree 的祖先节点，此时为 null.</span></span><br><span class="line">    _ancestorRenderObjectElement = _findAncestorRenderObjectElement();</span><br><span class="line">    <span class="comment">// 向 element 树中插入刚刚创建的 renderObject</span></span><br><span class="line">    _ancestorRenderObjectElement?.insertRenderObjectChild(renderObject, newSlot);</span><br><span class="line">    <span class="keyword">final</span> ParentDataElement&lt;ParentData&gt; parentDataElement = _findAncestorParentDataElement();</span><br><span class="line">    <span class="keyword">if</span> (parentDataElement != <span class="keyword">null</span>)</span><br><span class="line">      _updateParentData(parentDataElement.widget);</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>此时 newSlot _ancestorRenderObjectElement _slot 均为 null, 同上，后面的 _ancestorRenderObjectElement parentDataElement 也为 null.</p>
+<h2 id="2-9-rebuild"><a href="#2-9-rebuild" class="headerlink" title="2.9 _rebuild"></a>2.9 _rebuild</h2><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> _rebuild() &#123;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="comment">// 见 [2.9.1]</span></span><br><span class="line">    _child = updateChild(_child, widget.child, _rootChildSlot);</span><br><span class="line">  &#125; <span class="keyword">catch</span> (exception, stack) &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该方法的相关入参</p>
+<ul>
+<li>_child: 第一次执行，_child 为 null</li>
+<li>widget.child: widget: RenderObjectToWidgetAdapter 对象，所以 widget.child 就是 [2.4.1] 中我们在 main.dart 中自定义的 root widget</li>
+<li>_rootChildSlot: <code>static const Object _rootChildSlot = Object();</code> 是一个常量，表示一个 element 只有一个 child</li>
+</ul>
+<h3 id="2-9-1-Element-updateChild"><a href="#2-9-1-Element-updateChild" class="headerlink" title="2.9.1 Element.updateChild"></a>2.9.1 Element.updateChild</h3><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Element</span> updateChild(<span class="built_in">Element</span> child, Widget newWidget, <span class="built_in">dynamic</span> newSlot) &#123;</span><br><span class="line">  <span class="keyword">if</span> (newWidget == <span class="keyword">null</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (child != <span class="keyword">null</span>)</span><br><span class="line">      <span class="comment">// 移除旧的 element</span></span><br><span class="line">      deactivateChild(child);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">Element</span> newChild;</span><br><span class="line">  <span class="keyword">if</span> (child != <span class="keyword">null</span>) &#123;</span><br><span class="line">    <span class="built_in">bool</span> hasSameSuperclass = <span class="keyword">true</span>;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">if</span> (hasSameSuperclass &amp;&amp; child.widget == newWidget) &#123;</span><br><span class="line">      <span class="keyword">if</span> (child.slot != newSlot)</span><br><span class="line">        <span class="comment">// 更新 element</span></span><br><span class="line">        updateSlotForChild(child, newSlot);</span><br><span class="line">      newChild = child;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (hasSameSuperclass &amp;&amp; Widget.canUpdate(child.widget, newWidget)) &#123;</span><br><span class="line">      <span class="keyword">if</span> (child.slot != newSlot)</span><br><span class="line">        <span class="comment">// 更新 element</span></span><br><span class="line">        updateSlotForChild(child, newSlot);</span><br><span class="line">      <span class="comment">// 更新 widget  </span></span><br><span class="line">      child.update(newWidget);</span><br><span class="line">      newChild = child;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      newChild = inflateWidget(newWidget, newSlot);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// 见 [2.9.2]</span></span><br><span class="line">    newChild = inflateWidget(newWidget, newSlot);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> newChild;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-9-2-Element-inflateWidget"><a href="#2-9-2-Element-inflateWidget" class="headerlink" title="2.9.2 Element.inflateWidget"></a>2.9.2 Element.inflateWidget</h3><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Element</span> inflateWidget(Widget newWidget, <span class="built_in">dynamic</span> newSlot) &#123;</span><br><span class="line">  <span class="keyword">final</span> Key key = newWidget.key;</span><br><span class="line">  <span class="keyword">if</span> (key <span class="keyword">is</span> GlobalKey) &#123;</span><br><span class="line">    <span class="comment">// 从 _inactiveElements 中找可复用的 element</span></span><br><span class="line">    <span class="keyword">final</span> <span class="built_in">Element</span> newChild = _retakeInactiveElement(key, newWidget);</span><br><span class="line">    <span class="keyword">if</span> (newChild != <span class="keyword">null</span>) &#123;</span><br><span class="line">      <span class="comment">// 激活</span></span><br><span class="line">      newChild._activateWithParent(<span class="keyword">this</span>, newSlot);</span><br><span class="line">      <span class="keyword">final</span> <span class="built_in">Element</span> updatedChild = updateChild(newChild, newWidget, newSlot);</span><br><span class="line">      <span class="keyword">return</span> updatedChild;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 创建 element, 见 [2.9.3], 这里是 StatefulElement</span></span><br><span class="line">  <span class="keyword">final</span> <span class="built_in">Element</span> newChild = newWidget.createElement();</span><br><span class="line">  <span class="comment">// 见 [2.9.4]</span></span><br><span class="line">  newChild.mount(<span class="keyword">this</span>, newSlot);</span><br><span class="line">  <span class="keyword">return</span> newChild;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里 key 为 null.</p>
+<h3 id="2-9-3-createElement"><a href="#2-9-3-createElement" class="headerlink" title="2.9.3 createElement"></a>2.9.3 createElement</h3><p>这个的 root widget 是 StatefulWidget 类型，所以会走</p>
+<figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">StatefulElement</span> <span class="keyword">extends</span> <span class="title">ComponentElement</span> </span>&#123;</span><br><span class="line">    StatefulElement(StatefulWidget widget) : _state = widget.createState(), <span class="keyword">super</span>(widget) &#123;</span><br><span class="line">        _state._element = <span class="keyword">this</span>;</span><br><span class="line">        _state._widget = widget;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的方法主要功能</p>
+<ul>
+<li>对 _state 赋值</li>
+<li>对 element 的 widget 赋值，见前面的 <code>2.5.4.3 Element.mount</code></li>
+<li>对 _state._element 赋值</li>
+<li>对 _state._widget 赋值</li>
+</ul>
+<p>由此看见， state 是一个桥接类，关联 element 和 widget.</p>
+<h3 id="2-9-4-ComponentElement-mount"><a href="#2-9-4-ComponentElement-mount" class="headerlink" title="2.9.4 ComponentElement.mount"></a>2.9.4 ComponentElement.mount</h3><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@override</span></span><br><span class="line"><span class="keyword">void</span> mount(<span class="built_in">Element</span> parent, <span class="built_in">dynamic</span> newSlot) &#123;</span><br><span class="line">    <span class="comment">// 见 [2.5.4.3], 不过这里 parent 有值，是 [2.5.4] 新建的 RenderObjectToWidgetElement(root element)</span></span><br><span class="line">    <span class="keyword">super</span>.mount(parent, newSlot);</span><br><span class="line">    <span class="keyword">assert</span>(_child == <span class="keyword">null</span>);</span><br><span class="line">    <span class="keyword">assert</span>(_active);</span><br><span class="line">    <span class="comment">// 见 [2.9.5]</span></span><br><span class="line">    _firstBuild();</span><br><span class="line">    <span class="keyword">assert</span>(_child != <span class="keyword">null</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>StatefulElement extends ComponentElement extends Element,  ComponentElement 是跟 <code>2.5.4.2 RenderObjectElement</code> 是同级别的子类。</p>
+<h3 id="2-9-5-ComponentElement-firstBuild"><a href="#2-9-5-ComponentElement-firstBuild" class="headerlink" title="2.9.5 ComponentElement._firstBuild"></a>2.9.5 ComponentElement._firstBuild</h3><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> _firstBuild() &#123;</span><br><span class="line">    <span class="comment">// 见 [2.9.5.1]</span></span><br><span class="line">    rebuild();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="2-9-5-1-Element-rebuild"><a href="#2-9-5-1-Element-rebuild" class="headerlink" title="2.9.5.1 Element.rebuild"></a>2.9.5.1 Element.rebuild</h4><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> rebuild() &#123;</span><br><span class="line">    <span class="comment">// 未被激活(没调用 mount 方法) 或者 没被标脏(没调用相关 update 方法或者 markNeedsBuild 方法)，则不会走下面的逻辑</span></span><br><span class="line">    <span class="keyword">if</span> (!_active || !_dirty)</span><br><span class="line">      <span class="keyword">return</span>;</span><br><span class="line">    <span class="comment">// 见 [2.9.5.2]  </span></span><br><span class="line">    performRebuild();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="2-9-5-2-StatefulElement-performRebuild"><a href="#2-9-5-2-StatefulElement-performRebuild" class="headerlink" title="2.9.5.2 StatefulElement.performRebuild"></a>2.9.5.2 StatefulElement.performRebuild</h4><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> performRebuild() &#123;</span><br><span class="line">    <span class="comment">// 只有调用当前类的 didChangeDependencies 方法，才会将 _didChangeDependencies 置为 true</span></span><br><span class="line">    <span class="keyword">if</span> (_didChangeDependencies) &#123;</span><br><span class="line">      <span class="comment">// 调用 state didChangeDependencies 方法</span></span><br><span class="line">      _state.didChangeDependencies();</span><br><span class="line">      _didChangeDependencies = <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 见 [2.9.5.3]</span></span><br><span class="line">    <span class="keyword">super</span>.performRebuild();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="2-9-5-3-ComponentElement-performRebuild"><a href="#2-9-5-3-ComponentElement-performRebuild" class="headerlink" title="2.9.5.3 ComponentElement.performRebuild"></a>2.9.5.3 ComponentElement.performRebuild</h4><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> performRebuild() &#123;</span><br><span class="line">    Widget built;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// 见 [2.9.5.4]</span></span><br><span class="line">        built = build();</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="comment">// 已 build, 后续不要再构建</span></span><br><span class="line">        _dirty = <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// 同 [2.9.1], 第一次 _child 为 null</span></span><br><span class="line">        _child = updateChild(_child, built, slot);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="2-9-5-4-build"><a href="#2-9-5-4-build" class="headerlink" title="2.9.5.4 build"></a>2.9.5.4 build</h4><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Widget build() =&gt; _state.build(<span class="keyword">this</span>);</span><br></pre></td></tr></table></figure>
+<p>自此，最终会调用 rootwidget, 即 _MyAppState 的 build 方法。</p>
+<h2 id="2-10-scheduleWarmUpFrame"><a href="#2-10-scheduleWarmUpFrame" class="headerlink" title="2.10 scheduleWarmUpFrame"></a>2.10 scheduleWarmUpFrame</h2><figure class="highlight dart"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> scheduleWarmUpFrame() &#123;</span><br><span class="line">  <span class="keyword">if</span> (_warmUpFrame || schedulerPhase != SchedulerPhase.idle)</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">  _warmUpFrame = <span class="keyword">true</span>;</span><br><span class="line">  Timeline.startSync(<span class="string">&#x27;Warm-up frame&#x27;</span>);</span><br><span class="line">  <span class="keyword">final</span> <span class="built_in">bool</span> hadScheduledFrame = _hasScheduledFrame;</span><br><span class="line">  <span class="comment">// 异步执行, 执行完上面的代码才会执行 `2.4.1 attachRootWidget`</span></span><br><span class="line">  <span class="comment">// We use timers here to ensure that microtasks flush in between.</span></span><br><span class="line">  Timer.run(() &#123;</span><br><span class="line">    <span class="keyword">assert</span>(_warmUpFrame);</span><br><span class="line">    handleBeginFrame(<span class="keyword">null</span>);</span><br><span class="line">  &#125;);</span><br><span class="line">  Timer.run(() &#123;</span><br><span class="line">    <span class="keyword">assert</span>(_warmUpFrame);</span><br><span class="line">    handleDrawFrame();</span><br><span class="line">    <span class="comment">// We call resetEpoch after this frame so that, in the hot reload case,</span></span><br><span class="line">    <span class="comment">// the very next frame pretends to have occurred immediately after this</span></span><br><span class="line">    <span class="comment">// warm-up frame. The warm-up frame&#x27;s timestamp will typically be far in</span></span><br><span class="line">    <span class="comment">// the past (the time of the last real frame), so if we didn&#x27;t reset the</span></span><br><span class="line">    <span class="comment">// epoch we would see a sudden jump from the old time in the warm-up frame</span></span><br><span class="line">    <span class="comment">// to the new time in the &quot;real&quot; frame. The biggest problem with this is</span></span><br><span class="line">    <span class="comment">// that implicit animations end up being triggered at the old time and</span></span><br><span class="line">    <span class="comment">// then skipping every frame and finishing in the new time.</span></span><br><span class="line">    resetEpoch();</span><br><span class="line">    _warmUpFrame = <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">if</span> (hadScheduledFrame)</span><br><span class="line">      scheduleFrame();</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Lock events so touch events etc don&#x27;t insert themselves until the</span></span><br><span class="line">  <span class="comment">// scheduled frame has finished.</span></span><br><span class="line">  lockEvents(() <span class="keyword">async</span> &#123;</span><br><span class="line">    <span class="keyword">await</span> endOfFrame;</span><br><span class="line">    Timeline.finishSync();</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>进行绘制操作。</p>
+<h1 id="3-总结"><a href="#3-总结" class="headerlink" title="3. 总结"></a>3. 总结</h1><p>从 2.1 的 runApp 入口可知，</p>
+<ol>
+<li>WidgetsFlutterBinding 初始化，这是一个单例，负责创建各种绑定对象，有的时候我们需要将这段代码前置，使得各种绑定操作在 runApp 之前完成；</li>
+<li>attachRootWidget, 自底向上遍历整个视图树，创建 element、renderObject 对象，建立 widget、element、renderObject 三者之间的关系；</li>
+<li>scheduleWarmUpFrame, 执行绘制操作</li>
+</ol>
+<p>Q: 自底向上遍历整个视图树的时候，感觉 mount 无线递归执行，什么时候完成呢？<br>A: 当遍历到最顶层的 widget 时，在调用 updateChild 的时候回返回 null, 也就是<code>递</code>的结束，从而<code>归</code>回来，然后回到 <code>2.5 attachToRenderTree</code>，返回 RenderObjectToWidgetElement 类型的 root element. 我把前面 demo 的 debug 流程贴出来，如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">RenderObjectToWidgetElement </span><br><span class="line">- mount  // parent: null, newSlot: null</span><br><span class="line">	- _rebuild</span><br><span class="line">		- updateChild  // child: null, newWidget: MyApp</span><br><span class="line">			- inflateWidget // newWidget: MyApp</span><br><span class="line">				- createElement // StatefulElement: ComponentElement</span><br><span class="line">					- mount  </span><br><span class="line"></span><br><span class="line">StatefulElement: ComponentElement </span><br><span class="line">- mount // parent: [root](renderObject: RenderView#5a380 NEEDS-LAYOUT NEEDS-PAINT)</span><br><span class="line">	- _firstBuild</span><br><span class="line">		- rebuild</span><br><span class="line">			- performRebuild</span><br><span class="line">				- updateChild // child: null, newWidget: Container</span><br><span class="line">					- inflateWidget // newWidget: Container</span><br><span class="line">						- createElement // StatelessElement: ComponentElement</span><br><span class="line">							- mount // </span><br><span class="line"></span><br><span class="line">StatelessElement: ComponentElement</span><br><span class="line">- mount // parent: MyApp(state: _MyAppState#9e4bc)</span><br><span class="line">	- _firstBuild</span><br><span class="line">		- rebuild</span><br><span class="line">			- performRebuild // StatelessElement.build</span><br><span class="line">				- updateChild // child: null, newWidget: LimitedBox</span><br><span class="line">					- inflateWidget // newWidget: LimitedBox(maxWidth: 0.0, maxHeight: 0.0)</span><br><span class="line">						- createElement // SingleChildRenderObjectElement: RenderObjectElement</span><br><span class="line">							- mount</span><br><span class="line"></span><br><span class="line">SingleChildRenderObjectElement</span><br><span class="line">- mount // parent: Container</span><br><span class="line">	- updateChild // child: null, newWidget: ConstrainedBox(BoxConstraints(biggest))</span><br><span class="line">		- inflateWidget // newWidget: ConstrainedBox(BoxConstraints(biggest))</span><br><span class="line">			- createElement // SingleChildRenderObjectElement: RenderObjectElement</span><br><span class="line">				- mount</span><br><span class="line"></span><br><span class="line">SingleChildRenderObjectElement</span><br><span class="line">- mount // parent: LimitedBox(maxWidth: 0.0, maxHeight: 0.0, renderObject: RenderLimitedBox#3d07c NEEDS-LAYOUT NEEDS-PAINT NEEDS-COMPOSITING-BITS-U</span><br><span class="line">	- updateChild // child: null, newWidget: null</span><br></pre></td></tr></table></figure>
+<h2 id="3-1-问题"><a href="#3-1-问题" class="headerlink" title="3.1 问题"></a>3.1 问题</h2><ol>
+<li>三棵树的关系，element 的具体功能</li>
+<li>不同 element 执行 build 方法的时机</li>
+<li>key slot 等联系</li>
+<li>整个执行一帧的流程</li>
+<li>页面刷新的具体流程，setState vs provider 局部刷新</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/flutter/" rel="tag"># flutter</a>
+              <a href="/tags/%E6%BA%90%E7%A0%81/" rel="tag"># 源码</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/04/07/flutter-source-code-ios-platform-channels/" rel="prev" title="iOS Flutter Platform Channel">
+      <i class="fa fa-chevron-left"></i> iOS Flutter Platform Channel
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/09/20/fishhook/" rel="next" title="Fishhook">
+      Fishhook <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">1. 概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B"><span class="nav-number">2.</span> <span class="nav-text">2. 启动流程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-runApp"><span class="nav-number">2.1.</span> <span class="nav-text">2.1 runApp</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-ensureInitialized"><span class="nav-number">2.2.</span> <span class="nav-text">2.2 ensureInitialized</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-1-BindingBase-%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">2.2.1.</span> <span class="nav-text">2.2.1 BindingBase 初始化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-initInstances"><span class="nav-number">2.3.</span> <span class="nav-text">2.3 initInstances</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-1-GestureBinding"><span class="nav-number">2.3.1.</span> <span class="nav-text">2.3.1 GestureBinding</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-2-SchedulerBinding"><span class="nav-number">2.3.2.</span> <span class="nav-text">2.3.2 SchedulerBinding</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-3-ServicesBinding"><span class="nav-number">2.3.3.</span> <span class="nav-text">2.3.3 ServicesBinding</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-4-PaintingBinding"><span class="nav-number">2.3.4.</span> <span class="nav-text">2.3.4 PaintingBinding</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-5-SemanticsBinding"><span class="nav-number">2.3.5.</span> <span class="nav-text">2.3.5 SemanticsBinding</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-6-RendererBinding"><span class="nav-number">2.3.6.</span> <span class="nav-text">2.3.6 RendererBinding</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-6-1-PipelineOwner-%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">2.3.6.1.</span> <span class="nav-text">2.3.6.1 PipelineOwner 初始化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-6-2-initRenderView"><span class="nav-number">2.3.6.2.</span> <span class="nav-text">2.3.6.2 initRenderView</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-6-3-set-renderView"><span class="nav-number">2.3.6.3.</span> <span class="nav-text">2.3.6.3 set renderView</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-6-4-set-rootNode"><span class="nav-number">2.3.6.4.</span> <span class="nav-text">2.3.6.4 set rootNode</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-7-WidgetsBinding"><span class="nav-number">2.3.7.</span> <span class="nav-text">2.3.7 WidgetsBinding</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-7-1-BuildOwner-%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">2.3.7.1.</span> <span class="nav-text">2.3.7.1 BuildOwner 初始化</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-scheduleAttachRootWidget"><span class="nav-number">2.4.</span> <span class="nav-text">2.4 scheduleAttachRootWidget</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-1-attachRootWidget"><span class="nav-number">2.4.1.</span> <span class="nav-text">2.4.1 attachRootWidget</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-2-RenderObjectToWidgetAdapter-%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">2.4.2.</span> <span class="nav-text">2.4.2 RenderObjectToWidgetAdapter 初始化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-5-attachToRenderTree"><span class="nav-number">2.5.</span> <span class="nav-text">2.5 attachToRenderTree</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-1-createElement"><span class="nav-number">2.5.1.</span> <span class="nav-text">2.5.1 createElement</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-2-assignOwner"><span class="nav-number">2.5.2.</span> <span class="nav-text">2.5.2 assignOwner</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-3-buildScope"><span class="nav-number">2.5.3.</span> <span class="nav-text">2.5.3 buildScope</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-4-RenderObjectToWidgetElement-mount"><span class="nav-number">2.5.4.</span> <span class="nav-text">2.5.4 RenderObjectToWidgetElement.mount</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-5-4-1-RootRenderObjectElement-mount"><span class="nav-number">2.5.4.1.</span> <span class="nav-text">2.5.4.1 RootRenderObjectElement.mount</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-5-4-2-RenderObjectElement-mount"><span class="nav-number">2.5.4.2.</span> <span class="nav-text">2.5.4.2 RenderObjectElement.mount</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-5-4-3-Element-mount"><span class="nav-number">2.5.4.3.</span> <span class="nav-text">2.5.4.3 Element.mount</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-6-GlobalKey-register"><span class="nav-number">2.6.</span> <span class="nav-text">2.6 GlobalKey._register</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-7-createRenderObject"><span class="nav-number">2.7.</span> <span class="nav-text">2.7 createRenderObject</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-8-attachRenderObject"><span class="nav-number">2.8.</span> <span class="nav-text">2.8 attachRenderObject</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-9-rebuild"><span class="nav-number">2.9.</span> <span class="nav-text">2.9 _rebuild</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-9-1-Element-updateChild"><span class="nav-number">2.9.1.</span> <span class="nav-text">2.9.1 Element.updateChild</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-9-2-Element-inflateWidget"><span class="nav-number">2.9.2.</span> <span class="nav-text">2.9.2 Element.inflateWidget</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-9-3-createElement"><span class="nav-number">2.9.3.</span> <span class="nav-text">2.9.3 createElement</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-9-4-ComponentElement-mount"><span class="nav-number">2.9.4.</span> <span class="nav-text">2.9.4 ComponentElement.mount</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-9-5-ComponentElement-firstBuild"><span class="nav-number">2.9.5.</span> <span class="nav-text">2.9.5 ComponentElement._firstBuild</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-9-5-1-Element-rebuild"><span class="nav-number">2.9.5.1.</span> <span class="nav-text">2.9.5.1 Element.rebuild</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-9-5-2-StatefulElement-performRebuild"><span class="nav-number">2.9.5.2.</span> <span class="nav-text">2.9.5.2 StatefulElement.performRebuild</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-9-5-3-ComponentElement-performRebuild"><span class="nav-number">2.9.5.3.</span> <span class="nav-text">2.9.5.3 ComponentElement.performRebuild</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-9-5-4-build"><span class="nav-number">2.9.5.4.</span> <span class="nav-text">2.9.5.4 build</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-10-scheduleWarmUpFrame"><span class="nav-number">2.10.</span> <span class="nav-text">2.10 scheduleWarmUpFrame</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E6%80%BB%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">3. 总结</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-%E9%97%AE%E9%A2%98"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 问题</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">joakim.liu</p>
+  <div class="site-description" itemprop="description">你不解决问题，就会成为问题。iOS菜逗一枚。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/JoakimLiu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/JoakimLiu" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">joakim.liu</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://example.com/2021/04/09/flutter-main-runApp/";
+    this.page.identifier = "2021/04/09/flutter-main-runApp/";
+    this.page.title = "iOS Flutter Main runApp";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://http-joakimliu-github-io.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

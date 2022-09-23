@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="#前言今天隔上一篇博文已经差不多有一个月了，感觉非常羞愧，因为这意味着我特么将近一个月里面没有学到新知识。其实呢，不是这样子的，做项目过程中肯定有遇到问题，也有解决问题，但是就是没有长记性，说白了点，就没有记下来。今天洗澡的时候，突然又创建了一句座右铭“你可以蠢，但是不能懒；你可以懒，但是不能没有责任感。”作为一个经常刷技术微博的我，肯定会学在大牛的博客里面了解到一点东西。“先转后看”，这就是我的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="这周所学新技巧（1）">
+<meta property="og:url" content="http://example.com/2015/07/26/new-skill-in-this-week-one/index.html">
+<meta property="og:site_name" content="牛易疯先森的开发记录">
+<meta property="og:description" content="#前言今天隔上一篇博文已经差不多有一个月了，感觉非常羞愧，因为这意味着我特么将近一个月里面没有学到新知识。其实呢，不是这样子的，做项目过程中肯定有遇到问题，也有解决问题，但是就是没有长记性，说白了点，就没有记下来。今天洗澡的时候，突然又创建了一句座右铭“你可以蠢，但是不能懒；你可以懒，但是不能没有责任感。”作为一个经常刷技术微博的我，肯定会学在大牛的博客里面了解到一点东西。“先转后看”，这就是我的">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2015-07-26T14:57:24.000Z">
+<meta property="article:modified_time" content="2021-01-20T14:51:29.669Z">
+<meta property="article:author" content="joakim.liu">
+<meta property="article:tag" content="new skill">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2015/07/26/new-skill-in-this-week-one/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>这周所学新技巧（1） | 牛易疯先森的开发记录</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">牛易疯先森的开发记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2015/07/26/new-skill-in-this-week-one/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          这周所学新技巧（1）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2015-07-26 22:57:24" itemprop="dateCreated datePublished" datetime="2015-07-26T22:57:24+08:00">2015-07-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index"><span itemprop="name">经验分享</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>#前言<br>今天隔上一篇博文已经差不多有一个月了，感觉非常羞愧，因为这意味着我特么将近一个月里面没有学到新知识。其实呢，不是这样子的，做项目过程中肯定有遇到问题，也有解决问题，但是就是没有长记性，说白了点，就没有记下来。今天洗澡的时候，突然又创建了一句座右铭“你可以蠢，但是不能懒；你可以懒，但是不能没有责任感。”作为一个经常刷技术微博的我，肯定会学在大牛的博客里面了解到一点东西。“先转后看”，这就是我的原则。其实，这种想法、做法是非常浪费时间的，因为我平均一天要刷将近半个多小时的微博，在项目中很有可能会遇到以前在微博中看到过的东西，但是你还要去找啊找。就前几天，同事要做类似于黄易导航栏点击切换栏目的效果，我记得我有看到过，果不其然在微博中找到了它<a href="https://github.com/wangmchn/WMPageController">WMPageController</a>，但如果时间隔很久，那我岂不是要找很久，这就是浪费时间啊！以前转发微博的时候，会@我的印象笔记，当然这比较容易搜索，但是东西多了，你总得要花点时间去找到自己想要的那个东西。所以吧，“好记性，不如烂笔头”，古人的话总没错。这又让我想起了我们家那边的老话，“出门带好下雨伞”，然后然后我就想起了前天周五湿身的感觉，fuck！！！幸亏有好心同事救济我。前几天在cc上面看到一篇文章<a href="http://www.cocoachina.com/programmer/20150716/12592.html">如何坚持每周写一篇博客</a>，个人觉得写地挺好的，一想到自己隔这么久没有写博客了，就感到非常羞愧，所以吧，要坚持！因为你是男人嘛。好了，废话了这么久，实在不像是一个程序猿，下面来扯扯这周所学到的新技巧。</p>
+<a id="more"></a>
+
+<p>##怎么获取View所在的Controller?<br>当然这里不是指Controller的View属性这么简单。有的时候，你会遇到这样的需求：控制器顶部有两个按钮，点击切换不同的界面。这种效果实现的方法有很多，而我的做法是ViewController + ScrollView + View &amp; View。而View上面的跳转事件，你可以定义block、delegate、notification来操作，但是如果我想在View里面获取Controller里面的某个属性呢？我可以在View里面定义一个Controller类型的对象啊，没错这就是我以前的做法，很傻逼！其实有更好的方法<a href="http://stackoverflow.com/questions/1372977/given-a-view-how-do-i-get-its-viewcontroller">Given a view, how do I get its viewController?</a>。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> *  获取View所在的控制器</span><br><span class="line"> *</span><br><span class="line"> *  @return &lt;#return value description#&gt;</span><br><span class="line"> *&#x2F;</span><br><span class="line">- (BaseViewController *)viewController &#123;</span><br><span class="line">    UIResponder *responder &#x3D; self;</span><br><span class="line">    while ([responder isKindOfClass:[UIView class]]) &#123;</span><br><span class="line">        responder &#x3D; [responder nextResponder];</span><br><span class="line">    &#125;</span><br><span class="line">    return (BaseViewController *)responder;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>##Label不用 addSubView: 方法加载Image？<br>在cell里面，在A状态下Z区域要显示文字，在B状态下Z区域要显示图片。这我得两个控件啊，在config data的时候根据状态来显示或隐藏某个控件。诶，label可不可以加载Image啊？嗯，在UILabel的文件里面肯定有属性的，于是command+F “Image”，诶，我去，没找到？！于是又把UILabel的头文件里面的东东扫了一次，还是没有。好吧，后面在<a href="http://stackoverflow.com/questions/19318421/how-to-embed-small-icon-in-uilabel">so</a>搜到了，label真的可以不用 addSubView: 方法加载image，不过是在iOS7上，像我们支持iOS6的苦逼dog还是老老实实的用两个控件的方法吧。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">NSTextAttachment *attachment &#x3D; [[NSTextAttachment alloc] init];</span><br><span class="line">attachment.image &#x3D; [UIImage imageNamed:@&quot;MyIcon.png&quot;];</span><br><span class="line"></span><br><span class="line">NSAttributedString *attachmentString &#x3D; [NSAttributedString attributedStringWithAttachment:attachment];</span><br><span class="line"></span><br><span class="line">NSMutableAttributedString *myString&#x3D; [[NSMutableAttributedString alloc] initWithString:@&quot;My label text&quot;];</span><br><span class="line">[myString appendAttributedString:attachmentString];</span><br><span class="line"></span><br><span class="line">myLabel.attributedText &#x3D; myString;</span><br></pre></td></tr></table></figure>
+<p>##如何简单的收键盘？<br>我们可以自定义textfield或者textview子类，在初始化的时候设置它的<code>inputAccessoryView</code>属性，在它这个属性上面添加一个响应<code>resignFirstResponder</code>事件的按钮。可是有时候，你还得点击空白处也收键盘啊，可以在View上面添加一个手势啊，在相应手势的方法里面，让这个对象调用它的<code>resignFirstResponder</code>方法。如果在这个View上面UITextField对象很多个呢？那我肯定不会傻得一个个对象去调用<code>resignFirstResponder</code>方法啊，尽管第一响应者只能有一个，我以前觉得写了个很nice的方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;**</span><br><span class="line"> *  放弃第一响应者</span><br><span class="line"> *</span><br><span class="line"> *  @param view view description</span><br><span class="line"> *&#x2F;</span><br><span class="line">- (void)resignAllFirstResponder:(UIView *)view &#123;</span><br><span class="line">    for (UIView *subView in view.subviews) &#123;</span><br><span class="line">        if ([subView isKindOfClass:[UITextView class]] || [subView isKindOfClass:[UITextField class]]) &#123;</span><br><span class="line">            [subView resignFirstResponder];</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            [self resignAllFirstResponder:subView];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>还尼玛用到了递归，大学的数据结构重要有点用处了。可是，自从我在<a href="http://stackoverflow.com/questions/18755410/how-to-dismiss-keyboard-ios-programmatically">so</a>上面看到这个，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">- (void) touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event &#123;</span><br><span class="line">    [[self view] endEditing:YES];</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>我就。。。。肯定是苹果baba自家的方法好用撒！！！</p>
+<p>##怎么取出字符串中的URL？<br>肯定不会自己@”http”一个个的去寻找，至少也得写个正则玩玩，自己不会写，但网上一搜一大把。但你有没有想过苹果baba有个方法就是让我们这么任性的玩<a href="http://stackoverflow.com/questions/5998969/objective-c-finding-a-url-within-a-string">ios find links from string</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">NSDataDetector* detector &#x3D; [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:nil];</span><br><span class="line">NSArray* matches &#x3D; [detector matchesInString:source options:0 range:NSMakeRange(0, [source length])];</span><br></pre></td></tr></table></figure>
+<p>###关于代码规范<br>以前一个人开发的时候，代码想怎么写就怎么写，一副老子天下第一的样子。但是现在团队开发不同啊，一个项目几个人开发，还有code review，你得尽量写好，不能拖团队开发的后腿啊。所以，第一，你得写注释！写注释！！写注释！！！重要的事情说三遍。当然还有编程风格，这里我推荐两篇写的比较好的风格指南。</p>
+<blockquote>
+<ul>
+<li><a href="http://zh-google-styleguide.readthedocs.org/en/latest/contents/">Google 开源项目风格指南</a></li>
+<li><a href="https://github.com/objc-zen/objc-zen-book">Zen and the Art of the Objective-C Craftsmanship</a>  PS:中文版 <a href="https://github.com/oa414/objc-zen-book-cn">禅与 Objective-C 编程艺术</a></li>
+</ul>
+</blockquote>
+<p>看完以后，你会发现原来网络请求写dict的时候，还可以这样： </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[self.bodyParams setObject:link ?: @&quot;&quot; forKey:@&quot;Link&quot;];</span><br></pre></td></tr></table></figure>
+<p>调用block的时候，可以这样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">!self.saveDataBlock ?: self.saveDataBlock(data);</span><br></pre></td></tr></table></figure>
+<p>##以前的一些杂东西<br>有些东西是在以前的开发过程中记录的，但忘记是在哪里找到解决方案的了</p>
+<blockquote>
+<ul>
+<li>如何查看.a文件信息？ 在终端找到相关路径：lipo -info xxx.a ；也可以 file xxx.a; 还可以这么详细地看：lipo -detailed_info xxx.a；</li>
+<li>pod更新过慢？ 你可以尝试下面的语句：<code>pod install --verbose --no-repo-update</code> 或者 <code>pod update --verbose --no-repo-update</code></li>
+<li>如何更形象化的理解约束constraints?  这里有个很形象的<a href="http://constraints.icodeforlove.com/">网站</a></li>
+<li>想要找很多第三方工具？ 这个你得找<a href="http://apistore.baidu.com/">百度</a>撒 </li>
+<li>旧的Xcode版本到哪里下载啊？ 这个肯定找<a href="https://developer.apple.com/downloads/index.action?name=Xcode">苹果baba</a>啊，不过你得有开发者账号</li>
+<li>想看历年wwdc的相关资料？ 这个<a href="http://asciiwwdc.com/">网站</a>你肯定会喜欢（虽然我还没用过。。。。）</li>
+<li>想看第三方源码？ 这个想法好！很好！！非常好！！！ 那么推荐你用<a href="https://github.com/RuiAAPeres/UIViewController-Swizzled">UIViewController-Swizzled</a>、<a href="https://github.com/xuyunan/YNClassName">YNClassName</a>、<a href="https://github.com/DaidoujiChen/DaiMethodTracing">DaiMethodTracing</a>。请记得star！！！</li>
+<li>你是个Google重度使用者？ 推荐几款让Chrome新标签页炫酷的<a href="http://36kr.com/p/217026.html">插件</a>，希望你能喜欢。</li>
+</ul>
+</blockquote>
+<p>##Google搜索技巧推荐<br>上面说的东西，“不是我偷的，也不少我抢的，是我老乡从厂里面带出来的，现在便宜甩卖。。。”，(⊙o⊙)…，被这个促销口号洗脑了，这些都是我在网上找到。其实，个人觉得作为程序猿，你首先得善用网络资源，当然在吸取的时候，你也得付出、分享好的东西，共同促进一个美好的……姑且叫做“全球最大的同性交友世界”吧，这里我推荐一下Google的搜索技巧。当然你首先得学会FQ，如果你想要代理IP什么之类的，我可以给你一个网站<a href="http://g.ihonker.org/">Google全球缓存IP—中国红客联盟</a>。当然，如果你想用着舒服，那肯定得用付费的撒，我用的是<a href="http://honx.in/_VKPDpM6vD1DgvA1B">红杏</a>（不好用，我也不会推荐给你撒），目前只支持Google浏览器，移动端的VPN还在内测中吧。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Site: 只搜索某个网址的页面。 如：牛易疯先森 site:github.io</span><br><span class="line">~  同时搜索近义词。 如：iOS  webView ~crash</span><br><span class="line">-  排除某个关键字。 如：iOS  webView crash –baidu</span><br><span class="line">.. 显示指定年份时间段内搜索结果。如：apple 1995..2015</span><br><span class="line">“” 以整个短语为搜索关键字，而不是拆分成每个词。如：“iOS  webView crash”，它和 iOS  webView crash的搜索结果完全不一样。</span><br><span class="line">filetype: 指定搜索的文档类型。如：iOS filetype:pdf</span><br><span class="line">* 星号用来代替任意字符，这个就像数据库的查询语句一样。如：*iOS</span><br><span class="line">intitle: 只显示标题中包含指定关键字的搜索结果。如：intitle iOS</span><br><span class="line">define: 词句定义，如果你不知道这个词句什么意思，你就可以这么玩。 如：define:iOS </span><br><span class="line">数学计算。如：(2015*7)&#x2F;15+23-22</span><br><span class="line">单位换算。如：100人民币&#x3D;? 美元</span><br></pre></td></tr></table></figure>
+<p>#小结<br>昨晚三小时，今晚两小时。终于把平常积累的东东梳理一下，so nice！发现自己的印象笔记里面还是不少东西的，但整体水平不是很高，今天都是扯的一些东西的用法，没有深入研究某些东西，以后得多动动脑哈。。。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/new-skill/" rel="tag"># new skill</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2015/07/01/Translate-The-Blog-Post-Concurrent-Debug-Beta-and-App-Store-Builds/" rel="prev" title="（译）Debug，Beta，App Store版本的同时构建">
+      <i class="fa fa-chevron-left"></i> （译）Debug，Beta，App Store版本的同时构建
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2015/08/09/Simple-implementation-for-topic/" rel="next" title="UITextView中#话题#功能的简单实现">
+      UITextView中#话题#功能的简单实现 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">joakim.liu</p>
+  <div class="site-description" itemprop="description">你不解决问题，就会成为问题。iOS菜逗一枚。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/JoakimLiu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/JoakimLiu" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">joakim.liu</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://example.com/2015/07/26/new-skill-in-this-week-one/";
+    this.page.identifier = "2015/07/26/new-skill-in-this-week-one/";
+    this.page.title = "这周所学新技巧（1）";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://http-joakimliu-github-io.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

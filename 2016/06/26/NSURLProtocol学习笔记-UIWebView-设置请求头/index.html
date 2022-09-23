@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="NSURLProtocol 设置 UIWebView 请求头">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NSURLProtocol学习笔记-UIWebView 设置请求头">
+<meta property="og:url" content="http://example.com/2016/06/26/NSURLProtocol%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-UIWebView-%E8%AE%BE%E7%BD%AE%E8%AF%B7%E6%B1%82%E5%A4%B4/index.html">
+<meta property="og:site_name" content="牛易疯先森的开发记录">
+<meta property="og:description" content="NSURLProtocol 设置 UIWebView 请求头">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-06-26T01:40:28.000Z">
+<meta property="article:modified_time" content="2021-01-22T14:55:23.847Z">
+<meta property="article:author" content="joakim.liu">
+<meta property="article:tag" content="NSURLProtocol">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2016/06/26/NSURLProtocol%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-UIWebView-%E8%AE%BE%E7%BD%AE%E8%AF%B7%E6%B1%82%E5%A4%B4/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>NSURLProtocol学习笔记-UIWebView 设置请求头 | 牛易疯先森的开发记录</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">牛易疯先森的开发记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2016/06/26/NSURLProtocol%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-UIWebView-%E8%AE%BE%E7%BD%AE%E8%AF%B7%E6%B1%82%E5%A4%B4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          NSURLProtocol学习笔记-UIWebView 设置请求头
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2016-06-26 09:40:28" itemprop="dateCreated datePublished" datetime="2016-06-26T09:40:28+08:00">2016-06-26</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index"><span itemprop="name">经验分享</span></a>
+                </span>
+            </span>
+
+          
+            <div class="post-description">NSURLProtocol 设置 UIWebView 请求头</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>前段时间写过<a href="http://joakimliu.github.io/2016/05/15/UIWebView%E8%AE%BE%E7%BD%AE%E8%AF%B7%E6%B1%82%E5%A4%B4/">UIWebView 设置请求头</a>文章，后面发现那样做是有bug的，因为当我A到B回到A再进入B界面的时候，这是B已经加载过了，B的url已经存在那个数组里面，所以不会再塞请求头了，但是这样子就会请求失败，所以这个方法是不行的。好在<a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/Foundation/Classes/NSURLProtocol_Class/">NSURLProtocol</a>能解决这个问题。</p>
+<a id="more"></a>
+
+<p><code>An NSURLProtocol object handles the loading of protocol-specific URL data. The NSURLProtocol class itself is an abstract class that provides the infrastructure for processing URLs with a specific URL scheme. You create subclasses for any custom protocols or URL schemes that your app supports.</code></p>
+<p>NSURLProtocol 对象处理加载特定的url。它是一个为处理特定scheme url提供基础解决方案的抽象类。我们可以创建App支持的解决特定协议或者url的子类。</p>
+<!-- more -->
+<p>下面是我处理请求头的代码，在<code>viewDidLoad</code>方法里面调用 <code>registerClass:</code> 方法，<code>dealloc</code>里面调用<code>unregisterClass:</code>方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line">static NSString *const URLProtocolHandledKey &#x3D; @&quot;URLProtocolHandledKey&quot;;</span><br><span class="line">@interface NSCustomHeaderURLProtocol () &lt;NSURLConnectionDelegate&gt;</span><br><span class="line">@property (nonatomic, strong) NSURLConnection *connection;</span><br><span class="line">@end</span><br><span class="line"></span><br><span class="line">@implementation NSCustomHeaderURLProtocol</span><br><span class="line">+ (BOOL)canInitWithRequest:(NSURLRequest *)request &#123;</span><br><span class="line">    if (!([[[request URL] scheme] caseInsensitiveCompare:@&quot;http&quot;] &#x3D;&#x3D; NSOrderedSame || [[[request URL] scheme] caseInsensitiveCompare:@&quot;https&quot;] &#x3D;&#x3D; NSOrderedSame)) &#123; &#x2F;&#x2F; 不是http的不用处理</span><br><span class="line">        return NO;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if (![request allHTTPHeaderFields][kKeyWebViewAuthorization]) &#123;                   &#x2F;&#x2F; 不包含请求头</span><br><span class="line">        if ([NSURLProtocol propertyForKey:URLProtocolHandledKey inRequest:request]) &#123; &#x2F;&#x2F; 已经处理过了 不用处理</span><br><span class="line">            return NO;</span><br><span class="line">        &#125;</span><br><span class="line">        return YES;</span><br><span class="line">    &#125;</span><br><span class="line">    return NO;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">+ (NSURLRequest *)canonicalRequestForRequest:(NSURLRequest *)request &#123;</span><br><span class="line">    NSMutableURLRequest *mRequest &#x3D; [request mutableCopy];</span><br><span class="line">    NSString *fieldValue &#x3D;@&quot;xxx请求头内容&quot;;</span><br><span class="line">    [mRequest addValue:fieldValue forHTTPHeaderField:kKeyWebViewAuthorization];</span><br><span class="line">    return mRequest;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">+ (BOOL)requestIsCacheEquivalent:(NSURLRequest *)a toRequest:(NSURLRequest *)b &#123;</span><br><span class="line">    return [super requestIsCacheEquivalent:a toRequest:b];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)startLoading &#123;</span><br><span class="line">    NSMutableURLRequest *mutableReqeust &#x3D; [[self request] mutableCopy];</span><br><span class="line">    &#x2F;&#x2F;打标签，防止无限循环</span><br><span class="line">    [NSURLProtocol setProperty:@(YES) forKey:URLProtocolHandledKey inRequest:mutableReqeust];</span><br><span class="line">    self.connection &#x3D; [[NSURLConnection alloc] initWithRequest:[[self class] canonicalRequestForRequest:self.request] delegate:self startImmediately:YES];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)stopLoading &#123;</span><br><span class="line">    [self.connection cancel];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#pragma mark - NSURLConnectionDelegate</span><br><span class="line">- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response &#123;</span><br><span class="line">    [self.client URLProtocol:self didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageNotAllowed];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data &#123;</span><br><span class="line">    [self.client URLProtocol:self didLoadData:data];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)connectionDidFinishLoading:(NSURLConnection *)connection &#123;</span><br><span class="line">    [self.client URLProtocolDidFinishLoading:self];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error &#123;</span><br><span class="line">    [self.client URLProtocol:self didFailWithError:error];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)response &#123;</span><br><span class="line">    if (response !&#x3D; nil) &#123;</span><br><span class="line">        [[self client] URLProtocol:self wasRedirectedToRequest:request redirectResponse:response];</span><br><span class="line">    &#125;</span><br><span class="line">    return request;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@end</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>下面来说说它的处理流程以及相关方法。<br><code>propertyForKey:inRequest:</code>和<code>setProperty:forKey:inRequest:</code>方法是用来处理<code>NSURLRequest</code>或者<code>NSMutableURLRequest</code>的，可以标志该request是否已做过处理。 上面的<code>URLProtocolHandledKey</code>就是用来标记该request是否处理过。并且还有一个最基本的功能，就是创建NSURLResponse来处理request请求成功的情况。</p>
+<p>####Registering and Unregistering Protocol Classes<br>####<code>registerClass:</code><br>注册一个NSURLProtocol的子类，让<code>URL loading system</code>知道它的存在。当它注册失败返回NO时，说明注册的类不是 NSURLProtocol 的子类。<br>当<code>URL loading system</code>开始加载一个request时，每一个注册的protocol都会去看自己是否能够被特定的request初始化。当第一个注册protocol，<code>canInitWithRequest:</code>方法返回YES时，它就去加载特定的url了，所以这里并不能保证所有注册的protocol都能处理。protocol处理的顺序和它们注册的顺序相反，即后注册的先处理。处理模式就是在<code>canonicalRequestForRequest:</code>里面创建一个权威的request去请求。<br>####<code>unregisterClass:</code><br>取消注册。该方法调用后，该protocolClass不再被<code>URL loading system</code>处理。</p>
+<p>####Determining If a Subclass Can Handle a Request<br>#####<code>canInitWithRequest：</code><br>该protocolClass是否处理该request。子类必须实现该方法。</p>
+<p>####Getting and Setting Request Properties<br>#####<code>propertyForKey:inRequest:</code><br>#####<code>setProperty:forKey:inRequest:</code><br>#####<code>removePropertyForKey:inRequest:</code><br>顾名思义，这个三个方法就是根据某个key取出、设置、移除request的属性。</p>
+<p>####Providing a Canonical Version of a Request<br>#####<code>canonicalRequestForRequest:</code><br>权威的request（个人理解就是被处理过的request）。要保证该protocolClass处理过的request要有统一的形式（一个protocolClass 你不能即添加请求头，又改变url的query，这是错误的做法）。该方法子类必须实现，在实现的过程中得考虑<code>URL cache</code>缓存问题，因为<code>the canonical form of a request</code>习惯于从<code>URL cache</code>中查找对象用来检测两个<code>NSURLRequest</code>是否相等。</p>
+<p>####Determining If Requests Are Cache Equivalent<br>#####<code>requestIsCacheEquivalent:toRequest:</code><br>该方法用来检测两个request在缓存意义上是否相等。<br>该方法当且仅当request用相同的protocol来处理，并且当它们执行过特定的检测后protocol证明它们两个相等。</p>
+<p>####Starting and Stopping Downloads<br>#####<code>startLoading</code><br>执行特定的request请求。 子类必须实现该方法。<br>该方法执行后，子类需要加载该request并且通过<code>NSURLProtocolClient</code>协议来处理<code>URL loading system</code>的回调。<br>#####<code>stopLoading</code><br>取消特定的request请求。 子类必须实现该方法。<br>该方法能够取消一个正在进行中的请求，并且还要停止对该protocolClass的<code>client</code>属性发通知。</p>
+<p>####Getting Protocol Attributes<br>#####<code>cachedResponse</code><br> 缓存的响应数据。如果没有在子类里重载，则会返回在初始化时存储的值。<br>#####<code>client</code><br>与<code>URL loading system</code>交互的接受者。<br>####<code>request</code><br>请求对象request。</p>
+<p>####NSURLProtocolClient<br><code>NSURLProtocolClient</code>为<code>NSURLProtocol</code>提供于<code>URL loading system</code>交互的接口。App没有必要去实现该协议。从上面看到的代码看到，在<code>NSURLConnectionDelegate</code>的代理方法里面有<code>client</code>响应的处理方法。</p>
+<p>####总结</p>
+<ul>
+<li>当然了，这里的网络请求也可以用 <code>NSURLSession</code>，只要将请求返回的数据让<code>client</code>与<code>URL loading system</code>交互即可。</li>
+<li>上面的代码处理是参考的<a href="https://github.com/mattt/NSEtcHosts">matt大神的NSEtcHosts</a></li>
+<li><a href="https://developer.apple.com/library/ios/navigation/#section=Resource%20Types&topic=Sample%20Code">Apple Sample Code</a>里面竟然没有<code>NSURLProtocol</code>的samplecode</li>
+</ul>
+<p>####问题 NSURLProtocol不支持WKWebView ？</p>
+<blockquote>
+<p>It’s likely that this worked with UIWebView as an accident of the implementation.  WKWebView, OTOH, does all of its networking out of process, so such accidents are rare (everything that traverses the inter-process gap has to be explicitly coded to do so). from<a href="https://forums.developer.apple.com/thread/18952">https://forums.developer.apple.com/thread/18952</a></p>
+</blockquote>
+<p>NSURLProtocol<code>这种处理对</code>WKWebView<code>是不起作用的，因为</code>WKWebView<code>的加载是在另外一个进程里。如果现有的项目中是用</code>WKWebView`的，那么怎么塞请求头呢？我目前想到的只有通过特定的协议采取js交互。</p>
+<ul>
+<li><code>search keyword:wkwebview set header、 wkwebview custom header</code></li>
+<li><a href="http://labs.torques.jp/2015/10/06/4045/">WKWebViewでNSURLRequestをPOSTするとヘッダーが消える問題（解決）</a></li>
+<li><a href="http://stackoverflow.com/questions/26253133/cant-set-headers-on-my-wkwebview-post-request">Can’t set headers on my WKWebView POST request</a></li>
+<li><a href="http://stackoverflow.com/questions/28984212/how-to-add-httpheader-in-request-globally-for-ios-swift/37474812#37474812">How To add HttpHeader in request globally for ios swift</a></li>
+<li><a href="http://stackoverflow.com/questions/24208229/wkwebview-and-nsurlprotocol-not-working">WKWebView and NSURLProtocol not working</a>）</li>
+</ul>
+<p>####问题 重定向问题<br>最近在 load webPage 的时候，发现重定向的时候 (A-&gt;B-&gt;C) 有问题，不能 load C，只能到 B，或者到 A。现在假设 (A-&gt;B) 这个情况，通过调试发现，两个 URL 的 NSURLProtocol 方法如下：<br>A:</p>
+<ul>
+<li>canInitWithRequest:</li>
+<li>canonicalRequestForRequest:</li>
+<li>startLoading</li>
+</ul>
+<p>B:</p>
+<ul>
+<li>canInitWithRequest:</li>
+<li>canonicalRequestForRequest:</li>
+</ul>
+<p>也就是说 startLoading 方法没有调用，webView 就不会加载 B。后面通过查找资料发现是网络请求的原因，于是将 NSURLConnection 换成了 NSURLSession，因为 NSURLSession 有个重定向的代理方法   URLSession:task:willPerformHTTPRedirection:newRequest:completionHandler:</p>
+<p>调整后的实例代码如下(其他的代码逻辑处理还是一样的)，</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">- (void)startLoading &#123;</span><br><span class="line">    NSMutableURLRequest *mutableReqeust &#x3D; [[self request] mutableCopy];</span><br><span class="line">    &#x2F;&#x2F;打标签，防止无限循环</span><br><span class="line">    [NSURLProtocol setProperty:@(YES) forKey:URLProtocolHandledKey inRequest:mutableReqeust];</span><br><span class="line"></span><br><span class="line">    NSURLSessionConfiguration *configure &#x3D; [NSURLSessionConfiguration defaultSessionConfiguration];</span><br><span class="line">    NSOperationQueue *queue &#x3D; [[NSOperationQueue alloc] init];</span><br><span class="line">    self.session &#x3D; [NSURLSession sessionWithConfiguration:configure delegate:self delegateQueue:queue];</span><br><span class="line">    self.task &#x3D; [self.session dataTaskWithRequest:mutableReqeust];</span><br><span class="line">    [self.task resume];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)stopLoading &#123;</span><br><span class="line">    [self.session invalidateAndCancel];</span><br><span class="line">    self.session &#x3D; nil;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">#pragma mark - NSURLSessionDataDelegate</span><br><span class="line">- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(NSError *)error</span><br><span class="line">&#123;</span><br><span class="line">    if (error) &#123;</span><br><span class="line">        [self.client URLProtocol:self didFailWithError:error];</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        [self.client URLProtocolDidFinishLoading:self];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask</span><br><span class="line">didReceiveResponse:(NSURLResponse *)response</span><br><span class="line"> completionHandler:(void (^)(NSURLSessionResponseDisposition disposition))completionHandler</span><br><span class="line">&#123;</span><br><span class="line">    [self.client URLProtocol:self didReceiveResponse:response cacheStoragePolicy:NSURLCacheStorageNotAllowed];</span><br><span class="line">    completionHandler(NSURLSessionResponseAllow);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data</span><br><span class="line">&#123;</span><br><span class="line">    [self.client URLProtocol:self didLoadData:data];</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask willCacheResponse:(NSCachedURLResponse *)proposedResponse completionHandler:(void (^)(NSCachedURLResponse * _Nullable))completionHandler</span><br><span class="line">&#123;</span><br><span class="line">    completionHandler(proposedResponse);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task willPerformHTTPRedirection:(NSHTTPURLResponse *)response newRequest:(NSURLRequest *)newRequest completionHandler:(void (^)(NSURLRequest *))completionHandler</span><br><span class="line">&#123;</span><br><span class="line">    NSMutableURLRequest *redirectRequest &#x3D; [newRequest mutableCopy];</span><br><span class="line">    [[self class] removePropertyForKey:URLProtocolHandledKey inRequest:redirectRequest];</span><br><span class="line">    [[self client] URLProtocol:self wasRedirectedToRequest:redirectRequest redirectResponse:response];</span><br><span class="line">    </span><br><span class="line">    [self.task cancel];</span><br><span class="line">    [[self client] URLProtocol:self didFailWithError:[NSError errorWithDomain:NSCocoaErrorDomain code:NSUserCancelledError userInfo:nil]];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>####参考链接</p>
+<ul>
+<li><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/Foundation/Classes/NSURLProtocol_Class/">https://developer.apple.com/library/mac/documentation/Cocoa/Reference/Foundation/Classes/NSURLProtocol_Class/</a></li>
+<li><a href="https://developer.apple.com/library/mac/documentation/Cocoa/Reference/Foundation/Protocols/NSURLProtocolClient_Protocol/">https://developer.apple.com/library/mac/documentation/Cocoa/Reference/Foundation/Protocols/NSURLProtocolClient_Protocol/</a></li>
+<li><a href="https://github.com/mattt/NSEtcHosts">https://github.com/mattt/NSEtcHosts</a></li>
+<li><a href="http://stackoverflow.com/questions/25539837/how-to-add-customize-http-headers-in-uiwebview-request-my-uiwebview-is-based-on">http://stackoverflow.com/questions/25539837/how-to-add-customize-http-headers-in-uiwebview-request-my-uiwebview-is-based-on</a></li>
+</ul>
+<p>####其他学习链接</p>
+<ul>
+<li><a href="https://www.raywenderlich.com/59982/nsurlprotocol-tutorial">NSURLProtocol Tutorial</a></li>
+<li><a href="http://nshipster.com/nsurlprotocol/">NSURLProtocol - nshipster</a></li>
+<li><a href="http://xiongzenghuidegithub.github.io/blog/2015/01/07/nsurlprotocol/">NSURLProtocol - xiongzenghuidegithub</a></li>
+<li><a href="http://www.jianshu.com/p/7c89b8c5482a">iOS开发之— NSURLProtocol</a></li>
+<li><a href="https://yq.aliyun.com/articles/7470?spm=5176.100239.blogrightarea55708.13.Tob8Rp">研究笔记：iOS中使用WebViewProxy拦截URL请求</a></li>
+<li><a href="http://xiangwangfeng.com/2014/11/29/NSURLProtocol%E5%92%8CNSRunLoop%E7%9A%84%E9%82%A3%E4%BA%9B%E5%9D%91/">NSURLProtocol和NSRunLoop的那些坑</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/NSURLProtocol/" rel="tag"># NSURLProtocol</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2016/06/23/simple-algorithm/" rel="prev" title="OC数组排列组合">
+      <i class="fa fa-chevron-left"></i> OC数组排列组合
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2016/09/24/Xcode-Concepts/" rel="next" title="Xcode Concepts">
+      Xcode Concepts <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">joakim.liu</p>
+  <div class="site-description" itemprop="description">你不解决问题，就会成为问题。iOS菜逗一枚。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/JoakimLiu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/JoakimLiu" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">joakim.liu</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://example.com/2016/06/26/NSURLProtocol%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-UIWebView-%E8%AE%BE%E7%BD%AE%E8%AF%B7%E6%B1%82%E5%A4%B4/";
+    this.page.identifier = "2016/06/26/NSURLProtocol学习笔记-UIWebView-设置请求头/";
+    this.page.title = "NSURLProtocol学习笔记-UIWebView 设置请求头";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://http-joakimliu-github-io.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

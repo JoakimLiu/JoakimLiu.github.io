@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="本文是对 Image and Graphics Best Practices 的一个学习记录文章，主要讲了图像加载的过程，要怎么优化内存和 CPU ，构建更流畅的应用程序。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Image and Graphics Best Practices">
+<meta property="og:url" content="http://example.com/2019/03/02/wwdc-2018-219/index.html">
+<meta property="og:site_name" content="牛易疯先森的开发记录">
+<meta property="og:description" content="本文是对 Image and Graphics Best Practices 的一个学习记录文章，主要讲了图像加载的过程，要怎么优化内存和 CPU ，构建更流畅的应用程序。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2018/219/mvc.png?raw=true">
+<meta property="og:image" content="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2018/219/image-rendering-pipeline.png?raw=true">
+<meta property="og:image" content="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2018/219/buffers.png?raw=true">
+<meta property="og:image" content="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2018/219/image-buffers.png?raw=true">
+<meta property="og:image" content="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2018/219/frame-buffer.png?raw=true">
+<meta property="og:image" content="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2018/219/pipeline-in-action.png?raw=true">
+<meta property="og:image" content="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2018/219/decoding-concerns.png?raw=true">
+<meta property="og:image" content="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2018/219/downsampling.png?raw=true">
+<meta property="og:image" content="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2018/219/decoding-in-scrollable-views.png?raw=true">
+<meta property="og:image" content="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2018/219/image-sources.png?raw=true">
+<meta property="og:image" content="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2018/219/vector-artwork-pipeline.png?raw=true">
+<meta property="og:image" content="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2018/219/drawing.png?raw=true">
+<meta property="article:published_time" content="2019-03-02T07:38:31.000Z">
+<meta property="article:modified_time" content="2021-05-20T15:34:25.624Z">
+<meta property="article:author" content="joakim.liu">
+<meta property="article:tag" content="WWDC">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2018/219/mvc.png?raw=true">
+
+<link rel="canonical" href="http://example.com/2019/03/02/wwdc-2018-219/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Image and Graphics Best Practices | 牛易疯先森的开发记录</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">牛易疯先森的开发记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/03/02/wwdc-2018-219/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Image and Graphics Best Practices
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-03-02 15:38:31" itemprop="dateCreated datePublished" datetime="2019-03-02T15:38:31+08:00">2019-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本文是对 <a href="https://developer.apple.com/videos/play/wwdc2018/219/">Image and Graphics Best Practices</a> 的一个学习记录文章，主要讲了图像加载的过程，要怎么优化内存和 CPU ，构建更流畅的应用程序。</p>
+<a id="more"></a>
+
+<h1 id="Memory-and-CPU"><a href="#Memory-and-CPU" class="headerlink" title="Memory and CPU"></a>Memory and CPU</h1><p>它们是最重要的资源，它们都有各自独立的检测工具，它们是错综复杂联系在一起的。当 app 使用更多的 CPU 时，对电池寿命和响应有负面影响。不那么明显的是，当你的 App 和系统上其他 App 消耗更多的内存时，也会导致更多的 CPU 使用率，对电池寿命和性能有一定的不利影响。所以要减少内存和 CPU 的使用。</p>
+<p>内存和CPU分别对性能的影响。</p>
+<h1 id="UIImage-and-UIImageView"><a href="#UIImage-and-UIImageView" class="headerlink" title="UIImage and UIImageView"></a>UIImage and UIImageView</h1><p>在 MVC 风格上， UIImage 是一个 model, UIImageView 则是 view 。它们的责任就是， UIImage 负责加载图像内容， UIImageView 负责显示渲染它，如下图所示</p>
+<p><img src="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2018/219/mvc.png?raw=true" alt="UIImage UIImageView MVC"></p>
+<p>其实它们的关系不像上图那样单一，实际上会更加复杂一点，如下图所示，中间还有一个隐藏的阶段：解码(decoding)，当然渲染是一个持续的过程。</p>
+<p><img src="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2018/219/image-rendering-pipeline.png?raw=true" alt="Image Rendering Pipeline"></p>
+<p>为了讨论解码，我们先讨论一个叫做缓冲区(buffer)的概念，它是一段连续的内存区域。习惯用缓冲区来表示由<strong>一系列元素组成的内存</strong>，这些元素具有相同尺寸，并通常具有相同的内部结构。</p>
+<p><img src="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2018/219/buffers.png?raw=true" alt="Buffers"></p>
+<h2 id="Image-Buffers"><a href="#Image-Buffers" class="headerlink" title="Image Buffers"></a>Image Buffers</h2><p>图像缓冲区(Image Buffers)是一种特殊缓冲区。</p>
+<ul>
+<li>在内存中以图像的形式展现</li>
+<li>每个元素描述了图像中每个像素的颜色和透明度</li>
+<li>此缓冲区的内存大小与它包含图像的大小成正比</li>
+</ul>
+<p><img src="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2018/219/image-buffers.png?raw=true" alt="Image Buffers"></p>
+<h3 id="The-frame-buffer"><a href="#The-frame-buffer" class="headerlink" title="The frame buffer"></a>The frame buffer</h3><p>帧缓冲区(frame buffer)负责在 App 中保存实际渲染后的输出。因此，当你的 App 更新其视图层级结构时， UIKit 将重新渲染 App 的窗口及其所有子视图到帧缓冲区。该帧缓冲区提供每个像素的<strong>颜色信息</strong>，显示硬件将读取这些信息，以便点亮显示器上对应的像素。 最后一部分（即显示器读取）以固定的时间间隔发生， 60Hz(每 1/60s(约 16.67hm) 一次) ，在配备 ProMotion Display 的 iPad 上是 120Hz 。如果 App 没有任何改变，则显示硬件会将它上次看到的相同数据从帧缓冲区取出。当改变时，例如改变 image , UIKit 会重新渲染，走之前的流程。流程图如下：</p>
+<p><img src="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2018/219/frame-buffer.png?raw=true" alt="frame buffer"></p>
+<h2 id="Data-Buffers"><a href="#Data-Buffers" class="headerlink" title="Data Buffers"></a>Data Buffers</h2><p>数据缓冲区(data buffer)，一种包含一系列字节的缓冲区。 包含图像文件的数据缓冲区通常以某些元数据开头，这些元数据描述了存储在数据缓冲区中的图像大小。(ps:有一个无需下载图像就能知道图像大小的第三方库 <a href="https://github.com/malcommac/ImageSizeFetcher">ImageSizeFetcher</a>)</p>
+<h2 id="Pipeline-in-Action"><a href="#Pipeline-in-Action" class="headerlink" title="Pipeline in Action"></a>Pipeline in Action</h2><p>下图讲了显示图像设置管道。</p>
+<p><img src="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2018/219/pipeline-in-action.png?raw=true" alt="Pipeline in Action"></p>
+<p>有一个图像视图(UIImageView) ，右边白色实线标记是它的帧缓冲区区域（该区域将由图像进行渲染填充，在此图中，已被帧缓冲区填满），我们为图像视图设置了一个图像(UIImage 从磁盘读取或者网络请求得到的)，它有一个表示图像的数据缓冲区。但是我们需要用像素数据来填充帧缓冲区，所以图像将分配一个图像缓冲区（其大小等于包含在数据缓冲区中的图像的大小，图像的内存大小怎么算呢？见下面的 ps），并执行解码操作（将 JEPG 或者 PNG 或者其他编码的图像数据转换为每个像素的图像信息）。然后取决于我们的图像视图的内容模式，当 UIKit 要求图像视图进行渲染时，它将复制并缩放图像缓冲区中的图像数据，同时将其复制到帧缓冲区中。</p>
+<p>(ps: <a href="http://joakimliu.github.io/2019/02/24/wwdc-2011-129/">Practical Drawing for iOS Developers(Quartz 2D Programming Guide)</a> 里面 <code>MyCreateBitmapContext</code> 有讲到，<code>pixelsWide*4*pixelsHigh</code>(像素宽 * 4 * 像素高，因为位图中的每个像素由4个字节(byte)表示; 红色，绿色，蓝色和 alpha 各 8 位(bit))，用代码就是 <code>CGImageGetHeight(thumbImage.CGImage) * CGImageGetBytesPerRow(thumbImage.CGImage)</code>) 3000*2000 pixel</p>
+<p><img src="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2018/219/decoding-concerns.png?raw=true" alt="Decoding Concerns"></p>
+<p>在解码阶段是 CPU 密集型的，特别是对于大型图像。因此，不是每次 UIKit 要求图像视图渲染时都执行一次这个过程，图像绑定在该图像缓冲区上，因此它<strong>只能执行一次这个过程</strong>。 因此，对于每个被解码的图像， App 可能会持续存在大量的内存分配。这种内存分配<strong>与输入图像的大小成正比</strong>，而与帧缓冲区中实际渲染的<strong>图像视图的大小没有必然联系</strong>。    所以对性能会产生一些负面影响。 App 地址空间中的大块内存分配可能会迫使其他相关内容远离它想要引用的内容，这种情况被称为碎片，滥用内存的后果。 最终，如果 App 开始占用越来越多的内存，操作系统将会介入，并开始透明的压缩物理内存(physical memory)的内容。CPU 需要参与到这个操作中，因此除了你自己 App 对 CPU 的使用外，你可能会增加<strong>无法控制的</strong>全局 CPU 使用率。最终，你的 App 可能会消耗更多的物理内存，以至于操作系统需要启动终止进程，它将从低优先级的后台进程开始。如果你的 App 消耗了达到特定数量的内存，你的 App 可能会被终止。而其中被终止的后台进程可能正执行某些重要的工作，因此，它们可能一终止就立即重新启动。所以，即使你的 App 可能只会在短时间内消耗内存，它可能对 CPU 使用率产生深远的影响。所以，我们希望减少 App 的内存使用量，可以用一种称为向下采样(downsampling)的技术来实现这一目标。</p>
+<p><img src="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2018/219/downsampling.png?raw=true" alt="downsampling"></p>
+<p>我们要显示图像的图像视图实际上比要显示的图像小。 Core animation 在渲染阶段将负责缩小该图像，但我们可以节省一些内存（因为我们将有一个较小的图像缓冲区）。就是上图所示的 Thumbnail 处理。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">downsample</span><span class="params">(imageAt imageURL: URL, to pointSize: CGSize, scale: CGFloat)</span></span> -&gt; <span class="type">UIImage</span> &#123;</span><br><span class="line">    <span class="keyword">let</span> imageSourceOptions <span class="operator">=</span> [kCGImageSourceShouldCache: <span class="literal">false</span>] <span class="keyword">as</span> <span class="type">CFDictionary</span></span><br><span class="line">    <span class="keyword">let</span> imageSource <span class="operator">=</span> <span class="type">CGImageSourceCreateWithURL</span>(imageURL <span class="keyword">as</span> <span class="type">CFURL</span>, imageSourceOptions)<span class="operator">!</span></span><br><span class="line">    <span class="keyword">let</span> maxDimensionInPixels <span class="operator">=</span> <span class="built_in">max</span>(pointSize.width, pointSize.height) <span class="operator">*</span> scale</span><br><span class="line">    <span class="keyword">let</span> downsampleOptions <span class="operator">=</span></span><br><span class="line">    [kCGImageSourceCreateThumbnailFromImageAlways: <span class="literal">true</span>,</span><br><span class="line">             kCGImageSourceShouldCacheImmediately: <span class="literal">true</span>,</span><br><span class="line">       kCGImageSourceCreateThumbnailWithTransform: <span class="literal">true</span>,</span><br><span class="line">              kCGImageSourceThumbnailMaxPixelSize: maxDimensionInPixels] <span class="keyword">as</span> <span class="type">CFDictionary</span></span><br><span class="line">    <span class="keyword">let</span> downsampledImage <span class="operator">=</span></span><br><span class="line">    <span class="type">CGImageSourceCreateThumbnailAtIndex</span>(imageSource, <span class="number">0</span>, downsampleOptions)<span class="operator">!</span></span><br><span class="line">    <span class="keyword">return</span> <span class="type">UIImage</span>(cgImage: downsampledImage)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>kCGImageSourceShouldCache = false</code> 这就告诉了 Core Graphics ，我们只是在创建一个对象，来表示存储在该 URL 的文件中的信息。不要立即解码这个图像，只需创建一个表示它的对象，我们将需要来自此 URL 中的信息。<br><code>kCGImageSourceShouldCacheImmediately = true</code> 告诉 Core Graphics ，当我要求你创建缩略图时，这就是你应该为我创建解码图像缓冲区的确切时刻，因此，我们可以确切的控制何时调用 CPU 来进行解码。</p>
+<p><img src="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2018/219/decoding-in-scrollable-views.png?raw=true" alt="Decodin in Scrollable Views"></p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">collectionView</span><span class="params">(<span class="keyword">_</span> collectionView: UICollectionView, cellForItemAt indexPath: IndexPath)</span></span></span><br><span class="line">-&gt; <span class="type">UICollectionViewCell</span> &#123;</span><br><span class="line">    <span class="keyword">let</span> cell <span class="operator">=</span> collectionView.dequeueReusableCell(withReuseIdentifier: <span class="string">&quot;Cell&quot;</span>,</span><br><span class="line">                                                  <span class="keyword">for</span>: indexPath) <span class="keyword">as!</span> <span class="type">MyCollectionViewCell</span></span><br><span class="line">    cell.layoutIfNeeded() <span class="comment">// Ensure imageView is its final size.</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">let</span> imageViewSize <span class="operator">=</span> cell.imageView.bounds.size</span><br><span class="line">    <span class="keyword">let</span> scale <span class="operator">=</span> collectionView.traitCollection.displayScale</span><br><span class="line">    cell.imageView.image <span class="operator">=</span> downsample(imageAt: imageURLs[indexPath.item],</span><br><span class="line">                                      to: imageViewSize, scale: scale)</span><br><span class="line">    <span class="keyword">return</span> cell</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如上图和上述代码所示，在列表滚动的时候进行解码，当我们滚动页面时， CPU 相对比较空闲，或者它所做的工作可以在显示硬件需要帧缓冲区的下一个副本之前完成。所以当帧缓冲区被更新时，我们能够看到流动的效果，并且显示硬件能够及时获取到新帧。     当我们滑动的时候，即将显示另一行图像，在将单元格交回给 UICollectionView 之前，我们要求 Core Graphics 解码这些图像。这将会使用大量的 CPU 时间，以至于我们不得不重新渲染帧缓冲区，但显示器硬件按固定的时间间隔运行（下一帧获取的时候，还没渲染好）。因此，从用户的角度来看 App 好像卡住(stuttered)了一样，影响很慢，并且对电池寿命也有影响。 </p>
+<p>我们可以使用两种技术来平滑我们的 CPU 使用率。</p>
+<ul>
+<li>Prefetching: 基本思想是它允许 CollectionView 告知我们的数据源，它当前不需要一个单元格，但它在不久的将来需要。所以，如果你有任何工作要做，也许现在就可以提前开始，这允许我们<strong>随时间推移分摊 CPU 使用率，因此我们减少了 CPU 使用的峰值大小</strong>。</li>
+<li>Background: 既然随着时间分散了工作量，我们也可以将这些工作分散到可用的 CPU 上，代码如下。</li>
+</ul>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">collectionView</span><span class="params">(<span class="keyword">_</span> collectionView: UICollectionView,</span></span></span><br><span class="line"><span class="function"><span class="params">                    prefetchItemsAt indexPaths: [IndexPath])</span></span> &#123;</span><br><span class="line">    <span class="comment">// Asynchronously decode and downsample every image we are about to show</span></span><br><span class="line">    <span class="keyword">for</span> indexPath <span class="keyword">in</span> indexPaths &#123;</span><br><span class="line">        <span class="type">DispatchQueue</span>.global(qos: .userInitiated).async &#123;</span><br><span class="line">            <span class="keyword">let</span> downsampledImage <span class="operator">=</span> downsample(images[indexPath.row])</span><br><span class="line">            <span class="type">DispatchQueue</span>.main.async &#123; <span class="keyword">self</span>.update(at: indexPath, with: downsampledImage) &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的代码会有一个问题，<strong>线程爆炸</strong>。当我们要求系统去做比 CPU 能够做的工作 更多的工作时就会发生这种情况。如果我们要显示一定数量的图像，比如同时显示 6 张或者 8 张图片，但是我们在只有两个 CPU 的设备上运行，我们不能一次完成所有的工作，因为我们无法在不存在的 CPU 上进行并行处理。 避免向一个全局队列中异步的分配任务时发生死锁， GCD 将创建新线程来捕捉我们要求它所做的工作，然后 CPU 将花费大量时间在这些线程之间进行切换，尝试在所有工作上取得 我们要求操作系统为我们做的 渐进式进展。来回切换，实际上是相当大的开销（要减少）。如果一个或者多个 CPU 有机会能一次处理完图片，效果会更好。 所以，我们现在创建串行队列，异步将工作分派给该队列。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> serialQueue <span class="operator">=</span> <span class="type">DispatchQueue</span>(label: <span class="string">&quot;Decode queue&quot;</span>)</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">collectionView</span><span class="params">(<span class="keyword">_</span> collectionView: UICollectionView,</span></span></span><br><span class="line"><span class="function"><span class="params">                    prefetchItemsAt indexPaths: [IndexPath])</span></span> &#123;</span><br><span class="line">    <span class="comment">// Asynchronously decode and downsample every image we are about to show</span></span><br><span class="line">    <span class="keyword">for</span> indexPath <span class="keyword">in</span> indexPaths &#123;</span><br><span class="line">        serialQueue.async &#123;</span><br><span class="line">            <span class="keyword">let</span> downsampledImage <span class="operator">=</span> downsample(images[indexPath.row])</span><br><span class="line">            <span class="type">DispatchQueue</span>.main.async &#123; <span class="keyword">self</span>.update(at: indexPath, with: downsampledImage) &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2018/219/image-sources.png?raw=true" alt="Image Sources"><br>图片来源有很多种，如下图所示，但是推荐用 <code>Image assets</code> ，有以下优点</p>
+<ul>
+<li>Optimized name- and trait-based lookup</li>
+<li>Smarter buffer caching</li>
+<li>Per-device thinning</li>
+<li>Vector artwork</li>
+</ul>
+<h3 id="Vector-Artwork"><a href="#Vector-Artwork" class="headerlink" title="Vector Artwork"></a>Vector Artwork</h3><p>从 iOS 11 开始， <code>image assets</code> 支持保存向量数据(Vecotr Data)，它能在绘制比他本身大小不相等的情况下，避免模糊和抗锯齿。 向量数据的工作方式与我们之前看到的管道非常相似(看下图)，只是这里不是一个解码阶段，而是一个栅格化(rasterize)阶段，它负责获取矢量数据，并将其转换为可复制到帧缓冲区的位图数据。 </p>
+<p><img src="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2018/219/vector-artwork-pipeline.png?raw=true" alt="Vector Artwork Pipeline"></p>
+<p>如果需要不同尺寸时，建议在 <code>image assets</code> 中放置不同尺寸的矢量数据，如果不这样处理的处理的话，会消耗更多的 CPU 资源。</p>
+<h1 id="Custom-drawing-with-UIKit"><a href="#Custom-drawing-with-UIKit" class="headerlink" title="Custom drawing with UIKit"></a>Custom drawing with UIKit</h1><p>不建议重写 <code>draw</code> 方法来实现自定义视图，因为会造成额外的内存开销。先看两者的绘制过程，如下图所示</p>
+<p><img src="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2018/219/drawing.png?raw=true" alt="Custom Drawing Versus UIImageView"></p>
+<p>每个视图实际上都是依赖 Core animation 运行时的 CALayer 实现的，真正渲染的是 CALayer ，我们可以将渲染好的位图赋值给它的 contents 属性。</p>
+<p>对于我们的 UIImageView 创建时，要求<strong>图像创建解码图像缓冲区</strong>，然后，将解码后的图像交给 CALayer ，用作其所在图层上内容。<br>对于我们重写 <code>draw</code> 得到的自定义视图，它们的过程很相似，但略有不同。 layer 负责创建 <code>Backing Store</code> (即连接到 CALayer 的图像缓冲区)，来保存我们 draw 方法的内容， view 执行 draw 函数并填充该图像缓冲区的内容，这些内容接着根据显示硬件的需要，被复制到帧缓冲区中。</p>
+<p>开销大原因是， 我们这里使用的 <code>Backing Store</code> ，其大小与我们正在显示的<strong>视图大小成正比</strong>， 计算方法是<code>view.size*view.contentsScale</code>。</p>
+<p>我们在 iOS12 中引入了一项新功能和优化，即 Backing Store 中元素的大小，实际上会动态增长，取决于你是否绘制任何有颜色的内容，以及该颜色的内容是否在标准色彩范围之内或之外。因此如果你使用扩展的 SRGB 颜色绘制广色域内容(wide color content)， Backing Store 实际上会比 仅适用 0-1 范围内的颜色的 Backing Store 大。在之前的 iOS 版本中，你可以通过设置 CALayer 的内容格式属性(contents format property)来作为对 Core Animation 的一个提示，即“我知道我需要(或者不需要)在这个视图中支持广色域内容”。如果你这样做，实际将将会禁用 iOS12 中引入的优化。所以，得检查 layerWillDraw 的实现。但我们可以做的比仅仅<strong>提示</strong>除了是否需要一个支持广色域的 Backing Store <strong>更好</strong>，我们实际上可以<strong>减少</strong> App 所需的 Backing Store 总量。</p>
+<h2 id="Reducing-Backing-Store-Use"><a href="#Reducing-Backing-Store-Use" class="headerlink" title="Reducing Backing Store Use"></a>Reducing Backing Store Use</h2><p>减少 Backing Store 使用的方法有以下几个：</p>
+<ul>
+<li>Refactor larger views into subview hierarchies </li>
+<li>Reduce or eliminate overrides of draw(_:) </li>
+<li>Eliminate duplicate copies of image data</li>
+<li>Use optimized view properties and subclasses</li>
+</ul>
+<p>说第一条和第二条减少了 Backing Store 的总量，可以帮助我们实现第三和第四条。</p>
+<h3 id="Alternatives-to-custom-drawing"><a href="#Alternatives-to-custom-drawing" class="headerlink" title="Alternatives to custom drawing"></a>Alternatives to custom drawing</h3><ul>
+<li>Overriding draw(_:) opts into backing store</li>
+<li>UIView.backgroundColor can render directly to frame buffer without a backing store<ul>
+<li>…except for pattern colors</li>
+<li>Use UIImageView with tiling image instead</li>
+</ul>
+</li>
+</ul>
+<p>第一条，因为重写 draw 方法将需要创建一个 Backing Store 以与 CALayer 一起使用。但是 View 的一些属性，即使你不重写 draw 方法，仍然可以工作，比如 backgroundColor ，除了 pattern color 。所以，建议不要在 UIView 中使用 pattern color 作为 backgroundColor 。相反，用 UIImageView with tiling image 替代。</p>
+<h3 id="Masking-versus-corner-radius"><a href="#Masking-versus-corner-radius" class="headerlink" title="Masking versus corner radius"></a>Masking versus corner radius</h3><ul>
+<li>UIView.maskView and CALayer.maskLayer render view hierarchy into temporary image buffer</li>
+<li>CALayer.cornerRadius does not require any image buffer</li>
+<li>Consider UIImageView with resizable image instead of masking for transparent backgrounds</li>
+</ul>
+<p>corner 建议用 CALayer.cornerRadius 。因为 Core Animation 能够渲染圆角，而不需要额外的内存分配。用 maskView 或者 maskLayer ，需要额外分配内存来存储它们。 如果有更加复杂透明区域的背景，不能用 cornerRadius 完成，应该考虑用 UIImageView ，将这些信息存储在 asset catalog 中或者运行时渲染它，然后作为图像提供给 UIImageView ，而不是用 maskView 或者 maskLayer 。</p>
+<h3 id="Eliminating-duplicate-image-data"><a href="#Eliminating-duplicate-image-data" class="headerlink" title="Eliminating duplicate image data"></a>Eliminating duplicate image data</h3><ul>
+<li>UIImageView can colorize monochrome images while rendering directly into frame buffer</li>
+<li>UIImage.withRenderingMode(_:) or Rendering Mode popup in asset inspector</li>
+<li>Set tintColor of image view to any solid color</li>
+</ul>
+<p>UIImageView 能够对单色图稿(monochrome artwork)着色，而不需要额外的内存分配。 在 asset 中设置渲染模式属性为 always template 或者代码 <code>UIImage.withRenderingMode</code> 方法实现。 然后将 Image 赋值给 UIImageView ，再设置 UIImageView 的 tintColor 为你想要的颜色。    在 UIImage 将图像渲染到帧缓冲区的过程中，它会在复制操作中使用纯色，而不需要持有一个有纯色图像的<strong>单独副本</strong>。</p>
+<h3 id="UILabel-optimizations-for-rendering-text"><a href="#UILabel-optimizations-for-rendering-text" class="headerlink" title="UILabel optimizations for rendering text"></a>UILabel optimizations for rendering text</h3><ul>
+<li>UILabel is optimized for monochrome strings </li>
+<li>Uses 75% smaller backing store when possible</li>
+<li>Automatically upgrades to larger backing store for multicolor strings, emoji</li>
+</ul>
+<p>推荐用 UILabel 。</p>
+<h2 id="Drawing-Off-Screen"><a href="#Drawing-Off-Screen" class="headerlink" title="Drawing Off-Screen"></a>Drawing Off-Screen</h2><p>当我们为了离屏渲染，要创建 image buffer 时，我们通常会使用 <code>UIGraphicsBeginImageContext</code>，但是最好还是用 <code>UIGraphicsImageRenderer </code>，它的性能更好、更高效，并且支持广色域。自动支持广色域的方式跟前面说的 Vector Artwork 相似，这里有一个中间地带，如果你主要将图像渲染到图形图像渲染器(graphic image render)中，该图像可能使用超出 SRGB 色域的色彩空间值，但实际上<strong>并不需要更大</strong>的元素来存储这些信息。所以 UIImage 有一个可以用来获取预构建的 <code>UIGraphicsImageRendererFormat</code> 对象的 image renderer format 属性，该对象用于重新渲染图像时进行最优化存储。</p>
+<h1 id="Advanced-CPU-and-GPU-techniques"><a href="#Advanced-CPU-and-GPU-techniques" class="headerlink" title="Advanced CPU and GPU techniques"></a>Advanced CPU and GPU techniques</h1><h2 id="Advanced-Image-Effects"><a href="#Advanced-Image-Effects" class="headerlink" title="Advanced Image Effects"></a>Advanced Image Effects</h2><p>图片效果推荐用 <code>Core Image</code> 。</p>
+<ul>
+<li>Consider Core Image for realtime effects</li>
+<li>Executes on GPU, freeing up CPU</li>
+<li>UIImageView renders CIImages efficiently UIImage.init(ciImage:)</li>
+</ul>
+<h2 id="Advanced-Image-Processing"><a href="#Advanced-Image-Processing" class="headerlink" title="Advanced Image Processing"></a>Advanced Image Processing</h2><ul>
+<li>Use CVPixelBuffer to move data to frameworks like Metal, Vision, and Accelerate </li>
+<li>Use the best initializer—don’t unwind work that’s already been done</li>
+<li>Guard against moving work between GPU and CPU</li>
+<li>Ensure buffers are correct format for Accelerate</li>
+</ul>
+<p>CVPixelBuffer 是 Metal Vision Accelerate 这些框架中常见的数据类型之一，它用来表示在 CPU 或 GPU 上正在使用或者尚未使用的 缓冲区。</p>
+<p>不要展开任何解码操作，这些工作已经由现有的 UIImage 或者 CGImage 实现完成。</p>
+<h1 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h1><ul>
+<li>Implement prefetching to prepare asynchronously</li>
+<li>Reduce backing store usage by using UIImageView and UILabel </li>
+<li>Don’t accidentally disable new optimizations for custom drawing (这是 iOS12 引入的新特性)</li>
+<li>Prefer image assets for bundled artwork</li>
+<li>Avoid over-reliance on Preserve Vector Data (提供不同尺寸的矢量数据，而不要让一个矢量数据支撑多个尺寸)</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/WWDC/" rel="tag"># WWDC</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/03/02/wwdc-2014-419/" rel="prev" title="Advanced Graphics and Animations for iOS Apps">
+      <i class="fa fa-chevron-left"></i> Advanced Graphics and Animations for iOS Apps
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/03/09/runloop-note/" rel="next" title="Runloop 基础">
+      Runloop 基础 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Memory-and-CPU"><span class="nav-number">1.</span> <span class="nav-text">Memory and CPU</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#UIImage-and-UIImageView"><span class="nav-number">2.</span> <span class="nav-text">UIImage and UIImageView</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Image-Buffers"><span class="nav-number">2.1.</span> <span class="nav-text">Image Buffers</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#The-frame-buffer"><span class="nav-number">2.1.1.</span> <span class="nav-text">The frame buffer</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Data-Buffers"><span class="nav-number">2.2.</span> <span class="nav-text">Data Buffers</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pipeline-in-Action"><span class="nav-number">2.3.</span> <span class="nav-text">Pipeline in Action</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Vector-Artwork"><span class="nav-number">2.3.1.</span> <span class="nav-text">Vector Artwork</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Custom-drawing-with-UIKit"><span class="nav-number">3.</span> <span class="nav-text">Custom drawing with UIKit</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Reducing-Backing-Store-Use"><span class="nav-number">3.1.</span> <span class="nav-text">Reducing Backing Store Use</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Alternatives-to-custom-drawing"><span class="nav-number">3.1.1.</span> <span class="nav-text">Alternatives to custom drawing</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Masking-versus-corner-radius"><span class="nav-number">3.1.2.</span> <span class="nav-text">Masking versus corner radius</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Eliminating-duplicate-image-data"><span class="nav-number">3.1.3.</span> <span class="nav-text">Eliminating duplicate image data</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UILabel-optimizations-for-rendering-text"><span class="nav-number">3.1.4.</span> <span class="nav-text">UILabel optimizations for rendering text</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Drawing-Off-Screen"><span class="nav-number">3.2.</span> <span class="nav-text">Drawing Off-Screen</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Advanced-CPU-and-GPU-techniques"><span class="nav-number">4.</span> <span class="nav-text">Advanced CPU and GPU techniques</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Advanced-Image-Effects"><span class="nav-number">4.1.</span> <span class="nav-text">Advanced Image Effects</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Advanced-Image-Processing"><span class="nav-number">4.2.</span> <span class="nav-text">Advanced Image Processing</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Summary"><span class="nav-number">5.</span> <span class="nav-text">Summary</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">joakim.liu</p>
+  <div class="site-description" itemprop="description">你不解决问题，就会成为问题。iOS菜逗一枚。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/JoakimLiu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/JoakimLiu" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">joakim.liu</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://example.com/2019/03/02/wwdc-2018-219/";
+    this.page.identifier = "2019/03/02/wwdc-2018-219/";
+    this.page.title = "Image and Graphics Best Practices";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://http-joakimliu-github-io.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="前言 当时刚开始搞iOS开发的时候，对断点调试的理解局限于：看代码风骚的走位，即当运行出来的效果对不住我的代码时，我会去看代码是怎么运行的，然后用雍正之剑去砍杀八阿哥。后面慢慢的接触lldb后，发现lldb用起来真的很赞，下面我来分享一下我在平时开发中积累的一些用法，这些用法有些是从网上发现的，有些是同事告诉我的。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="iOS开发中一些Debug方法">
+<meta property="og:url" content="http://example.com/2015/05/22/Some-Debug-Method-in-iOS/index.html">
+<meta property="og:site_name" content="牛易疯先森的开发记录">
+<meta property="og:description" content="前言 当时刚开始搞iOS开发的时候，对断点调试的理解局限于：看代码风骚的走位，即当运行出来的效果对不住我的代码时，我会去看代码是怎么运行的，然后用雍正之剑去砍杀八阿哥。后面慢慢的接触lldb后，发现lldb用起来真的很赞，下面我来分享一下我在平时开发中积累的一些用法，这些用法有些是从网上发现的，有些是同事告诉我的。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://ww4.sinaimg.cn/mw690/005IevIrgw1etip1fj483j30oj0adduk.jpg">
+<meta property="og:image" content="http://ww4.sinaimg.cn/mw690/005IevIrgw1etip1km9q3j30mb0bfwth.jpg">
+<meta property="article:published_time" content="2015-05-22T13:02:42.000Z">
+<meta property="article:modified_time" content="2021-01-22T14:55:23.849Z">
+<meta property="article:author" content="joakim.liu">
+<meta property="article:tag" content="Debug lldb">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://ww4.sinaimg.cn/mw690/005IevIrgw1etip1fj483j30oj0adduk.jpg">
+
+<link rel="canonical" href="http://example.com/2015/05/22/Some-Debug-Method-in-iOS/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>iOS开发中一些Debug方法 | 牛易疯先森的开发记录</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">牛易疯先森的开发记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2015/05/22/Some-Debug-Method-in-iOS/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          iOS开发中一些Debug方法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2015-05-22 21:02:42" itemprop="dateCreated datePublished" datetime="2015-05-22T21:02:42+08:00">2015-05-22</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%BB%8F%E9%AA%8C%E5%88%86%E4%BA%AB/" itemprop="url" rel="index"><span itemprop="name">经验分享</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><hr>
+<p>当时刚开始搞iOS开发的时候，对断点调试的理解局限于：看代码风骚的走位，即当运行出来的效果对不住我的代码时，我会去看代码是怎么运行的，然后用雍正之剑去砍杀八阿哥。后面慢慢的接触lldb后，发现lldb用起来真的很赞，下面我来分享一下我在平时开发中积累的一些用法，这些用法有些是从网上发现的，有些是同事告诉我的。</p>
+<a id="more"></a>
+
+<h1 id="相关用法"><a href="#相关用法" class="headerlink" title="相关用法"></a>相关用法</h1><hr>
+<h2 id="打印网络请求的相关信息"><a href="#打印网络请求的相关信息" class="headerlink" title="打印网络请求的相关信息"></a>打印网络请求的相关信息</h2><p>现在开发项目中没有网络请求都不好意思说自己在搞项目了，那为了方便调试，是不是要把请求的网址、请求的参数、服务器返回的数据等相关打印出来呢？我以前的做法都是在每个请求的API方法里将这些信息NSLog打印出来，直到最近我的主管告诉了我一个秘密。在网络请求库收到data的方法里面添加Debugger Command类型的断点。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">po [connection.currentRequest.URL absoluteString]</span><br><span class="line">po [NSString stringWithCString:(char*)[connection.currentRequest.HTTPBody bytes] encoding:4]</span><br><span class="line">po [NSString stringWithCString:(char*)[data bytes] encoding:4]</span><br></pre></td></tr></table></figure>
+<p>其实上面打印的东西我们都知道，我只是把他们放在了一个断点里面，让可以进行三连击：<em><strong>1、输出请求网址；2、输出请求参数；3、输出返回数据。</strong></em></p>
+<p>这样不仅解决了NSLog打印出来的中文数据显示为UTF8格式，还能省下我们很多代码量，是不是很nice。。。</p>
+<p>注：AF接收数据的方法 在AFURLConnectionOperation文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">- (void)connection:(NSURLConnection __unused *)connection</span><br><span class="line">    didReceiveData:(NSData *)data)</span><br></pre></td></tr></table></figure>
+<hr>
+<h2 id="显示图片"><a href="#显示图片" class="headerlink" title="显示图片"></a>显示图片</h2><p>当你创建UIImage对象从服务器端获取数据时，假如中间出了一点小问题，为了验证图片是否创建成功，可以试一下下面的debug方法。</p>
+<p>用将鼠标放在UIImage对象上面，然后按option键，在出现的弹出视图上面，点击像眼睛一样的图标，你可以看到：</p>
+<p><img src="http://ww4.sinaimg.cn/mw690/005IevIrgw1etip1fj483j30oj0adduk.jpg" alt="Image1"></p>
+<p>那么图片就显示出来了，并且你还可以选择 Open With Preview 在预览中打开该图片。当然还有一种方法能做到，在控制台的左侧，当断点执行时，你会看到相关对象，选择你要查看的对象，现在我也要查看UIImage对象，然后按space键，也能将图片显示出来。</p>
+<p><img src="http://ww4.sinaimg.cn/mw690/005IevIrgw1etip1km9q3j30mb0bfwth.jpg" alt="Image2"></p>
+<p>刚刚上面说的两种方法，除了能显示UIImage对象以后，UIImageView、UIView也行，至于其他的类型，我以前没有操作过，在以后的实践中可以试试。</p>
+<hr>
+<h2 id="po-的一个隐藏指令"><a href="#po-的一个隐藏指令" class="headerlink" title="po 的一个隐藏指令"></a>po 的一个隐藏指令</h2><p>在lldb中，<code>po</code> (<code>print object</code>的缩写) 是打印某个对象的指令，自然的 po xxxx (某个对象)应该是我用的最多的指令了，其实还有一个指令用来查看某个View的层级结构关系 <code>po  [self.view recursiveDescription]</code>。或许你觉得在控制栏下输出一大串代码不是很直观，那么你可以试试Xcode6 出来的 View debug方法，它能很好的解决这个问题，能更直观的查看视图的层级结构。</p>
+<hr>
+<h2 id="改变某些值"><a href="#改变某些值" class="headerlink" title="改变某些值"></a>改变某些值</h2><p>有的时候，我们程序运行时改变某个值，来看看效果。我们可以用<code>exp</code>(<code>expression</code>的缩写)。</p>
+<p><strong><em>改变某个字符串的值？</em></strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">(lldb) expression NSString *$xxString &#x3D; @&quot;111&quot;</span><br><span class="line">(lldb) po $xxString</span><br><span class="line">111</span><br><span class="line"></span><br><span class="line">(lldb) po $xxString &#x3D; @&quot;2222&quot;</span><br><span class="line">2222</span><br><span class="line"></span><br><span class="line">(lldb) expression $xxString &#x3D; @&quot;3333&quot;</span><br><span class="line">(__NSCFString *) $2 &#x3D; 0x00007fc793675a10 @&quot;3333&quot;</span><br><span class="line">(lldb) po $xxString</span><br><span class="line">3333</span><br><span class="line"></span><br><span class="line">(lldb) </span><br></pre></td></tr></table></figure>
+<p>哦哦，对了 <code>exp Class *$instance </code>是在lldb中创建实例。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">(lldb) expression int $b &#x3D; 10</span><br><span class="line">(lldb) po $b</span><br><span class="line">10</span><br><span class="line"></span><br><span class="line">(lldb) exp $b &#x3D; 100</span><br><span class="line">(int) $0 &#x3D; 100</span><br><span class="line">(lldb) po $b</span><br><span class="line">100</span><br><span class="line"></span><br><span class="line">(lldb) </span><br></pre></td></tr></table></figure>
+<p><strong><em>当然，我们还可以改变某个对象的属性，比如，如果我想要改变一个视图的背景颜色。</em></strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">po self.view.backgroundColor &#x3D; [UIColor redColor]</span><br><span class="line">call imageView.backgroundColor &#x3D; [UIColor greenColor]</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p><strong>*有时候，我想需要改变某个函数的返回值，来测试函数的稳健性，那可以试试 <code>thread return XXX</code>指令。 *</strong>  看一下下面的代码吧。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;&#x2F; Value</span><br><span class="line">NSString *string &#x3D; [self exeGetReturnString];</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;&#x2F; Method</span><br><span class="line">- (NSString *)exeGetReturnString &#123;</span><br><span class="line"></span><br><span class="line">    return @&quot;1111&quot;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;&#x2F; lldb</span><br><span class="line">(lldb) thread return @&quot;This is Changed String!!!&quot;</span><br><span class="line">(lldb) po string</span><br><span class="line">This is Changed String!!!</span><br><span class="line"></span><br><span class="line">(lldb) </span><br></pre></td></tr></table></figure>
+<p>我把断点设置在函数<code>exeGetReturnString </code>的返回值前面，可以看出<code>string</code>的值变了。这些改变值的方法，有时在调试程序的时候是非常有用的。</p>
+<h2 id="指定输出的格式"><a href="#指定输出的格式" class="headerlink" title="指定输出的格式"></a>指定输出的格式</h2><hr>
+<p>对于基本简单类型，我们可以指定它的输出类型<code>p/x</code>(x表示输出的类型)，这种最能体现在的就是整数类型数据之间二进制、八进制、十进制、十六进制的转换，虽然我们能算出来，但电脑应该算的比我们快，比我们准确吧！好吧，那让我们来一发试试吧。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">(lldb) expression int $a &#x3D; 1</span><br><span class="line">(lldb) po $a</span><br><span class="line">1</span><br><span class="line"></span><br><span class="line">(lldb) p&#x2F;t $a</span><br><span class="line">(int) $a &#x3D; 0b00000000000000000000000000000001</span><br><span class="line">(lldb) p&#x2F;o $a</span><br><span class="line">(int) $a &#x3D; 01</span><br><span class="line">(lldb) p&#x2F;x $a</span><br><span class="line">(int) $a &#x3D; 0x00000001</span><br><span class="line">(lldb) p&#x2F;d 0b00000000000000000000000000000001</span><br><span class="line">(int) $0 &#x3D; 1</span><br><span class="line">(lldb) p&#x2F;d 01</span><br><span class="line">(int) $1 &#x3D; 1</span><br><span class="line">(lldb) p&#x2F;d 0x00000001</span><br><span class="line">(int) $2 &#x3D; 1</span><br><span class="line">(lldb) </span><br></pre></td></tr></table></figure>
+<p>上面用的<code>p/X</code>(X代表进制，<code>t，二进制；o，八进制；d，十进制；x，十六进制</code>)。</p>
+<p>上面输出的<code> $X(0-2)</code>,这是啥意思呢？其实可以将他们看作是对操作对象的一个引用，可以直接使用这个符号来操作相对应的对象。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">(lldb) po $0</span><br><span class="line">1</span><br><span class="line"></span><br><span class="line">(lldb) po $1</span><br><span class="line">1</span><br><span class="line"></span><br><span class="line">(lldb) po $2</span><br><span class="line">1</span><br></pre></td></tr></table></figure>
+<h2 id="查找奔溃信息的位置"><a href="#查找奔溃信息的位置" class="headerlink" title="查找奔溃信息的位置"></a>查找奔溃信息的位置</h2><hr>
+<p>程序崩溃了要咋办？找到崩溃的地方，解决它撒。我们可以添加一个全局的断点<code>Add Exception Breakpoint</code>，当程序崩溃的时候，它能定位错误的代码位置。但是还有一种方法能找到错误的位置。<code>image lookup --address 0xXXXXXXXX</code>（0xXXXXXXXX为程序奔溃时控制台给出的地址）。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">NSString *originalString &#x3D; @&quot;0123&quot;;</span><br><span class="line">NSString *subString &#x3D; [originalString substringFromIndex:5];</span><br></pre></td></tr></table></figure>
+<p>好吧，这个代码的问题比较简单，我只是举个例子哈，[emoji]。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">2015-05-17 23:26:04.790 DebugMethod[5282:1628084] *** Terminating app due to uncaught exception &#39;NSRangeException&#39;, reason: &#39;*** -[__NSCFConstantString substringFromIndex:]: Index 5 out of bounds; string length 4&#39;</span><br><span class="line">*** First throw call stack:</span><br><span class="line">(</span><br><span class="line">	0   CoreFoundation                      0x0000000104a70c65 __exceptionPreprocess + 165</span><br><span class="line">	1   libobjc.A.dylib                     0x0000000104707bb7 objc_exception_throw + 45</span><br><span class="line">	2   CoreFoundation                      0x0000000104a70b9d +[NSException raise:format:] + 205</span><br><span class="line">	3   Foundation                          0x0000000104276ca8 -[NSString substringFromIndex:] + 118</span><br><span class="line">	4   DebugMethod                         0x00000001041d3936 -[ViewController viewDidLoad] + 710</span><br><span class="line">	5   UIKit                               0x0000000104f9b210 -[UIViewController loadViewIfRequired] + 738</span><br><span class="line">	6   UIKit                               0x0000000104f9b40e -[UIViewController view] + 27</span><br><span class="line">	7   UIKit                               0x0000000104eb62c9 -[UIWindow addRootViewControllerViewIfPossible] + 58</span><br><span class="line">	8   UIKit                               0x0000000104eb668f -[UIWindow _setHidden:forced:] + 247</span><br><span class="line">	9   UIKit                               0x0000000104ec2e21 -[UIWindow makeKeyAndVisible] + 42</span><br><span class="line">	10  UIKit                               0x0000000104e66457 -[UIApplication _callInitializationDelegatesForMainScene:transitionContext:] + 2732</span><br><span class="line">	11  UIKit                               0x0000000104e691de -[UIApplication _runWithMainScene:transitionContext:completion:] + 1349</span><br><span class="line">	12  UIKit                               0x0000000104e680d5 -[UIApplication workspaceDidEndTransaction:] + 179</span><br><span class="line">	13  FrontBoardServices                  0x000000010766f5e5 __31-[FBSSerialQueue performAsync:]_block_invoke_2 + 21</span><br><span class="line">	14  CoreFoundation                      0x00000001049a441c __CFRUNLOOP_IS_CALLING_OUT_TO_A_BLOCK__ + 12</span><br><span class="line">	15  CoreFoundation                      0x000000010499a165 __CFRunLoopDoBlocks + 341</span><br><span class="line">	16  CoreFoundation                      0x0000000104999f25 __CFRunLoopRun + 2389</span><br><span class="line">	17  CoreFoundation                      0x0000000104999366 CFRunLoopRunSpecific + 470</span><br><span class="line">	18  UIKit                               0x0000000104e67b42 -[UIApplication _run] + 413</span><br><span class="line">	19  UIKit                               0x0000000104e6a900 UIApplicationMain + 1282</span><br><span class="line">	20  DebugMethod                         0x00000001041d3d3f main + 111</span><br><span class="line">	21  libdyld.dylib                       0x000000010703f145 start + 1</span><br><span class="line">)</span><br><span class="line">libc++abi.dylib: terminating with uncaught exception of type NSException</span><br></pre></td></tr></table></figure>
+<p>其实从上面的崩溃信息中，我们可以看出是越界<code>NSRangeException</code>的问题，原因是<code>&#39;*** -[__NSCFConstantString substringFromIndex:]: Index 5 out of bounds; string length 4&#39;</code>，字符串本来长度为4，而要取的位置为5，所以越界了！！！</p>
+<p>假如，如果你一个ViewController里面用到了多个<code>[NSString substringFromIndex:]</code>方法，那是不是比较难找到崩溃的地方？这样<code>image lookup --address 0xXXXXXXXX</code>就派上用场了，从上面的错误信息中，可以初步断定<code>viewDidLoad</code>方法里的<code>substringFromIndex:</code>方法出错了，那我们就拿<code>viewDidLoad</code>的里面的错误地址取寻找。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(lldb) image lookup --address 0x00000001041d3936</span><br><span class="line">      Address: DebugMethod[0x0000000100001936] (DebugMethod.__TEXT.__text + 710)</span><br><span class="line">      Summary: DebugMethod&#96;-[ViewController viewDidLoad] + 710 at ViewController.m:34</span><br><span class="line">(lldb) </span><br></pre></td></tr></table></figure>
+<p>结果还真的被猜中了，从上面的结果来看，代码错在<code>ViewController.m</code>文件<code>viewDidLoad</code>34行。</p>
+<h1 id="一些问题的处理"><a href="#一些问题的处理" class="headerlink" title="一些问题的处理"></a>一些问题的处理</h1><hr>
+<p>在使用以上一些方法的时候，也遇到了一些问题。有的时候，它找不到对象类型或者方法，比如下面这个：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">(lldb) po self.view.frame</span><br><span class="line">error: property &#39;frame&#39; not found on object of type &#39;UIView *&#39;</span><br><span class="line">error: 1 errors parsing expression</span><br><span class="line">(lldb) po (CGRect)self.view.frame</span><br><span class="line">error: &#39;CGRect&#39; is not a valid command.</span><br><span class="line">(lldb) po (CGRect)[self.view frame]</span><br><span class="line">(origin &#x3D; (x &#x3D; 0, y &#x3D; 0), size &#x3D; (width &#x3D; 375, height &#x3D; 667))</span><br><span class="line"> (origin &#x3D; (x &#x3D; 0, y &#x3D; 0), size &#x3D; (width &#x3D; 375, height &#x3D; 667))</span><br><span class="line">(lldb) exp @import UIKit</span><br><span class="line">(lldb) po self.view.frame</span><br><span class="line">(origin &#x3D; (x &#x3D; 0, y &#x3D; 0), size &#x3D; (width &#x3D; 375, height &#x3D; 667))</span><br><span class="line"> (origin &#x3D; (x &#x3D; 0, y &#x3D; 0), size &#x3D; (width &#x3D; 375, height &#x3D; 667))</span><br><span class="line">(lldb) </span><br></pre></td></tr></table></figure>
+<p>这个是找不到<code>UIView</code>的<code>frame</code>属性，我们可以制定输出的类型，或者引入<code>UIKit</code>库。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">(lldb) expr NSDictionary *$tmpDict &#x3D; [dataDict[@&quot;Data&quot;] firstObject]</span><br><span class="line">error: no known method &#39;-firstObject&#39;; cast the message send to the method&#39;s return type</span><br><span class="line">error: 1 errors parsing expression</span><br><span class="line">(lldb) expr NSDictionary *$tmpDict &#x3D; (NSDictionary *)[dataDict[@&quot;Data&quot;] firstObject]</span><br><span class="line">(lldb) po $tmpDict</span><br><span class="line">&#123;</span><br><span class="line">    Key &#x3D; 1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个是找不到<code>-firstObject</code>这个方法。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><hr>
+<p>以上这些我提到的方法，只是调试中的冰山一角，lldb里还有很多宝藏去挖掘。在开发项目中，对我们开发有利的去多了解，至于其他更牛逼的技巧（与实际开发项目没有多大关系的），我们有时间、有精力、有想法的可以多去探讨。研究的越多、越广，你会发现自己有很多很多很多很多都不知道，[emoji]，发现自己很菜很菜，因为搞技术就像一个无底洞嘛。</p>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><hr>
+<p><a href="https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/gdb_to_lldb_transition_guide/document/Introduction.html">About LLDB and Xcode</a></p>
+<p><a href="http://southpeak.github.io/blog/2015/01/25/gong-ju-pian-:lldbdiao-shi-qi/">工具篇：LLDB调试器</a></p>
+<p><a href="http://objccn.io/issue-19-2/">与调试器共舞 - LLDB 的华尔兹</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Debug-lldb/" rel="tag"># Debug lldb</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2015/05/03/Let-UIImageView-Can-Click-Like-UIButton/" rel="prev" title="让UIImageView像UIButton那样点击">
+      <i class="fa fa-chevron-left"></i> 让UIImageView像UIButton那样点击
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2015/06/26/A-way-of-implementation-for-adding-tag-to-photo/" rel="next" title="图片打标签的一种实现方式">
+      图片打标签的一种实现方式 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%9B%B8%E5%85%B3%E7%94%A8%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">相关用法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%93%E5%8D%B0%E7%BD%91%E7%BB%9C%E8%AF%B7%E6%B1%82%E7%9A%84%E7%9B%B8%E5%85%B3%E4%BF%A1%E6%81%AF"><span class="nav-number">2.1.</span> <span class="nav-text">打印网络请求的相关信息</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%98%BE%E7%A4%BA%E5%9B%BE%E7%89%87"><span class="nav-number">2.2.</span> <span class="nav-text">显示图片</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#po-%E7%9A%84%E4%B8%80%E4%B8%AA%E9%9A%90%E8%97%8F%E6%8C%87%E4%BB%A4"><span class="nav-number">2.3.</span> <span class="nav-text">po 的一个隐藏指令</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%94%B9%E5%8F%98%E6%9F%90%E4%BA%9B%E5%80%BC"><span class="nav-number">2.4.</span> <span class="nav-text">改变某些值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%87%E5%AE%9A%E8%BE%93%E5%87%BA%E7%9A%84%E6%A0%BC%E5%BC%8F"><span class="nav-number">2.5.</span> <span class="nav-text">指定输出的格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E6%89%BE%E5%A5%94%E6%BA%83%E4%BF%A1%E6%81%AF%E7%9A%84%E4%BD%8D%E7%BD%AE"><span class="nav-number">2.6.</span> <span class="nav-text">查找奔溃信息的位置</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98%E7%9A%84%E5%A4%84%E7%90%86"><span class="nav-number">3.</span> <span class="nav-text">一些问题的处理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">joakim.liu</p>
+  <div class="site-description" itemprop="description">你不解决问题，就会成为问题。iOS菜逗一枚。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/JoakimLiu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/JoakimLiu" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">joakim.liu</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://example.com/2015/05/22/Some-Debug-Method-in-iOS/";
+    this.page.identifier = "2015/05/22/Some-Debug-Method-in-iOS/";
+    this.page.title = "iOS开发中一些Debug方法";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://http-joakimliu-github-io.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

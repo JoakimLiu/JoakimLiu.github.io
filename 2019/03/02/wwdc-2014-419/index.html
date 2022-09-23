@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="本文是对 Advanced Graphics and Animations for iOS Apps 的一个学习记录文章，字幕在 transcripts ，当然也可以下载 WWDC 在桌面上看带有字幕的视频。这篇挺实用的，讲解了渲染的基本流程，以及怎么发现并解决渲染性能的问题。(ps: 20中旬发现这个视频下架了，可以在 419_hd_advanced_graphics_and_animation">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Advanced Graphics and Animations for iOS Apps">
+<meta property="og:url" content="http://example.com/2019/03/02/wwdc-2014-419/index.html">
+<meta property="og:site_name" content="牛易疯先森的开发记录">
+<meta property="og:description" content="本文是对 Advanced Graphics and Animations for iOS Apps 的一个学习记录文章，字幕在 transcripts ，当然也可以下载 WWDC 在桌面上看带有字幕的视频。这篇挺实用的，讲解了渲染的基本流程，以及怎么发现并解决渲染性能的问题。(ps: 20中旬发现这个视频下架了，可以在 419_hd_advanced_graphics_and_animation">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2014/419/pipeline1.png?raw=true">
+<meta property="og:image" content="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2014/419/pipeline2.png?raw=true">
+<meta property="og:image" content="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2014/419/commit-transaction.png?raw=true">
+<meta property="og:image" content="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2014/419/animation-process.png?raw=true">
+<meta property="og:image" content="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2014/419/tile-based-rendering.png?raw=true">
+<meta property="og:image" content="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2014/419/rendering-pass.png?raw=true">
+<meta property="og:image" content="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2014/419/masking-rendering-pass.png?raw=true">
+<meta property="og:image" content="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2014/419/blureffect-rendering-pass.png?raw=true">
+<meta property="og:image" content="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2014/419/blureffect1.png?raw=true">
+<meta property="og:image" content="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2014/419/blureffect2.png?raw=true">
+<meta property="og:image" content="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2014/419/vibrancyeffect-rendering-pass.png?raw=true">
+<meta property="og:image" content="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2014/419/vibrancyeffect1.png?raw=true">
+<meta property="og:image" content="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2014/419/vibrancyeffect2.png?raw=true">
+<meta property="og:image" content="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2014/419/performance-inverstigation-mindset.png?raw=true">
+<meta property="article:published_time" content="2019-03-02T01:07:01.000Z">
+<meta property="article:modified_time" content="2021-05-20T15:11:03.590Z">
+<meta property="article:author" content="joakim.liu">
+<meta property="article:tag" content="WWDC">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2014/419/pipeline1.png?raw=true">
+
+<link rel="canonical" href="http://example.com/2019/03/02/wwdc-2014-419/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Advanced Graphics and Animations for iOS Apps | 牛易疯先森的开发记录</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">牛易疯先森的开发记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/03/02/wwdc-2014-419/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Advanced Graphics and Animations for iOS Apps
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-03-02 09:07:01" itemprop="dateCreated datePublished" datetime="2019-03-02T09:07:01+08:00">2019-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本文是对 <a href="https://developer.apple.com/videos/play/wwdc2014/419/">Advanced Graphics and Animations for iOS Apps</a> 的一个学习记录文章，字幕在 <a href="https://asciiwwdc.com/2014/sessions/419">transcripts</a> ，当然也可以下载 <a href="https://wwdc.io/">WWDC</a> 在桌面上看带有字幕的视频。这篇挺实用的，讲解了渲染的基本流程，以及怎么发现并解决渲染性能的问题。(ps: 20中旬发现这个视频下架了，可以在 <a href="http://devstreaming.apple.com/videos/wwdc/2014/419xxli6f60a6bs/419/419_hd_advanced_graphics_and_animation_performance.mov?dl=1">419_hd_advanced_graphics_and_animation_performance.mov</a> 下载)。</p>
+<a id="more"></a>
+
+<h1 id="Core-Animation-Pipeline"><a href="#Core-Animation-Pipeline" class="headerlink" title="Core Animation Pipeline"></a>Core Animation Pipeline</h1><p>我们知道 Core Animation 是 iOS 上可用的图形渲染和动画基础结构，它将大部分实际绘图工作交给图形硬件以加速渲染(摘自官方文档<a href="https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/CoreAnimation_guide/Introduction/Introduction.html#//apple_ref/doc/uid/TP40004514">Core Animation Programming Guide</a>)。 我们先来看看 Core Animation 的管道图：</p>
+<p><img src="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2014/419/pipeline1.png?raw=true" alt="Animation Pipeline1"></p>
+<p>我们看到在应用程序(Application)和渲染服务器(Render Server)中都有 Core Animation ，但是渲染工作并不是在应用程序里(尽管它有 Core Animation)完成的。它只是将视图层级(view hierarchy)打包(encode)提交给渲染服务器(一个单独的进程，也有 Core Animation)， 视图层级才会被渲染。(“The view hierarchy is then rendered with Core Animation with OpenGL or metal, that’s the GPU.”) 大致流程如下：</p>
+<ul>
+<li>Handle Events: 它代表 touch, 即一切要更新视图层级的事情；</li>
+<li>Commit Transaction: 编码打包视图层级，发送给渲染服务器；</li>
+<li>Decode: 渲染服务器第一件事就是解码这些视图层级；</li>
+<li>Draw Calls: 渲染服务器必须等待下一次重新同步，以便等待缓冲区从 它们实现渲染的显示器 返回，然后最终开始为 GPU 绘制，这里就是 OpenGL or metal 。</li>
+<li>Render: 一旦视图资源可用， GPU 就开始它的渲染工作，希望在下个重新同步完成，因为要交换缓冲区给用户。</li>
+<li>Display: 显示给用户看。</li>
+</ul>
+<p>在上述情况下，这些不同的步骤总共跨越三帧。在最后一个步骤 display 后，是可以平行操作的，在 Draw call 的时候可以处理下一个 handler event 和 Commit Transaction 。如下图所示</p>
+<p><img src="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2014/419/pipeline2.png?raw=true" alt="Animation Pipeline2"></p>
+<h2 id="Commit-Transaction"><a href="#Commit-Transaction" class="headerlink" title="Commit Transaction"></a>Commit Transaction</h2><p>先聚焦 Commit transaction 这个阶段，因为这是开发者接触最多的，主要有四个阶段，如下图所示</p>
+<p><img src="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2014/419/commit-transaction.png?raw=true" alt="Commit Transaction"></p>
+<ul>
+<li>Layout: Set up the views. (重载的 <code>layoutSubviews</code> 方法会在这个阶段被调用；视图的创建，被添加到视图层级上；计算内容，比如：字符串，用来布局 label ；这个阶段通常是 CPU 或者 I/O 限制，所以做的事情要轻量)</li>
+<li>Display: Draw the views. (主要是 core graphics 用来绘制，调用重载的 <code>drawRect:</code> 方法来绘制，绘制字符串；这个阶段通常是 CPU 或者内存限制，所以减少 core graphics 的工作)</li>
+<li>Prepare: Additional Core Animation work. (主要是图片解码和图片转换。所以，图片大小和格式都是被 GPU 支持的，不然转换是发生在 CPU 上的，最好是 index bitmap ，可以免去转换)</li>
+<li>Commit: Package up the layers and send them to the render server. (视图层级不要太复杂，尽量扁平，因为这里的打包是循环处理的)</li>
+</ul>
+<h2 id="Animation"><a href="#Animation" class="headerlink" title="Animation"></a>Animation</h2><p>动画分为三个阶段，前面两个阶段在应用程序，最后一个在渲染服务器，如下图所示</p>
+<p><img src="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2014/419/animation-process.png?raw=true" alt="Animation Process"></p>
+<p>跟<strong>视图的不同的</strong>是，这里提交的不是视图层级，而是动画。这是出于效率的原因，方便我们可以继续更新动画，因为如果提交视图层级的话，动画一更新，又得返回到应用程序提交新的视图层级，很耗时。</p>
+<h1 id="Rendering-Concepts"><a href="#Rendering-Concepts" class="headerlink" title="Rendering Concepts"></a>Rendering Concepts</h1><p>来了解渲染的一些概念。</p>
+<h2 id="Tile-Based-Rendering"><a href="#Tile-Based-Rendering" class="headerlink" title="Tile Based Rendering"></a>Tile Based Rendering</h2><p>“first tile based rendering is how all GPUs work.” 基于图块的渲染是 GPU 的工作方式。</p>
+<p><img src="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2014/419/tile-based-rendering.png?raw=true" alt="Tile Based Rendering"></p>
+<ul>
+<li>屏幕被分割成 N*N 个像素块，就像之前讲 <a href="http://joakimliu.github.io/2019/02/24/wwdc-2011-129/">Points vs Pixels</a> 中的例子一样；</li>
+<li>每块都适应 Soc 缓存。(Soc: 苹果 A9 是一款由苹果公司设计的系统芯片(Soc)。可以理解为系统芯片。 维基百科上面写的，这个芯片是 2015.9.9 才首次发布)。</li>
+<li>几何体被分割成瓷砖桶(tile buckets)，这一步发生在 tiler stage (后面有提到)。这里举了 iPhone icon 的例子，从上图中可以看到，这个 icon 被分割成多个很小的三角形，使得这些三角形块可以单独的渲染，分割这样做的思路可以决定哪一块显示，哪一块渲染。 因为每个像素只有一个像素着色器，所以混合的话还是有问题的，涉及到覆盖绘制。</li>
+<li>几何体提交后，光栅化才开始。(所以光栅化能提升性能，因为几何体都提交了，下次渲染的时候就可以省略这一步。)</li>
+</ul>
+<h3 id="Rendering-pass"><a href="#Rendering-pass" class="headerlink" title="Rendering pass"></a>Rendering pass</h3><p><img src="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2014/419/rendering-pass.png?raw=true" alt="Rendering pass"></p>
+<p>如上图所示，我们假设视图层级已经被提交到渲染服务器，并且 Core Animation 已经解码它，现在需要用 OpenGL 或者 metal 去渲染了，文章讲师举例是用的 OpenGL (所以这里的 Slide 比前面讲 Core Animation Pipeline 的 Slide 在 Render Server 这一栏，多了 OpenGL 在里面)。具体流程如下：</p>
+<ul>
+<li>GPU 收到 Command Buffer ；</li>
+<li>顶点着色器开始运行，思路就是先将所有的顶点转换到屏幕空间，然后平铺处理，平铺成**瓷砖桶(tile bucket)**的几何图形（这里分两步走，先顶点处理然后平铺，统称为 Tiler stage, 在 Instrument 的 OpenGL ES tiler utilization 能看到这一步。）这一步的产出被写入 Parameter Buffer, 下一阶段不会马上启动。相反，会等待，直到 a. 处理完所有的几何体，并且都位于 Parameter Buffer 中；或者 b. Parameter buffer 已满（满了的话，必须刷新它）。</li>
+<li>像素着色器处理，这一步被称为 Renderer stage, 产出被写入 Render Buffer 。(在 Instrument 的 OpenGL ES renderer utilization 能看到这一步。)</li>
+</ul>
+<h3 id="Masking-Rendering-pass-Example"><a href="#Masking-Rendering-pass-Example" class="headerlink" title="Masking Rendering pass Example"></a>Masking Rendering pass Example</h3><p>举了一个渲染遮罩的例子，步骤如下图：</p>
+<p><img src="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2014/419/masking-rendering-pass.png?raw=true" alt="Masking Rendering Pass"></p>
+<p>分三步走，两步渲染，一步合成。</p>
+<ol>
+<li>将遮罩层(相机 icon)渲染到纹理(texture)上；</li>
+<li>将内容层渲染到纹理上；</li>
+<li>将遮罩添加到内容纹理上。</li>
+</ol>
+<p>(texture: 材质贴图，又称纹理贴图，在计算机图形学中是把存储在内存里的位图包裹到 3D 渲染物体的表面。可以把它理解成图片。)</p>
+<h1 id="UIBlurEffect"><a href="#UIBlurEffect" class="headerlink" title="UIBlurEffect"></a>UIBlurEffect</h1><p>UIBlurEffect 是 iOS8 新出的用来实现模糊效果的类。它的渲染过程如下：</p>
+<p><img src="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2014/419/blureffect-rendering-pass.png?raw=true" alt="UIBlurEffect Rendering Pass"></p>
+<p>再看下图，聚焦在一帧，</p>
+<p><img src="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2014/419/blureffect1.png?raw=true" alt="UIBlurEffect1"></p>
+<p>我们可以看到有三行，每一行代表一个事件</p>
+<ul>
+<li>tile activity</li>
+<li>render activity</li>
+<li>VBlank interrupt, “and the last row I put in the VBlank interrupt and we can actually see what our frame boundaries are.”  (我们实际上可以看到我们的帧边界是什么)</li>
+</ul>
+<p>然后我们看看每个渲染步骤所需的时间，每个渲染步骤都牵扯到了上面所提到的事件(tile/render/VBlank interrupt)。</p>
+<ol>
+<li>content pass, 在这种情况下，它只是一个简单的图像，因此如果我们涉及 UI ，可能需要更长的时间；</li>
+<li>downscale, 它实际上相当快。这几乎是不变的成本；</li>
+<li>horizontal blur, 也非常快，因为是小区域。</li>
+<li>vertical blur, 同上</li>
+<li>upscale and tint the blur</li>
+</ol>
+<p>我们注意到下图，每个步骤之间的间隙，用橘色标记了</p>
+<p><img src="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2014/419/blureffect2.png?raw=true" alt="UIBlurEffect2"></p>
+<p>5 个步骤中间有 4 个间隙，之所以存在，是因为这是发生在 GPU 上切换所花的时间。在空闲时间，每个步骤所花费的时间大概在 0.1<del>0.2ms, 所以总共 0.4</del>0.8ms, 所以这个是 16.67ms 的一个重要组成部分。</p>
+<p>还列举了不同设备间的耗时，有一种设备某个 Dark style 下的时间是 18.15ms, 超过 16.67ms, 所以不可能在 60 hert 渲染完成。所以 Apple 在这些设备上不支持 blur 。 </p>
+<p>UIBlurEffect 有三种 style: Extra light, Light, Dark ，它们消耗的资源各不相同， Dark 最少， Extra light 最多。</p>
+<h1 id="UIVibrancyEffect"><a href="#UIVibrancyEffect" class="headerlink" title="UIVibrancyEffect"></a>UIVibrancyEffect</h1><p>UIVibrancyEffect 是在模糊之上使用的效果，它可以<strong>确保内容突出，而不会被模糊</strong>。它的渲染过程如下：<br><img src="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2014/419/vibrancyeffect-rendering-pass.png?raw=true" alt="UIBlurEffect Rendering Pass"></p>
+<p>比 UIBlurEffect 多了两个步骤，最后一个步骤 filter 是最昂贵的，所以作用区域越小越好，千万别作用到全屏上。<br><img src="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2014/419/vibrancyeffect1.png?raw=true" alt="UIVibrancyEffect1"></p>
+<p>所以也会比 UIBlurEffect 多两个间隙，所以总共 0.6~1.2ms.<br><img src="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2014/419/vibrancyeffect2.png?raw=true" alt="UIVibrancyEffect2"></p>
+<h1 id="Profiling-tools"><a href="#Profiling-tools" class="headerlink" title="Profiling tools"></a>Profiling tools</h1><p>性能调查要考虑以下点</p>
+<p><img src="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2014/419/performance-inverstigation-mindset.png?raw=true" alt="Performance Investigation Mindset"></p>
+<ul>
+<li>What is the frame rate? Goal is always 60 fps.  // 检查工具： Core Animation template / OpenGL ES driver template</li>
+<li>CPU or GPU bound? Lower utilization is desired and saves battery.   (更少的 CPU 或者 GPU 利用率，让电池更持久。) // 检查工具： OpenGL ES driver template</li>
+<li>Any unnecessary CPU rendering? GPU is desirable but know when CPU makes sense.   (得知道渲染什么和怎么渲染， <code>drawRect</code> 方法尽量少用，减少让 CPU 的工作，让 GPU 做更多的渲染。) // 检查工具： Core Animation template / OpenGL ES driver template</li>
+<li>Too many offscreen passes? Fewer is better.   (前面说 UIBlurEffect 的时候有说到，橘色的间隙就是用在 GPU 切换时间，每个间隙大概 0.1~0.2ms 。 离屏渲染也会出现这样的情况，因为它必须进行切换，所以得减少。因为前面有提到，我们减少 CPU 或者 GPU 的使用时间。) // 检查工具： Core Animation template</li>
+<li>Too much blending? less is better. (GPU 处理 blending 合成的时候，操作昂贵，消耗性能) // 检查工具： Core Animation template</li>
+<li>Any strange image formats or sizes? Avoida on-the-fly conversions or resizing.  (会转给 CPU 去处理，增加 CPU 的负担) // 检查工具： Core Animation template</li>
+<li>Any expensive views or effects?  Understand the cost of what is in use.   (避免昂贵的效果，例如 Blur 和 Vibrancy ，得去考量。) // 检查工具： Xcode view debugging</li>
+<li>Anything unexpected in the view hierarchy?   Know the actual view hierarchy.   (添加和移除要匹配。) // 检查工具： Xcode view debugging</li>
+</ul>
+<h2 id="检查工具"><a href="#检查工具" class="headerlink" title="检查工具"></a>检查工具</h2><p>上面每个例子后面都有提到一个检测工具，这里来讲讲相应检测工具的作用。请注意一点，在开始挖掘代码以试图找出正在发生的事情之前，这总是一个很好的起点(<strong>先看大概发生什么问题，再深入研究代码</strong>)。</p>
+<h3 id="Core-Animation-template"><a href="#Core-Animation-template" class="headerlink" title="Core Animation template"></a>Core Animation template</h3><ul>
+<li>看 fps </li>
+<li>color blended layers, green 表示不透明， red 代表需要去 blend 混合。 增加 GPU 的工作。 绿多红少，是理想中的状态。</li>
+<li>color hit screens and misses red,  展示如何使用或滥用 CALayer’rasterize 属性，没命中缓存就是红色。第一次启动会有很多红色，因为必须在它被缓存之前渲染一次，后面就没有了，因为缓存了。</li>
+<li>color copied images, 如果是 GPU 不支持的图片就会让 CPU 去转换(在 commit phase)，增加了 CPU 的工作。 显示为蓝绿色(cyan)就表示让 CPU 去转换，影响滚动体验。 所以 size and color/image format 最好提前在后台处理好，不要阻塞主线程。</li>
+<li>color misaligned images, 黄色表示需要缩放，紫色表示像素没对齐。</li>
+<li>color offscreen-rendered yellow, 黄色代表离屏渲染。 nav bar 和 tool bar 是黄色，因为这些图层的模糊实际上模糊了它背后的内容(前面 blur 有讲过)。</li>
+<li>color OpenGL fast path blue, 蓝色是好事，由显示硬件去 blend ，这样就会减少 GPU 的工作。</li>
+<li>flash updated regions,  正在更新的部分为黄色。 理想状况下，黄色区域越少越好。它意味着 CPU 和 GPU 的工作都减少了。</li>
+</ul>
+<h3 id="OpenGL-ES-driver-template"><a href="#OpenGL-ES-driver-template" class="headerlink" title="OpenGL ES driver template"></a>OpenGL ES driver template</h3><ul>
+<li>device utilization,  which will show you how much the GPU is in use during the trace. (使用率越少越好，这里举例的是 30% vs 70%(心中的理想值))</li>
+<li>render and tiler utilization,  correspond to the renderer and tiler phases.</li>
+<li>CoreAnimationFramesPerSecond,  what the actual frame rate is that we’re seeing.</li>
+</ul>
+<h3 id="Time-Profiler-template"><a href="#Time-Profiler-template" class="headerlink" title="Time Profiler template"></a>Time Profiler template</h3><ul>
+<li>看调用栈耗时，看 CPU 在干什么；</li>
+</ul>
+<h1 id="Case-studies"><a href="#Case-studies" class="headerlink" title="Case studies"></a>Case studies</h1><p>讲了两个例子(Fictitious Photo/Contacts Application)，在旧设备上性能较差，都是 offscreen render 导致的，并且还是项目中常用的设置阴影和设置圆角。要在不同的设备上测试，尽管新设备没问题，可能旧设备就有问题。</p>
+<h2 id="Shadow"><a href="#Shadow" class="headerlink" title="Shadow"></a>Shadow</h2><p>一般情况下是用以下代码，但是不要用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">CALayer *imageViewLayer &#x3D; cell.imageView.layer;</span><br><span class="line">imageViewLayer.shadowColor &#x3D; [UIColor blackColor].CGColor;</span><br><span class="line">imageViewLayer.shadowOpacity &#x3D; 1.0;</span><br><span class="line">imageViewLayer.shadowRadius &#x3D; 2.0;</span><br><span class="line">imageViewLayer.shadowOffset &#x3D; CGSizeMake(1.0, 1.0);</span><br></pre></td></tr></table></figure>
+<p>请用更高效的</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">imageViewLayer.shadowPath &#x3D; CGPathCreateWithRect(imageRect, NULL);</span><br></pre></td></tr></table></figure>
+<p>因为 Core Animation 必须知道阴影的形状和位置，所以它用 offscreen pass 去渲染内容，在查看刚刚渲染的 alpha channel 来找出阴影的位置。</p>
+<h2 id="Round"><a href="#Round" class="headerlink" title="Round"></a>Round</h2><p>一般情况下是用以下代码，但是不要用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CALayer *imageViewLayer &#x3D; cell.imageView.layer;</span><br><span class="line">imageViewLayer.cornerRadius &#x3D; imageHeight &#x2F; 2.0;</span><br><span class="line">imageViewLayer.masksToBounds &#x3D; YES;</span><br></pre></td></tr></table></figure>
+<p>下面的方式可能会更高效：</p>
+<ul>
+<li>不要在渲染的时候使用 mask ，提前生成圆头像</li>
+<li>如果上面的方式做不到，可以在头像上面盖一个中间透明的视图，尽管增加 GPU blend 的工作，但是还是会比离屏渲染快，所以还是可行的。</li>
+</ul>
+<p>优化后设备利用率(Device Utilization)是 30% ，之前有 80%，但是没有达到 100% ，这是因为当有离屏渲染时，GPU 必须得有来回切换的空闲时间，所以知道尽管受到 GPU 的限制，由于 offscreen passes 的存在，利用率都达不到 100% 。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/WWDC/" rel="tag"># WWDC</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/03/01/Drawing-and-Printing-Guide-for-iOS/" rel="prev" title="Drawing and Printing Guide for iOS">
+      <i class="fa fa-chevron-left"></i> Drawing and Printing Guide for iOS
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/03/02/wwdc-2018-219/" rel="next" title="Image and Graphics Best Practices">
+      Image and Graphics Best Practices <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Core-Animation-Pipeline"><span class="nav-number">1.</span> <span class="nav-text">Core Animation Pipeline</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Commit-Transaction"><span class="nav-number">1.1.</span> <span class="nav-text">Commit Transaction</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Animation"><span class="nav-number">1.2.</span> <span class="nav-text">Animation</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Rendering-Concepts"><span class="nav-number">2.</span> <span class="nav-text">Rendering Concepts</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Tile-Based-Rendering"><span class="nav-number">2.1.</span> <span class="nav-text">Tile Based Rendering</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Rendering-pass"><span class="nav-number">2.1.1.</span> <span class="nav-text">Rendering pass</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Masking-Rendering-pass-Example"><span class="nav-number">2.1.2.</span> <span class="nav-text">Masking Rendering pass Example</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#UIBlurEffect"><span class="nav-number">3.</span> <span class="nav-text">UIBlurEffect</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#UIVibrancyEffect"><span class="nav-number">4.</span> <span class="nav-text">UIVibrancyEffect</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Profiling-tools"><span class="nav-number">5.</span> <span class="nav-text">Profiling tools</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A3%80%E6%9F%A5%E5%B7%A5%E5%85%B7"><span class="nav-number">5.1.</span> <span class="nav-text">检查工具</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Core-Animation-template"><span class="nav-number">5.1.1.</span> <span class="nav-text">Core Animation template</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#OpenGL-ES-driver-template"><span class="nav-number">5.1.2.</span> <span class="nav-text">OpenGL ES driver template</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Time-Profiler-template"><span class="nav-number">5.1.3.</span> <span class="nav-text">Time Profiler template</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Case-studies"><span class="nav-number">6.</span> <span class="nav-text">Case studies</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Shadow"><span class="nav-number">6.1.</span> <span class="nav-text">Shadow</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Round"><span class="nav-number">6.2.</span> <span class="nav-text">Round</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">joakim.liu</p>
+  <div class="site-description" itemprop="description">你不解决问题，就会成为问题。iOS菜逗一枚。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/JoakimLiu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/JoakimLiu" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">joakim.liu</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://example.com/2019/03/02/wwdc-2014-419/";
+    this.page.identifier = "2019/03/02/wwdc-2014-419/";
+    this.page.title = "Advanced Graphics and Animations for iOS Apps";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://http-joakimliu-github-io.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="前言最近在做支付相关的东西，其中牵扯到了RSA、DES、证书等密码学相关知识，在网上也搜了相关的东西，感觉太杂了，没有把相关知识融合在一起，看完《图解秘密技术》后，算是有个了大致的了解，所以这算是一篇简单的读后感吧【这本书讲的通俗易懂，也比较全面，适合入门】。加密，我们在开发中或多或少都会碰到。按照我个人的理解，就是不想让其他人知道你所发送的消息，它只有你自己和信任的队友能看懂。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《图解秘密技术》简单读后感">
+<meta property="og:url" content="http://example.com/2017/08/14/%E3%80%8A%E5%9B%BE%E8%A7%A3%E7%A7%98%E5%AF%86%E6%8A%80%E6%9C%AF%E3%80%8B%E7%AE%80%E5%8D%95%E8%AF%BB%E5%90%8E%E6%84%9F/index.html">
+<meta property="og:site_name" content="牛易疯先森的开发记录">
+<meta property="og:description" content="前言最近在做支付相关的东西，其中牵扯到了RSA、DES、证书等密码学相关知识，在网上也搜了相关的东西，感觉太杂了，没有把相关知识融合在一起，看完《图解秘密技术》后，算是有个了大致的了解，所以这算是一篇简单的读后感吧【这本书讲的通俗易懂，也比较全面，适合入门】。加密，我们在开发中或多或少都会碰到。按照我个人的理解，就是不想让其他人知道你所发送的消息，它只有你自己和信任的队友能看懂。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-08-13T16:10:52.000Z">
+<meta property="article:modified_time" content="2021-01-20T14:51:29.672Z">
+<meta property="article:author" content="joakim.liu">
+<meta property="article:tag" content="密码">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2017/08/14/%E3%80%8A%E5%9B%BE%E8%A7%A3%E7%A7%98%E5%AF%86%E6%8A%80%E6%9C%AF%E3%80%8B%E7%AE%80%E5%8D%95%E8%AF%BB%E5%90%8E%E6%84%9F/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>《图解秘密技术》简单读后感 | 牛易疯先森的开发记录</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">牛易疯先森的开发记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2017/08/14/%E3%80%8A%E5%9B%BE%E8%A7%A3%E7%A7%98%E5%AF%86%E6%8A%80%E6%9C%AF%E3%80%8B%E7%AE%80%E5%8D%95%E8%AF%BB%E5%90%8E%E6%84%9F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《图解秘密技术》简单读后感
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-08-14 00:10:52" itemprop="dateCreated datePublished" datetime="2017-08-14T00:10:52+08:00">2017-08-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>最近在做支付相关的东西，其中牵扯到了RSA、DES、证书等密码学相关知识，在网上也搜了相关的东西，感觉太杂了，没有把相关知识融合在一起，看完<a href="https://www.amazon.cn/%E5%9B%BE%E4%B9%A6/dp/B01HI4WMEC">《图解秘密技术》</a>后，算是有个了大致的了解，所以这算是一篇简单的读后感吧【这本书讲的通俗易懂，也比较全面，适合入门】。加密，我们在开发中或多或少都会碰到。按照我个人的理解，就是不想让其他人知道你所发送的消息，它只有你自己和信任的队友能看懂。</p>
+<a id="more"></a>
+<h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>加密，会用到加密算法和密钥，密钥就相当于钥匙，所以一个加密算法就可以进行多次加密操作，只需改变密钥就行了，不必每进行一次加密就换一种加密算法。所使用的加密算法最好是那些已经公开的、被公认为强度较高的密码算<br>法，因为这些秘密算法由世界上最高水平的密码学家共同尝试破译，依然未能找到弱点【 AES 和 SHA-3 算法的选择就是一个很好的例子】。本文会简单说说对称密码、公钥密码、单向散列函数、消息认证码、数字签名、伪随机数生成器，这可以说是密钥学家的工具箱。</p>
+<h2 id="对称密码与公钥密码"><a href="#对称密码与公钥密码" class="headerlink" title="对称密码与公钥密码"></a>对称密码与公钥密码</h2><p>用于解决复杂问题的步骤，通常称为算法(algorithm)。从明文生成密文的步骤，也就是加密的步骤，称为“加密算法”，而解密的步骤则称为“解密算法”。加密、解密的算法合在一起统称为加密算法。密码算法中需要密钥，我们可以将密钥想象成保险箱的钥匙，如果钥匙被盗，即使保险箱再坚固，里面的东西还是会被盗。根据密钥的使用方法，我们将密码分为对称密码(symmetric cryptography ，加密、解密使用同一密钥)和公钥密码(public-key cryptography ，加密、解密使用不同密钥)两种。将对称密码和和公钥密码结合起来的密码方式成为混合密码系统(hybrid cryptosystem)，它集合了两种方式的优势。</p>
+<h2 id="其他密码技术"><a href="#其他密码技术" class="headerlink" title="其他密码技术"></a>其他密码技术</h2><h3 id="单向散列函数"><a href="#单向散列函数" class="headerlink" title="单向散列函数"></a>单向散列函数</h3><p>单向散列函数(one-way hash function)计算出来的数值被称为散列值。这个应该熟悉吧，例如 NSObject 的 hash 方法。经常会听到有人说 MD5 是一种加密方式，呵呵，其实它是一种单向散列函数。单向散列函数所保证的不是机密性，而是完整性(integrity)，可以检测出消息是否被篡改过。单向散列函数是一种保证消息完整性的密码技术。</p>
+<h3 id="消息认证码"><a href="#消息认证码" class="headerlink" title="消息认证码"></a>消息认证码</h3><p>为了确保消息是否来自正确的通信对象【即是否是你的队友】，可以使用消息认证码(message authentication code, MAC)技术。通过使用它，不但能够确实消息是否被篡改，而且还能确认消息是否来自所期待的对象。消息认证码是一种能够保证完整性和提供认证的密码技术。</p>
+<h3 id="数字签名"><a href="#数字签名" class="headerlink" title="数字签名"></a>数字签名</h3><p>我们把消息发送给通信对象后，他可以否认，说他没收到该消息，我们可以用数字签名来防止这种事情的出现。数字签名(digital signature)是一种能够保证完整性、提供认证和防止否认的密码技术。</p>
+<h3 id="伪随机数生成器"><a href="#伪随机数生成器" class="headerlink" title="伪随机数生成器"></a>伪随机数生成器</h3><p>伪随机数生成器(Pseudo Random Number Generator, PRNG)是一种能够模拟产生随机数列的算法。它承担着密钥生成等重要职责，比较重要。</p>
+<h1 id="对称密码"><a href="#对称密码" class="headerlink" title="对称密码"></a>对称密码</h1><p>对称密码，用相同的密钥进行加密和解密。那么这密钥该怎么配送给通信对象，如果密钥被窃听者获取到了，那就没什么秘密可谈了。如果收到的消息解密后是一段随机字符串，那该怎么玩？所以得判断该消息发送者是不是来自可信的通信对象（消息认证码和数字签名就能提供认证），当然不排除通信对象会发随机字符串咯。 DES(Data Encryption Standard) 和 AES(Advanced Encryption Standard) 就是属于对称密码。 DES 目前是不安全的，而 AES 是安全的。分组密码(block cipher)是每次只能处理特定长度的一块数据的一类密码算法，这里一块就称为分组。一个分组的比特数就称为分组长度(block length)。流密码(stream cipher)是对数据流进行连续处理的一类密码算法。 DES 和 AES 就属于分组密码，只能将一个固定长度的分组进行加密，当明文长度超过分组长度时，需要对密码算法进行迭代，迭代的模式大概有以下几种：</p>
+<ul>
+<li>ECB 模式: Electronic CodeBook mode, 电子密码本模式。将明文分组加密之后的结果将直接成文密文分组。</li>
+<li>CBC 模式: Cipher Block Chaining mode, 密码分组链接模式。首先将明文分组与前一个密文分组进行 XOR 运算，然后再进行加密。【SSL/TLS 有用到】</li>
+<li>CFB 模式: Cipher FeedBack mode, 密文反馈模式。前一个密文分组会被送到密码算法的输入端。</li>
+<li>OFB 模式: Output FeedBack mode, 输出反馈模式。密码算法的输出会反馈到密码算法的输入端。XOR 流密码。</li>
+<li>CTR 模式: CounTeR mode, 计数器模式。通过将逐次累加的计数器进行加密来生成密钥流的密码。XOR 流密码。</li>
+</ul>
+<p>分组密码算法的选择固然很重要，但模式的选择也很重要。ECB 是安全性最差的模式，在使用的时候得注意。</p>
+<h1 id="公钥密码"><a href="#公钥密码" class="headerlink" title="公钥密码"></a>公钥密码</h1><p>对称加密需要解决密钥配送问题，大概有如下几种方法：事先共享密钥、密钥分配中心、 Diffie-Hellman 密钥交换、公钥密码。 我们简单来说说公钥密码。在公钥密码中，密钥分为加密密钥和解密密钥两种。发送者用加密密钥对消息进行加密，接收者用解密密钥对消息进行解密。注意下面四个点：</p>
+<ul>
+<li>发送者只需要加密密钥</li>
+<li>接收者只需要解密密钥</li>
+<li>解密密钥不可以被窃听者获取</li>
+<li>加密密钥被窃听者获取也没关系</li>
+</ul>
+<p>所以解密密钥一开始就是用接收者自己保管的，只要将加密密钥发送给发送者就能够解决密钥配送问题了，根本就不需要配送解密密钥。公钥密码中，解密密钥一般是公开的，被称为公钥(public key)，而解密密钥是绝对不能公开的，这个密钥只能由你自己来使用，被称为私钥(private key)。公钥和私钥是一一对应的关系，一对公钥和私钥被称为密钥对(key pair)。它们两者之间具有非常密切的数学上的关系，由公钥进行加密的密文，必须使用与之配对的私钥才能够解密。对称密码通过将明文转换为复杂的形式来保证其机密性的，而公钥密码则是基于数学上困难的问题来保证机密性的。尽管公钥密码解决了密钥配送问题，但它也有两个很大的问题，一个是中间人攻击（ man-in-the-middle attack, 攻击者混入发送者和接收者之间，对发送者伪装成接收者，对接收者伪装成发送者的攻击方式。证书能够抵御这种攻击方式），要防御这种攻击，就需要回答“这个公钥是否正确，是否属于合法的通信对象”，其实也就是公钥认证问题，还有一个问题就是它的处理速度只有对称密码的几百分之一。 RSA、EIGamal 方式、Rabin 方式、椭圆曲线密码(Elliptical Curve Cryptograph, ECC) 是几种公钥密码。</p>
+<h2 id="混合密码系统"><a href="#混合密码系统" class="headerlink" title="混合密码系统"></a>混合密码系统</h2><p>混合密码系统(hybrid cryptosystem)是将对称密码和公钥密码的优势相结合的方法，用对称密码提高速度（来加密密文），用公钥密码保护会话密钥（来加密对称密码中所使用的密钥）。上面不是说公钥密码有两个很大的问题么？用混合密码系统就能解决处理速度这个问题。经过混合密码系统处理后的密文，由用公钥加密的会话密钥以及用对称密码加密的消息两者按顺序拼接在一起组成的，所以通信双方得协商好密文拼接的方式。混合密码系统解决了公钥密钥速度慢的问题，并通过公钥密码解决了对称密码的密钥配送问题。它的组成机制是：</p>
+<ul>
+<li>用对称密码加密消息</li>
+<li>通过伪随机数生成器生成对称密码加密中的使用的会话密钥</li>
+<li>用公钥密码加密会话密钥</li>
+<li>从混合密码系统外部赋予公钥密码加密时使用的密钥</li>
+</ul>
+<p>可以发现混合密码系统运用了伪随机数生成器、对称密码和公钥密码这三种技术。其实密码技术的组合经常被用于构建一些实用的系统。例如：</p>
+<ul>
+<li>数字签名，是由单项散列函数和公钥密码组合而成的。</li>
+<li>证书，是由公钥和数数字签名组合而成的。</li>
+<li>消息认证码，是由单项散列函数和密钥组合而成的，也可以通过对称密码来生成。</li>
+<li>伪随机生成器，可以使用对称密码、单项散列函数或者公钥密码来构建。</li>
+</ul>
+<p>对称密码、公钥密码保护了消息的机密性，但是密码技术所保护的不仅仅是机密性，还有确认消息完整性、进行认证以及防止否认。</p>
+<h1 id="单项散列函数"><a href="#单项散列函数" class="headerlink" title="单项散列函数"></a>单项散列函数</h1><p>使用单项散列函数可以获取到消息的“指纹”，通过对比“指纹”，就能够知道两条消息是否一致，而不需要直接对比两条消息了。单项散列函数有一个输入和一个输出，其中输入称为消息(message)，输出称为散列值(hash value)，它可以根据消息的内容计算出散列值，而散列值就可以被用来检测消息的完整性(integrity)。它有下以下几个性质：</p>
+<ul>
+<li>根据任意长度的消息计算出固定长度的散列值</li>
+<li>能够快速计算出散列值</li>
+<li>消息不同散列值不同</li>
+<li>具有单向性</li>
+</ul>
+<p>MD4、MD5、SHA-1、SHA-2(SHA-256、SHA-384、SHA-512)、RIPEMD-160、SHA-3是几种单项散列函数。假设如果攻击者 Mallory 伪装成 Alice，向 Bob 同时发送了消息和散列值，这时 Bob 能够通过单项散列函数检查消息的完整性，但是这只是对 Mallory 发送的消息进行检查，无法检查出发送者的身份。单项散列函数能够辨别出“篡改”，但无法辨别出“伪装”。要解决这个问题，我们需要进行认证，进行认证的技术包括消息验证码和数字签名。消息验证码能够向通信对象保证消息没有被篡改，而数字签名不仅能向通信对象保证消息没有被篡改，还能够向所有第三方做出这样的保证。认证需要用到密钥，也就是通过消息附加发送者 Alice 的密钥(只有 Alice 才知道的密码信息)来确保消息真的属于 Alice。</p>
+<h1 id="消息认证码-1"><a href="#消息认证码-1" class="headerlink" title="消息认证码"></a>消息认证码</h1><p>消息认证码(Message Authentication Code，MAC)，是一种确认完整性并进行认证的技术。消息认证码的输入包括任意长度的消息和一个发送者和接收者之间共享的密钥，它可以输出固定长度的数据，这个数据成为 MAC 值。消息认证码是一种与密钥相关联的单项散列函数。要计算 MAC 必须持有共享密钥，没有共享密钥的人就无法计算出 MAC 值，利用这个性质来完成认证的，利用单项散列函数来确认完整性的。下面以 Alice 银行和 Bob 银行来说说它的使用步骤：</p>
+<ul>
+<li>发送者 Alice 与接收者 Bob 事先共享秘钥。</li>
+<li>发送者 Alice 根据汇款请求消息计算 MAC 值（使用共享秘钥）。</li>
+<li>发送者 Alice 将汇款信息和 MAC 值两者发送给接收者 Bob。</li>
+<li>接收者 Bob 根据接收到的汇款请求消息计算 MAC值（使用共享秘钥）。</li>
+<li>接收者 Bob 将自己计算的 MAC 值与从 Alice 处收到的 MAC 值进行对比。</li>
+<li>如果两个 MAC 值一致，则接收者 Bob 就可以断定汇款请求的确来自 Alice（认证成功）；如果不一致，则可以断定消息不是来自 Alice（认证失败）。</li>
+</ul>
+<p>上面的步骤需要事先共享密钥，那么对称密码的消息配送问题在消息认证码中也同样会发生。消息认证码可以通过使用单项散列函数、分组密码、流密码、公钥密码等方式实现。使用单项散列函数来构造消息认证码的方法被称为 HMAC，其实 H 就是 Hash 的意思。</p>
+<h2 id="认证加密"><a href="#认证加密" class="headerlink" title="认证加密"></a>认证加密</h2><p>认证加密是一种将对称密码与消息认证码相结合，同时满足机密性、完整性和认证三大功能的机制。大概有下面几种吧</p>
+<ul>
+<li>Encrypt-then-MAC:先用对称密码将明文加密，然后计算密文的 MAC 值。</li>
+<li>Encrypt-and-MAC:将明文用对称密码加密，并对明文计算 MAC 值。</li>
+<li>MAC-and-Encrypt:先计算明文的 MAC 值，然后将明文和 MAC 值同时用对称密码加密。</li>
+</ul>
+<h2 id="重放攻击"><a href="#重放攻击" class="headerlink" title="重放攻击"></a>重放攻击</h2><p>狡猾的主动攻击者 Mallory 想到可以通过将事先保存的正确的 MAC 值不断重放来发动攻击。防御这种重放攻击的方式有下面几种：</p>
+<ul>
+<li>序号<br>  约定每次都对发送的消息赋予一个递增的序号，并且在计算 MAC 值时将序号也包含在消息中。这种方式虽然有效，但是对每个通信对象都需要记录最后一个消息的序号。</li>
+<li>时间戳<br>  约定在发送消息的时候包含当前的时间，如果收到以前的消息，即便 MAC 值正确也将其当成错误的消息来处理。这种方式虽然有效，但是发送者和接收者的时钟必须一致，而且考虑到通信的延迟，必须在时间的判断上留下缓冲，所以多多少少还是会存在可以重放攻击的空间。</li>
+<li>nonce<br>  在通信之前，接收者先向发送者发送一个一次性的随机数，这个随机数成为 nonce。发送者在消息中包含这个 nonce 并计算 MAC 值。这种方式虽然有效，但通信的数据量会有所增加。发送的时候也得防止被窃听者获取。</li>
+</ul>
+<p>由于接收者和发送者共享相同的密钥，因此会产生无法对第三方证明以及无法否认等问题。</p>
+<h1 id="数字签名-1"><a href="#数字签名-1" class="headerlink" title="数字签名"></a>数字签名</h1><p>数字签名，如果发送者和接收者各自使用不同的密钥，那么不就能够处理消息认证码不能处理对第三方证明以及无法否认的问题了么？就像公钥密码一样。数字签名包括生成消息签名和验证消息签名两种行文，签名密钥只能由签名的人持有，而验证密钥则是任何需要验证签名的人都可以持有。跟公钥密码一样，用私钥加密所得到的密文，也只能用与该私钥配对的公钥才能够解密。用私钥进行加密这一行文只能由持有私钥的人能完成，正式基于这一事实，我们才可以将用私钥加密的密文作为签名来对待。RSA、EIGamal 方式、DSA(Digital Signature Algorithm)、ECDSA (Elliptical Curve Digital Signature Algorithm)、Rabin方式是几种数字签名方式。我们实际上不会直接对消息进行签名，而是会对消息的散列值进行签名。有两个个问题：</p>
+<ul>
+<li>如果数字签名的生成者说“我的私钥被别人窃取了”，那也有可能进行否认的，那就只能依靠刑事侦查了。</li>
+<li>利用数字签名攻击公钥密码。在 RSA 中，“请对消息签名”这一请求可以理解为“请解密这个消息”。对于这种攻击方式，我们首先不要直接对消息进行签名，而是对消息的散列值进行签名，这样会比较安全；其次，公钥密码和数字签名最好分别使用不同的密钥对； 最重要的是，我们绝对不要对意思不清楚的消息进行签名。</li>
+</ul>
+<p>数字签名同时实现了确认消息的完整性、进行认证已经防止否认。但是它得有个大前提：用于验证签名的公钥必须属于真正的发送者。于是乎这样就陷入了一个死循环：数字签名是用来识别消息篡改、伪装以及否认的，但是为此我们又必须从没有被伪装的发送者得到没有被篡改的公钥才行。为了能够确认自己得到的公钥是否合法，我们需要使用证书。所谓证书，就是将公钥当作一条消息，由一个可信的第三方对其签名后所得到的公钥。然后，这样并没有解决问题，只是把问题转移了。为了对证书上施加的数字签名进行验证，我们必定需要另一个公钥，那么如何才能构筑一个可信的数字签名链条呢？又由谁来颁发可行的证书呢？这就进入了社会学的领域了。</p>
+<h1 id="证书"><a href="#证书" class="headerlink" title="证书"></a>证书</h1><p>如果不能判断自己手上的公钥是否合法，就有可能遭到中间人攻击。而证书就可以对公钥合法性提供证明。公钥证书(Public-Key Certificate, PKC)其实和驾照相似，里面记有名字、组织、邮箱等个人信息，以及属于此人的公钥，并由认证机构(Certification Authority、Certifying Authority, CA)施加数字签名。只要看到公钥证书，我们就可以知道认证机构认定该公钥的确属于此人，公钥证书也简称为证书(certificate)。简单点，认证机构就是能够认定“公钥确实属于此人”并能够生成数字签名的个人或者组织。</p>
+<p>证书有个统一的标准规范叫做 X.509 规范。仅仅只有证书的规范还不足以支持公钥的实际运用，我们还需要很多其他的规范，例如证书应该由谁来颁发，如何颁发，私钥泄露时应该如何作废证书，计算机之间的数据交换应采用怎样的格式等。而公钥基础规范(Public-Key Infrastructure, PKI)是为了能够有效地运用公钥而制定的一系列规范和规格的总称。 PKI 只是一个总称，而并非指某一个单独的规范或规格。例如， PKCS(Public-Key Cryptograph Standards, 公钥密码标准)也是 PKI 的一种，RFC(Request for Comments，互联网规格)中也有许多与 PKI 相关的文档。 PKI 有3个组成要素：</p>
+<ul>
+<li>用户，使用 PKI 的实体。</li>
+<li>认证机构，颁发证书的实体。</li>
+<li>仓库，保存证书的数据库。</li>
+</ul>
+<p>数字签名技术本身是可信的，而且只要使用证书就能够获得可信的公钥，然后我们也不能忘记，在信任的背后还隐藏这各种各样的前提条件，比如进行签名的认证机构本身是否可信等。无论是数字签名、证书，还是认证结构的层级关系，都不可能在完全不信任的状态下创造出信任关系。只有以某种已经存在的信任关系为种子，比如电子邮件能够送达、电话能够打通等，才能够引申出其他的信任关系，然而这就转向社会学了。</p>
+<h1 id="密钥"><a href="#密钥" class="headerlink" title="密钥"></a>密钥</h1><p>在使用对称密码、公钥密钥、消息认证码、数字签名等密码技术时，都需要一个称为密钥(key)的巨大数字。密钥本身的大小并不重要，重要的是密钥空间的大小，因为密钥空间越大，进行暴力破解就越困难。密钥空间的大小是由密钥长度决定的。密钥和明文是等价的，密钥被破解，也就知道明文了。信息的机密性不应该依赖于密码算法本身，而是应该依赖于妥善管理的密钥，这是密码世界的常识之一，所以密钥是很重要的，我们可以这样想，自己的房子再宝贵，我们不可能出门的时候把房子也带走吧，所以我们给房子上了锁，然后把钥匙带走，锁保卫房子的安全，同样的，我们需要保卫密钥的安全。密码算法保卫明文的安全，而我们需要保卫密钥的安全。密钥就是密码技术的钥匙，密钥这样一个很短的比特序列可以确保重要信息的机密性，还可以证明你的身份。密钥可以分为很多种：</p>
+<ul>
+<li>对称密码的密钥与公钥密码的密钥</li>
+<li>消息认证码的密钥与数字签名的密钥</li>
+<li>用于确保机密性的密钥与用于认证的密钥<br>  对称密码和公钥密码的密钥都是用于确保机密性的密钥。消息认证码和数字签名的密钥，则是用于认证的密钥。</li>
+<li>会话密码和主密钥<br>  这里关注的是密钥被使用的次数。每次通信只能使用一次的密钥成为会话密钥(session key)，例如基于 https:// 开头的网页进行 SSL/TLS 的加密通信。而一直被重复使用的密钥成为主密钥(master key)。</li>
+<li>用于加密内容的密钥与用于加密密钥的密钥<br>  加密内容密钥(Contents Encrypting Key, CEK)；加密密钥密钥(Key Encrypting Key, KEK)。使用 KEK 可以减少需要保管的密钥数量。</li>
+</ul>
+<p>再来讲讲密钥管理相关的内容</p>
+<ul>
+<li>生成密钥<ul>
+<li>用随机数生成密钥，当然密码学用途的伪随机数生成器必须是专门针对密钥学用途而设计的。</li>
+<li>用口令生成密钥，这里的口令(password 或 passphrase)就是我们平常设置密码的自己可以记住的那种。我们一般很少直接用口令作为密钥来使用，一般都是使用口令的散列值。</li>
+</ul>
+</li>
+<li>配送密钥</li>
+<li>更新密钥<br>  有一种提高通信机密性的技术被称为密钥更新(key updating)，在做银联 POS 机刷卡 SDK 的时候就遇到过，这种方法就是在使用共享密钥进行通信的过程中，定期（例如每发送 1000 个字）改变密钥，要求发送者和接收者同时使用相同的方法来改变密钥。例如用当期密钥的散列值作为下一个密钥，假如密钥被窃听者获取了，那么窃听者就可以用这个密钥将之后的通信内容全部解密，因为单项散列函数的单向性，他没法破解之前的通信内容。像这种防止破译过去的通信内容的机制，成为后向安全(backward security)。</li>
+<li>保存密钥<br>  当密钥重复使用时，就牵扯到保存密钥的问题了。人类无法记住具有实用长度的密钥，所以可以考虑保存在其他某个地方。将密钥和密文存放在同一台电脑上面是非常愚蠢的。如果将密钥保存成文件，放在保险箱等安全的地方，如果放在保险箱的话，出门在外就无法使用了，如果放在存储卡随时携带的话，就会产生存储卡丢失、被盗的风险。万一密钥被盗，为了能够让攻击者花更多的时间才能真正使用这个密钥，我们可以使用将密钥加密后保存的方法，就是 KEK。那么问题来了，既然加密密钥需要另一个密钥(KEK)，那么另一个密钥(KEK)又要如何保存呢？是不是又进入死循环了。虽然将密钥加密的这种方式没有完全解决机密性问题，但是在现实中确实一个非常有效的方法，这样可以减少需要保管的密钥数量。例如，我需要 100W个密钥对 100W 文件进行加密，保管 100W 密钥是不是很困难，如果这 100W 个密钥用同一个 KEK 进行加密，那么我是不是只要保管一个 KEK 就行了，这一个 KEK 的价值相当于前面 100W 个密钥的价值，其实这有点像认证机构的层级化。</li>
+<li>作废密钥<br>  密钥的作废和生成是同等重要的，因为密钥和明文是等价的。</li>
+</ul>
+<h2 id="基于口令的密钥-PBE"><a href="#基于口令的密钥-PBE" class="headerlink" title="基于口令的密钥(PBE)"></a>基于口令的密钥(PBE)</h2><p>基于口令的密钥(Password Based Encryption, PBE)就是一种根据口令生成密钥并使用该密钥进行加密的方法。加密和解密使用同一个密钥。我们先来看看它的逻辑：</p>
+<ul>
+<li>想确保重要消息的机密性。</li>
+<li>将消息直接保存在磁盘上的话，可能会被别人看到。</li>
+<li>用密钥(CEK)对消息进行加密吧。</li>
+<li>但是这次又需要确保密钥(CEK)的机密性了。</li>
+<li>将密钥(CEK)直接保存在磁盘上好像很危险。</li>
+<li>用另一个密钥(KEK)对密钥进行加密(CEK)吧。</li>
+<li>等等！这次有需要确保密钥(KEK)的机密性了。进入死循环了。</li>
+<li>既然如此，那就用口令来生成密钥(KEK)吧。</li>
+<li>但只用口令容易遭受字典攻击。</li>
+<li>那么就用口令和盐共同生成密钥(KEK)吧。</li>
+<li>盐可以后加密后的密钥(KEK)一起保存在磁盘上，而密钥(KEK)可以直接丢弃。【可以用盐和口令再次生成 KEK，用 KEK 解密 CEK，就可以解密了】</li>
+<li>口令就记住自己的脑子里吧。</li>
+</ul>
+<p>我们之前提到生成密钥最好用伪随机数生成器生成，而人类又无法记住具有充足实用长度的密钥，口令也是一样的。那么通过口令生成的密钥(KEK)强度不如伪随机数生成器生成的密钥(CEK)，这就好像是将一个牢固的保险柜的钥匙放在了一个不怎么牢固的保险柜中保管，所以我们使用 PBE 时，需要将盐和加密后的 CEK 通过物理方式进行保护，例如将它们保存在存储卡中随身携带，要好好保存。</p>
+<p>在生成 KEK 的时候，我们可以通过多次使用单项散列函数提高安全性，例如经过 1000 次单项散列函数所得到的散列值作为 KEK 来使用。像这种将单项散列函数进行多次迭代的方法称为拉伸(stretching)。那么我们该如何生成口令呢？下面介绍一些小技巧：</p>
+<ul>
+<li>使用只有自己才能知道消息<ul>
+<li>不要使用对自己重要的事物的名字，例如，老婆的名字、车牌号码等</li>
+<li>不要使用关于自己的信息，例如，自己的名字、生日等</li>
+<li>不要使用别人见过的信息，例如，键盘上的字母顺序(qwerty)等</li>
+</ul>
+</li>
+<li>将多个不同的口令分开使用<br>  例如 qazwsx1、qazwsx2、qazwsx3、qazwsx4 等，只改变口令的一部分【即字母后面的数字】。</li>
+<li>有效利用笔记<br>  记下来然后保存在安全的地方。</li>
+<li>理解口令的局限性<br>  例如，假设 8 个字符的英文字母和数组组成，那么字母和数组一共 62 个【a<del>z A</del>Z 1~0】，它们组合的可能性为 62^8 = 218340105584896，大概 218 万亿种，可以通过暴力破解来破解。如果攻击者的计算机每秒可以生成并尝试 1 亿个口令，那么 25 天 就可以遍历所有的口令了。所以很多登录逻辑，会有当天最大尝试次数，超过该次数后，就会停止该账户再次登录，只能通过申诉来处理。</li>
+<li>使用口令生成和管理工具<br>  我们感受到了口令的麻烦，实际上通过人自己来生成和管理口令可以说是非常困难的，所以出现了很多口令管理工具，例如 1Password，但是也必须提防这些工具擅自盗用用户的口令，我们得判断这些工具及其开发者是否可信。</li>
+</ul>
+<h1 id="随机数"><a href="#随机数" class="headerlink" title="随机数"></a>随机数</h1><p>尽管跟对称密码、公钥密码、数字签名等技术相比，随机数确实不是很引入注意，但是随机数在密码技术中扮演者十分重要的角色。我们先来谈谈使用随机数的密码技术。</p>
+<ul>
+<li>生成密钥<br>  用于对称密码和消息认证码。</li>
+<li>生成密钥对<br>  用于公钥密码和数字签名。</li>
+<li>生成初始化向量<br>  用于分组密码的 CBC、CFB 和 OFB 等模式。</li>
+<li>生成 nonce<br>  用于防御重放攻击以及分组密码的 CTR 模式等。</li>
+<li>生成盐<br>  用于基于口令的密码(PBE)等。</li>
+</ul>
+<p>上面的这些用途都很重要，尤其是“生成密钥”和“生成密钥对”。即使密码算法的强度再高，只要攻击者知道了密钥，那么密码就会立刻变得形同虚设。所以我们需要用随机数来生成密钥，让它无法被攻击者看穿，也就是所谓的不可预测性。</p>
+<p>我们对随机数的性质进行下分类。</p>
+<ul>
+<li>随机性，不存在统计学偏差，是完全杂乱的数列，称为“弱伪随机数”</li>
+<li>不可预测性，不能从过去的数列推测出下一个出现的数，称为“强伪随机数”</li>
+<li>不可重现性，除非将数列本身保存下来，否则不能重现相同的数列，称为“真伪随机数”</li>
+</ul>
+<p>具备不可预测性的随机数，一定具备随机性。具备不可重现性的随机数，一定具备不可预测性。弱伪随机数不可用于密码技术。紧靠软件是无法生成出具备不可重现性的随机数列的，软件只能生成伪随机数，因为运行软件的计算机本身仅具备有限的内部状态，所以肯定会生成相同的数。要生成具备不可重现性的随机数列，需要从不可重现的物理现象中获取信息，比如周围的温度和声音的变化、用户移动的鼠标的位置、放射线测量仪的输出值等。所以这里只谈伪随机数，先来说说伪随机数生成器。伪随机数生成器的算法是公开的，但伪随机数生成器的种子（一个用于对伪随机数生成器的内部状态进行初始的值）是保密的，这就有点像加密算法和密钥一样。将根据内部状态计算伪随机数的方法和改变内部状态的方法组合起来（这里的内部状态是指伪随机数生成器所管理的内存中的数值），就是伪随机数生成器的算法。下面来说说具体的伪随机数生成器。</p>
+<ul>
+<li>杂乱的方法<br>  如果只是把算法搞得复杂，是无法用于密码技术的。因为其周期太短，还有就是如果程序员自己都无法理解算法的详细内容，那么就无法判断所生成的随机数列是否具备不可预测性。</li>
+<li>线性同余法<br>  不可以，不具备不可预测性。</li>
+<li>单项散列函数<br>  可以，单项散列函数的单向性是支撑伪随机数生成器不可预测性的基础。</li>
+<li>密码法<br>  可以，密码的机密性是支撑伪随机数生成器不可预测性的基础。</li>
+<li>ANSI X9.17<br>  可以，它的内部状态也是通过密码进行保护的。</li>
+<li>梅森旋转算法<br>  不可以，不具备不可预测性。</li>
+</ul>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>把<a href="https://www.amazon.cn/%E5%9B%BE%E4%B9%A6/dp/B01HI4WMEC">《图解秘密技术》</a>中提到的相关密码技术大致的都过了一下，由于牵扯到比较复杂的数学相关知识，还有很多相关的技术现实细节提及。攻击方法以及相应的防御方法、具体的用法等也没有提及。即便有很完美的密码技术存在，但由于不完美的人参与其中，也不可能实现完美的安全性。</p>
+<p>**转载请注明出处！<a href="http://joakimliu.github.io/2017/08/14/%E3%80%8A%E5%9B%BE%E8%A7%A3%E7%A7%98%E5%AF%86%E6%8A%80%E6%9C%AF%E3%80%8B%E7%AE%80%E5%8D%95%E8%AF%BB%E5%90%8E%E6%84%9F/">http://joakimliu.github.io/2017/08/14/《图解秘密技术》简单读后感/</a> 谢谢！ **</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%AF%86%E7%A0%81/" rel="tag"># 密码</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/01/15/iOS%E7%9A%84%E4%BA%8B%E4%BB%B6%E5%A4%84%E7%90%86/" rel="prev" title="iOS的事件处理">
+      <i class="fa fa-chevron-left"></i> iOS的事件处理
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/08/17/%E6%B5%85%E8%B0%88-RSA/" rel="next" title="浅谈 RSA">
+      浅谈 RSA <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">2.</span> <span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E7%A7%B0%E5%AF%86%E7%A0%81%E4%B8%8E%E5%85%AC%E9%92%A5%E5%AF%86%E7%A0%81"><span class="nav-number">2.1.</span> <span class="nav-text">对称密码与公钥密码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E5%AF%86%E7%A0%81%E6%8A%80%E6%9C%AF"><span class="nav-number">2.2.</span> <span class="nav-text">其他密码技术</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%95%E5%90%91%E6%95%A3%E5%88%97%E5%87%BD%E6%95%B0"><span class="nav-number">2.2.1.</span> <span class="nav-text">单向散列函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E8%AE%A4%E8%AF%81%E7%A0%81"><span class="nav-number">2.2.2.</span> <span class="nav-text">消息认证码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E5%AD%97%E7%AD%BE%E5%90%8D"><span class="nav-number">2.2.3.</span> <span class="nav-text">数字签名</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%AA%E9%9A%8F%E6%9C%BA%E6%95%B0%E7%94%9F%E6%88%90%E5%99%A8"><span class="nav-number">2.2.4.</span> <span class="nav-text">伪随机数生成器</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%B9%E7%A7%B0%E5%AF%86%E7%A0%81"><span class="nav-number">3.</span> <span class="nav-text">对称密码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AC%E9%92%A5%E5%AF%86%E7%A0%81"><span class="nav-number">4.</span> <span class="nav-text">公钥密码</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%B7%E5%90%88%E5%AF%86%E7%A0%81%E7%B3%BB%E7%BB%9F"><span class="nav-number">4.1.</span> <span class="nav-text">混合密码系统</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%95%E9%A1%B9%E6%95%A3%E5%88%97%E5%87%BD%E6%95%B0"><span class="nav-number">5.</span> <span class="nav-text">单项散列函数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B6%88%E6%81%AF%E8%AE%A4%E8%AF%81%E7%A0%81-1"><span class="nav-number">6.</span> <span class="nav-text">消息认证码</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%A4%E8%AF%81%E5%8A%A0%E5%AF%86"><span class="nav-number">6.1.</span> <span class="nav-text">认证加密</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8D%E6%94%BE%E6%94%BB%E5%87%BB"><span class="nav-number">6.2.</span> <span class="nav-text">重放攻击</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E5%AD%97%E7%AD%BE%E5%90%8D-1"><span class="nav-number">7.</span> <span class="nav-text">数字签名</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AF%81%E4%B9%A6"><span class="nav-number">8.</span> <span class="nav-text">证书</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AF%86%E9%92%A5"><span class="nav-number">9.</span> <span class="nav-text">密钥</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E5%8F%A3%E4%BB%A4%E7%9A%84%E5%AF%86%E9%92%A5-PBE"><span class="nav-number">9.1.</span> <span class="nav-text">基于口令的密钥(PBE)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9A%8F%E6%9C%BA%E6%95%B0"><span class="nav-number">10.</span> <span class="nav-text">随机数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">11.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">joakim.liu</p>
+  <div class="site-description" itemprop="description">你不解决问题，就会成为问题。iOS菜逗一枚。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/JoakimLiu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/JoakimLiu" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">joakim.liu</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://example.com/2017/08/14/%E3%80%8A%E5%9B%BE%E8%A7%A3%E7%A7%98%E5%AF%86%E6%8A%80%E6%9C%AF%E3%80%8B%E7%AE%80%E5%8D%95%E8%AF%BB%E5%90%8E%E6%84%9F/";
+    this.page.identifier = "2017/08/14/《图解秘密技术》简单读后感/";
+    this.page.title = "《图解秘密技术》简单读后感";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://http-joakimliu-github-io.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

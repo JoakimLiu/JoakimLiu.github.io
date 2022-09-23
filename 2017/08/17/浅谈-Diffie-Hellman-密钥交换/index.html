@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="之前在讲密钥配送的时候，有提到 Diffie-Hellman 密钥交换，今天来简单的谈谈它。 Diffie-Hellman 密钥交换(Diffie-Hellman key exchange)通信双方仅通过交换一些可以公开的信息就能够生成共享的数字，而这一秘密数字就可以被用作对称密码的密钥。下面先来讲讲它的步骤。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浅谈 Diffie-Hellman 密钥交换">
+<meta property="og:url" content="http://example.com/2017/08/17/%E6%B5%85%E8%B0%88-Diffie-Hellman-%E5%AF%86%E9%92%A5%E4%BA%A4%E6%8D%A2/index.html">
+<meta property="og:site_name" content="牛易疯先森的开发记录">
+<meta property="og:description" content="之前在讲密钥配送的时候，有提到 Diffie-Hellman 密钥交换，今天来简单的谈谈它。 Diffie-Hellman 密钥交换(Diffie-Hellman key exchange)通信双方仅通过交换一些可以公开的信息就能够生成共享的数字，而这一秘密数字就可以被用作对称密码的密钥。下面先来讲讲它的步骤。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-08-17T15:06:30.000Z">
+<meta property="article:modified_time" content="2021-01-20T14:51:29.673Z">
+<meta property="article:author" content="joakim.liu">
+<meta property="article:tag" content="密码">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2017/08/17/%E6%B5%85%E8%B0%88-Diffie-Hellman-%E5%AF%86%E9%92%A5%E4%BA%A4%E6%8D%A2/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>浅谈 Diffie-Hellman 密钥交换 | 牛易疯先森的开发记录</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">牛易疯先森的开发记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2017/08/17/%E6%B5%85%E8%B0%88-Diffie-Hellman-%E5%AF%86%E9%92%A5%E4%BA%A4%E6%8D%A2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          浅谈 Diffie-Hellman 密钥交换
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-08-17 23:06:30" itemprop="dateCreated datePublished" datetime="2017-08-17T23:06:30+08:00">2017-08-17</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>之前在讲密钥配送的时候，有提到 Diffie-Hellman 密钥交换，今天来简单的谈谈它。 Diffie-Hellman 密钥交换(Diffie-Hellman key exchange)通信双方仅通过交换一些可以公开的信息就能够生成共享的数字，而这一秘密数字就可以被用作对称密码的密钥。下面先来讲讲它的步骤。</p>
+<a id="more"></a>
+<ul>
+<li>Alice 向 Bob 发送两个质数 P 和 G<br> P 必须是一个非常大的质数，而 G 则是和 P 相关的数，被称为生成元，而 G 可以是一个很小的数。 P 和 G不需要保密。</li>
+<li>Alice 生成一个随机数 A<br> A 是一个<code>1 ~ P-2</code>之间的整数，它只能是 Alice 自己知道的密码数字。</li>
+<li>Bob 生成一个随机数 B<br> 同样的，B 是一个<code>1 ~ P-2</code>之间的整数，它只能是 Bob 自己知道的密码数字。</li>
+<li>Alice 将 G^A mod P 这个数发送给 Bob<br>  这个数被 Eve 知道也没关系。</li>
+<li>Bob 将 G^B mod P 这个数发送给 Alice<br>  这个数被 Eve 知道也没关系。</li>
+<li>Alice 用 Bob 发过来的数计算 A 次方 并求 mod P<br>  即<code>(G^B mod P)^A mode P</code>，这个数就是共享密钥，可以将它简化为：<code>G^(A*B) mod P</code></li>
+<li>Bob 用 Alice 发过来的数计算 B 次方 并求 mod P<br>  即<code>(G^A mod P)^B mode P</code>，这个数就是共享密钥，可以将它简化为：<code>G^(A*B) mod P</code></li>
+</ul>
+<p>我们可以发现：<code>Alice 计算的密钥 = Bob 计算的密钥</code>。 那么问题来了，Eve 能够计算出密钥么？从上面的步骤来看， Eve 知道<code>P、G、G^A mod P、G^B mod P</code>这 4 个数，而根据这 4 个数计算出共享秘钥 <code>G^(A*B) mod P</code> 是非常困难的，这个又是离散对数的问题了。</p>
+<p>还是上篇博文《浅谈 RSA》说的时钟问题。我们假设 P 为 13，而 mod P 的时钟运算中所使用的数就是：<code>0,1,2...12</code>。我们看看下面 G^A mod P 表格（P = 13）。</p>
+<table>
+<thead>
+<tr>
+<th>G  /  A</th>
+<th align="right">1</th>
+<th align="right">2</th>
+<th align="right">3</th>
+<th align="right">4</th>
+<th align="right">5</th>
+<th align="right">6</th>
+<th align="right">7</th>
+<th align="right">8</th>
+<th align="right">9</th>
+<th align="right">10</th>
+<th align="right">11</th>
+<th align="right">12</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr>
+<td>1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">1</td>
+</tr>
+<tr>
+<td>2</td>
+<td align="right">2</td>
+<td align="right">4</td>
+<td align="right">8</td>
+<td align="right">3</td>
+<td align="right">6</td>
+<td align="right">12</td>
+<td align="right">11</td>
+<td align="right">9</td>
+<td align="right">5</td>
+<td align="right">10</td>
+<td align="right">7</td>
+<td align="right">1</td>
+</tr>
+<tr>
+<td>3</td>
+<td align="right">3</td>
+<td align="right">9</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">9</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">9</td>
+<td align="right">1</td>
+<td align="right">3</td>
+<td align="right">9</td>
+<td align="right">1</td>
+</tr>
+<tr>
+<td>4</td>
+<td align="right">4</td>
+<td align="right">3</td>
+<td align="right">12</td>
+<td align="right">9</td>
+<td align="right">10</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">3</td>
+<td align="right">12</td>
+<td align="right">9</td>
+<td align="right">10</td>
+<td align="right">1</td>
+</tr>
+<tr>
+<td>5</td>
+<td align="right">5</td>
+<td align="right">12</td>
+<td align="right">8</td>
+<td align="right">1</td>
+<td align="right">5</td>
+<td align="right">12</td>
+<td align="right">8</td>
+<td align="right">1</td>
+<td align="right">5</td>
+<td align="right">2</td>
+<td align="right">8</td>
+<td align="right">1</td>
+</tr>
+<tr>
+<td>6</td>
+<td align="right">6</td>
+<td align="right">10</td>
+<td align="right">8</td>
+<td align="right">9</td>
+<td align="right">2</td>
+<td align="right">12</td>
+<td align="right">7</td>
+<td align="right">3</td>
+<td align="right">5</td>
+<td align="right">4</td>
+<td align="right">11</td>
+<td align="right">1</td>
+</tr>
+<tr>
+<td>7</td>
+<td align="right">7</td>
+<td align="right">10</td>
+<td align="right">5</td>
+<td align="right">9</td>
+<td align="right">11</td>
+<td align="right">12</td>
+<td align="right">6</td>
+<td align="right">3</td>
+<td align="right">8</td>
+<td align="right">4</td>
+<td align="right">2</td>
+<td align="right">1</td>
+</tr>
+<tr>
+<td>9</td>
+<td align="right">8</td>
+<td align="right">12</td>
+<td align="right">5</td>
+<td align="right">1</td>
+<td align="right">8</td>
+<td align="right">12</td>
+<td align="right">5</td>
+<td align="right">1</td>
+<td align="right">8</td>
+<td align="right">12</td>
+<td align="right">5</td>
+<td align="right">1</td>
+</tr>
+<tr>
+<td>9</td>
+<td align="right">9</td>
+<td align="right">3</td>
+<td align="right">1</td>
+<td align="right">9</td>
+<td align="right">3</td>
+<td align="right">1</td>
+<td align="right">9</td>
+<td align="right">3</td>
+<td align="right">1</td>
+<td align="right">9</td>
+<td align="right">3</td>
+<td align="right">1</td>
+</tr>
+<tr>
+<td>10</td>
+<td align="right">10</td>
+<td align="right">9</td>
+<td align="right">12</td>
+<td align="right">3</td>
+<td align="right">4</td>
+<td align="right">1</td>
+<td align="right">10</td>
+<td align="right">9</td>
+<td align="right">12</td>
+<td align="right">3</td>
+<td align="right">4</td>
+<td align="right">1</td>
+</tr>
+<tr>
+<td>11</td>
+<td align="right">11</td>
+<td align="right">4</td>
+<td align="right">5</td>
+<td align="right">3</td>
+<td align="right">7</td>
+<td align="right">12</td>
+<td align="right">2</td>
+<td align="right">9</td>
+<td align="right">8</td>
+<td align="right">10</td>
+<td align="right">6</td>
+<td align="right">1</td>
+</tr>
+<tr>
+<td>12</td>
+<td align="right">12</td>
+<td align="right">1</td>
+<td align="right">12</td>
+<td align="right">1</td>
+<td align="right">12</td>
+<td align="right">1</td>
+<td align="right">12</td>
+<td align="right">1</td>
+<td align="right">12</td>
+<td align="right">1</td>
+<td align="right">12</td>
+<td align="right">1</td>
+</tr>
+</tbody></table>
+<p>在上表中，注意看 G 等于 2 那一行。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">2^1  mod 13 &#x3D; 2</span><br><span class="line">2^2  mod 13 &#x3D; 4</span><br><span class="line">2^3  mod 13 &#x3D; 7</span><br><span class="line">2^4  mod 13 &#x3D; 3</span><br><span class="line">2^5  mod 13 &#x3D; 6</span><br><span class="line">2^6  mod 13 &#x3D; 12</span><br><span class="line">2^7  mod 13 &#x3D; 11</span><br><span class="line">2^8  mod 13 &#x3D; 9</span><br><span class="line">2^9  mod 13 &#x3D; 5</span><br><span class="line">2^10 mod 13 &#x3D; 10</span><br><span class="line">2^11 mod 13 &#x3D; 7</span><br><span class="line">2^12 mod 13 &#x3D; 1</span><br></pre></td></tr></table></figure>
+<p>我们发现<code>2^1</code>到<code>2^12</code>这 12 个值都不一样，也就是说， 2 的乘方结果中出现了 1 到 12 的全部整数，由于 2 具备上述性质，因此称它为 13 的生成元，同样的， 6、7、11也是生成元。 P 的生成元的乘方结果与<code>1 ~ P-1</code>一一对应。正是因为这种一一对应关系， Alice 和 Bob 才能从<code>1 ~ P-2</code>中随机选择一个数字（之所以不能选择 P-1，因为<code>G^(P-1) mod P</code>的值一定是等于 1 的）。当然，从数学上看，我们还得必须证明对于任意质数 P 都一定存在生成元 G，但这个就不证明了。不得不感叹质数真的很神奇！！！</p>
+<p>**转载请注明出处！<a href="http://joakimliu.github.io/2017/08/17/%E6%B5%85%E8%B0%88-Diffie-Hellman-%E5%AF%86%E9%92%A5%E4%BA%A4%E6%8D%A2/">http://joakimliu.github.io/2017/08/17/浅谈-Diffie-Hellman-密钥交换/</a> 谢谢！ **</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%AF%86%E7%A0%81/" rel="tag"># 密码</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/08/17/%E6%B5%85%E8%B0%88-RSA/" rel="prev" title="浅谈 RSA">
+      <i class="fa fa-chevron-left"></i> 浅谈 RSA
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/09/22/%E5%86%99%E5%9C%A8%E8%A2%AB%E8%8B%B9%E6%9E%9C%E8%A2%AB%E6%8B%926%E6%AC%A1%E5%90%8E/" rel="next" title="写在被苹果被拒6次后">
+      写在被苹果被拒6次后 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">joakim.liu</p>
+  <div class="site-description" itemprop="description">你不解决问题，就会成为问题。iOS菜逗一枚。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/JoakimLiu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/JoakimLiu" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">joakim.liu</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://example.com/2017/08/17/%E6%B5%85%E8%B0%88-Diffie-Hellman-%E5%AF%86%E9%92%A5%E4%BA%A4%E6%8D%A2/";
+    this.page.identifier = "2017/08/17/浅谈-Diffie-Hellman-密钥交换/";
+    this.page.title = "浅谈 Diffie-Hellman 密钥交换";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://http-joakimliu-github-io.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

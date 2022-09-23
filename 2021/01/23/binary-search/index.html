@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="二分查找，就是在一个区间内查找某个值(eg: target)的时候，每次把区间一分为二，然后选择满足性质的区间(即包含 target)继续一分为二，直到区间长度为一。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="二分查找">
+<meta property="og:url" content="http://example.com/2021/01/23/binary-search/index.html">
+<meta property="og:site_name" content="牛易疯先森的开发记录">
+<meta property="og:description" content="二分查找，就是在一个区间内查找某个值(eg: target)的时候，每次把区间一分为二，然后选择满足性质的区间(即包含 target)继续一分为二，直到区间长度为一。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4mm9IE6dO1rua4myJIoyNT1t8_hVGQaUBQBHG6YB5B7yzoWYKdyavWhk_Dr-DfvKWsS4qvgTubCyuhq2C0Rc1MChrZVIZ6UEAxbgqulbIBT5AH6jTHOBpH3-FFfJSKGoe4dULaybBJ_pRMlI5ttQv6xooTGlVTydUHFCX8mP1e8rDXd6UA5wzSHDgmHgfWR6TT?width=2650&height=648&cropmode=none">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4mqOQEcq3hX3_xryQqB9yFCrJa1zvw4xGLkV_nS61wxy0XsvKbymPAkARAWomghQHWezSymg4inF_9r9zlb1vSOwuYEzPCo1IjqkJuPVmaAJRMeggpCs2rvRS9YK4aZn5tJbFIb1WPI7DdDtxP7PNm-9O4nIG0KUr4o7kCGk6dWlIKrmjY-_5M7e4wPoWf7X-e?width=1256&height=824&cropmode=none">
+<meta property="article:published_time" content="2021-01-22T23:34:04.000Z">
+<meta property="article:modified_time" content="2021-01-25T15:07:50.354Z">
+<meta property="article:author" content="joakim.liu">
+<meta property="article:tag" content="二分查找">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://sat02pap001files.storage.live.com/y4mm9IE6dO1rua4myJIoyNT1t8_hVGQaUBQBHG6YB5B7yzoWYKdyavWhk_Dr-DfvKWsS4qvgTubCyuhq2C0Rc1MChrZVIZ6UEAxbgqulbIBT5AH6jTHOBpH3-FFfJSKGoe4dULaybBJ_pRMlI5ttQv6xooTGlVTydUHFCX8mP1e8rDXd6UA5wzSHDgmHgfWR6TT?width=2650&height=648&cropmode=none">
+
+<link rel="canonical" href="http://example.com/2021/01/23/binary-search/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>二分查找 | 牛易疯先森的开发记录</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">牛易疯先森的开发记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/01/23/binary-search/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          二分查找
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-01-23 07:34:04" itemprop="dateCreated datePublished" datetime="2021-01-23T07:34:04+08:00">2021-01-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">算法</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>二分查找，就是在一个区间内查找某个值(eg: target)的时候，每次把区间一分为二，然后选择满足性质的区间(即包含 target)继续一分为二，直到区间长度为一。</p>
+<a id="more"></a>
+
+<p>最开始刷二分题的时候，比较慢，可能自己没整理好的一个通用的思路，自从用了 <code>y总</code> 的<a href="https://www.acwing.com/activity/content/introduction/11/">模板</a>后，就离不开了，真的很爽。</p>
+<h1 id="模板"><a href="#模板" class="headerlink" title="模板"></a>模板</h1><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">check</span><span class="params">(<span class="keyword">int</span> x)</span> </span>&#123;<span class="comment">/* ... */</span>&#125; <span class="comment">// 检查x是否满足某种性质</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 区间[l, r]被划分成[l, mid]和[mid + 1, r]时使用：</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">bsearch_1</span><span class="params">(<span class="keyword">int</span> l, <span class="keyword">int</span> r)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">while</span> (l &lt; r)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> mid = l + r &gt;&gt; <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">if</span> (check(mid)) r = mid;    <span class="comment">// check()判断mid是否满足性质</span></span><br><span class="line">        <span class="keyword">else</span> l = mid + <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> l;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 区间[l, r]被划分成[l, mid - 1]和[mid, r]时使用：</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">bsearch_2</span><span class="params">(<span class="keyword">int</span> l, <span class="keyword">int</span> r)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">while</span> (l &lt; r)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> mid = l + r + <span class="number">1</span> &gt;&gt; <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">if</span> (check(mid)) l = mid;</span><br><span class="line">        <span class="keyword">else</span> r = mid - <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> l;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">作者：yxc</span><br><span class="line">链接：https:<span class="comment">//www.acwing.com/blog/content/277/</span></span><br></pre></td></tr></table></figure>
+<p>其实，上面模板的代码分别对应两种情况</p>
+<ul>
+<li>bsearch_1: 找左边界，不断的向左逼近，比如：求 &gt;=x 的最小值</li>
+<li>bsearch_2: 找右边界，不断的向右逼近，比如：求 &lt;=x 的最大值</li>
+</ul>
+<p>画个图，来加深下理解；</p>
+<p><img src="https://sat02pap001files.storage.live.com/y4mm9IE6dO1rua4myJIoyNT1t8_hVGQaUBQBHG6YB5B7yzoWYKdyavWhk_Dr-DfvKWsS4qvgTubCyuhq2C0Rc1MChrZVIZ6UEAxbgqulbIBT5AH6jTHOBpH3-FFfJSKGoe4dULaybBJ_pRMlI5ttQv6xooTGlVTydUHFCX8mP1e8rDXd6UA5wzSHDgmHgfWR6TT?width=2650&height=648&cropmode=none"></p>
+<p>上图中，红色的区间是满足性质的，反之绿色的则不满足性质，而模板中的 <code>check(mid)</code> 函数就是用来判断是否满足性质，从而将区间一分为二。</p>
+<ul>
+<li>bsearch_1<ul>
+<li>true: 满足性质，区间变成：[l, mid], 不断的向左逼近，找左边界</li>
+<li>false: 不足，区间变成：[mid+1, r]</li>
+</ul>
+</li>
+<li>bsearch_2<ul>
+<li>true: [mid, r], 不断的向右逼近，找右边界</li>
+<li>false: [l, mid-1]</li>
+</ul>
+</li>
+</ul>
+<p>注意点</p>
+<ol>
+<li>循环退出条件是 <code>while(l &lt; r)</code>, 不是 <code>while(l &lt;= r)</code>；因为当 <code>while(l &lt; r)</code> 时，当条件是 <code>l &gt;= r</code> 就会退出，而这里则是 <code>l == r</code>； </li>
+<li><code>check(mid)</code> 是用来判断 <code>mid</code> 是否满足某种性质的，并且 <code>mid</code> 是在所满足性质区间内的；</li>
+<li><code>bsearch_2</code> 里面的 <code>mid = l + r + 1 &gt;&gt; 1;</code>，对比 <code>bsearch_1</code> 为什么要加 <code>+1</code> 呢？因为 <code>C++</code> 是下取整的，当 <code>l = r-1</code> 时，<code>mid = l+r&gt;&gt;1 = r+r-1&gt;&gt;1 = r-1=l</code>，当满足性质时，<code>l = mid = l</code>，此时 <code>l</code> 的值没发生变化，这样就发生死循环了</li>
+</ol>
+<h3 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h3><p><strong>解题思路总结</strong>：</p>
+<ol>
+<li>先画图，确定二分的边界(找左边界还是右边界)</li>
+<li>根据边界来设计一个<code>check</code> 函数（满足某种性质）</li>
+<li>判断区间怎么更新，决定是 <code>l = mid</code> 还是 <code>r = mid</code></li>
+</ol>
+<h1 id="练习"><a href="#练习" class="headerlink" title="练习"></a>练习</h1><p>刷几道 lc 来找下感觉，巩固下模板知识。</p>
+<h2 id="704-二分查找"><a href="#704-二分查找" class="headerlink" title="704. 二分查找"></a>704. 二分查找</h2><p><a href="https://leetcode-cn.com/problems/binary-search/">704. 二分查找</a>.</p>
+<p>一道很基础的题目，在升序数组里面找一个数，这里即可以找左边界，也可以找右边界，按上面的<strong>解题思路总结</strong>来考虑一下这道题。</p>
+<ol>
+<li>左边界(bsearch_1)<ol>
+<li>check 函数：<code>nums[mid] &gt;= target</code>，则不断的向左逼近</li>
+<li>因为是找左边界，所以是 <code>r = mid</code>；</li>
+</ol>
+</li>
+<li>右边界(bsearch_2)<ol>
+<li>check 函数：<code>nums[mid] &lt;= target</code>，则不断的向左逼近（跟左边界的代码是相对的）</li>
+<li>因为是找右边界，所以是 <code>l = mid</code>；</li>
+</ol>
+</li>
+</ol>
+<h3 id="bsearch-1"><a href="#bsearch-1" class="headerlink" title="bsearch_1"></a>bsearch_1</h3><p><strong>找左边界，不断的向左逼近，找 <code>&gt;= target</code> 的最小值。</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">search</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; nums, <span class="keyword">int</span> target)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> l = <span class="number">0</span>, r = nums.size()<span class="number">-1</span>;</span><br><span class="line">        <span class="keyword">while</span> (l &lt; r) &#123;</span><br><span class="line">            <span class="keyword">int</span> mid = (l + r) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">if</span> (nums[mid] &gt;= target) r = mid;</span><br><span class="line">            <span class="keyword">else</span> l = mid + <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (nums[l] != target) <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">        <span class="keyword">return</span> l;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="bsearch-2"><a href="#bsearch-2" class="headerlink" title="bsearch_2"></a>bsearch_2</h3><p><strong>找右边界，不断的向右逼近，找 <code>&lt;= target</code> 的最大值。</strong></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">search</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; nums, <span class="keyword">int</span> target)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> l = <span class="number">0</span>, r = nums.size()<span class="number">-1</span>;</span><br><span class="line">        <span class="keyword">while</span> (l &lt; r) &#123;</span><br><span class="line">            <span class="keyword">int</span> mid = (l+r+<span class="number">1</span>) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">if</span> (nums[mid] &lt;= target) l = mid;</span><br><span class="line">            <span class="keyword">else</span> r = mid<span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (nums[l] != target) <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">        <span class="keyword">return</span> l;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="34-在排序数组中查找元素的第一个和最后一个位置"><a href="#34-在排序数组中查找元素的第一个和最后一个位置" class="headerlink" title="34. 在排序数组中查找元素的第一个和最后一个位置"></a>34. 在排序数组中查找元素的第一个和最后一个位置</h2><p><a href="https://leetcode-cn.com/problems/find-first-and-last-position-of-element-in-sorted-array/">34. 在排序数组中查找元素的第一个和最后一个位置</a></p>
+<p>这题跟上题是一样的思路，套用模板直接求第一个位置和最后一个位置的数即可。</p>
+<ul>
+<li>第一个位置：见 704. 二分查找 - bsearch_1;</li>
+<li>最后一个位置：见 704. 二分查找 - bsearch_2;</li>
+</ul>
+<h2 id="33-搜索旋转排序数组"><a href="#33-搜索旋转排序数组" class="headerlink" title="33. 搜索旋转排序数组"></a>33. 搜索旋转排序数组</h2><p><a href="https://leetcode-cn.com/problems/search-in-rotated-sorted-array/">33. 搜索旋转排序数组</a></p>
+<p>这道题目的数据并不是单调的，但也是可以用二分的，我们需要发现其中的性质。</p>
+<p><img src="https://sat02pap001files.storage.live.com/y4mqOQEcq3hX3_xryQqB9yFCrJa1zvw4xGLkV_nS61wxy0XsvKbymPAkARAWomghQHWezSymg4inF_9r9zlb1vSOwuYEzPCo1IjqkJuPVmaAJRMeggpCs2rvRS9YK4aZn5tJbFIb1WPI7DdDtxP7PNm-9O4nIG0KUr4o7kCGk6dWlIKrmjY-_5M7e4wPoWf7X-e?width=1256&height=824&cropmode=none"></p>
+<p>发现上面的数据是有二段性的，即两个区间是有序的，如果我们能确定 <code>target</code> 在某一个区间，那么就可以在这个区间里面用二分了。<br>那怎么确定 <code>target</code> 在哪一个区间呢？这个简单，由于数组没有重复元素，第一段的最小值肯定大于第二段的最大值，我们只需要用 <code>target</code> 跟第二段的最大值（即数组最后一个元素）作比较即可。<br>那我们怎么判断找到这两个区间呢？也就是找到一个位置，把数组分成两个区间，可以遍历一次，如果 <code>nums[i+1]</code> 小于 <code>nums[i]</code>，则说明 <code>[0, i]</code> 属于第一段，而 <code>[i+1, n-1]</code> 属于第二段，是否能用二分找到这个区间呢？也就是找到这个区间的最大值或者最小值，然后根据这里两个极值把数组分成两个区间。<br>我们先以求最大值为例。</p>
+<h3 id="最大值"><a href="#最大值" class="headerlink" title="最大值"></a>最大值</h3><p>按上面的<strong>解题思路总结</strong>来考虑一下这道题。</p>
+<ol>
+<li>边界在哪？求最大值，有因为是递增的，肯定在右边</li>
+<li><code>check</code> 函数？<code>&gt;= nums[0]</code> 就行，不断向右逼近</li>
+<li>区间更新？向右逼近，肯定是 <code>l = mid;</code></li>
+</ol>
+<p>好，开干。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">search</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; nums, <span class="keyword">int</span> target)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> l = <span class="number">0</span>, r = nums.size()<span class="number">-1</span>;</span><br><span class="line">        <span class="keyword">while</span> (l &lt; r) &#123;</span><br><span class="line">            <span class="keyword">int</span> mid = (l + r + <span class="number">1</span>) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">if</span> (nums[mid] &gt;= nums[<span class="number">0</span>]) l = mid;</span><br><span class="line">            <span class="keyword">else</span> r = mid - <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// l 和 r 就是最大值的下标</span></span><br><span class="line">        <span class="keyword">if</span> (target &lt;= nums.back()) &#123; <span class="comment">// 在第二个区间</span></span><br><span class="line">            l++, r = nums.size()<span class="number">-1</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            l = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">/* </span></span><br><span class="line"><span class="comment">        防止某种 case: [1], 0 的情况，导致</span></span><br><span class="line"><span class="comment">        l = 1, r = 0 的情况。</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line">        <span class="keyword">if</span> (l &gt; r) &#123;</span><br><span class="line">            l = <span class="number">0</span>, r = nums.size() - <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// bsearch_2, 这里用 bsearch_1 也是 OK 的，同 704</span></span><br><span class="line">        <span class="keyword">while</span> (l &lt; r) &#123;</span><br><span class="line">            <span class="keyword">int</span> mid = (l + r + <span class="number">1</span>) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">if</span> (nums[mid] &lt;= target) l = mid;</span><br><span class="line">            <span class="keyword">else</span> r = mid<span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (nums[r] != target) <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">        <span class="keyword">return</span> r;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="最小值"><a href="#最小值" class="headerlink" title="最小值"></a>最小值</h3><p>解题思路同上。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">search</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; nums, <span class="keyword">int</span> target)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> l = <span class="number">0</span>, r = nums.size()<span class="number">-1</span>;</span><br><span class="line">        <span class="keyword">while</span> (l &lt; r) &#123;</span><br><span class="line">            <span class="keyword">int</span> mid = (l + r) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">if</span> (nums[mid] &lt;= nums.back()) r = mid;</span><br><span class="line">            <span class="keyword">else</span> l = mid + <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// l 和 r 就是最大值的下标</span></span><br><span class="line">        <span class="keyword">if</span> (target &lt;= nums.back()) &#123; <span class="comment">// 在第二区间</span></span><br><span class="line">            r = nums.size()<span class="number">-1</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            l = <span class="number">0</span>, r--;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// bsearch_1, 这里用 bsearch_2 也是 OK 的，同 704</span></span><br><span class="line">        <span class="keyword">while</span> (l &lt; r) &#123;</span><br><span class="line">            <span class="keyword">int</span> mid = (l + r) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">if</span> (nums[mid] &gt;= target) r = mid;</span><br><span class="line">            <span class="keyword">else</span> l = mid+<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (nums[l] != target) <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">        <span class="keyword">return</span> l;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>用这里找最小值的思路就能解决 <a href="https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array/">153. 寻找旋转排序数组中的最小值</a> 了。</p>
+<h2 id="81-搜索旋转排序数组-II"><a href="#81-搜索旋转排序数组-II" class="headerlink" title="81. 搜索旋转排序数组 II"></a>81. 搜索旋转排序数组 II</h2><p><a href="https://leetcode-cn.com/problems/search-in-rotated-sorted-array-ii/">81. 搜索旋转排序数组 II</a></p>
+<p>跟 33 的区别在于：这道题有重复数，那这个思路还行的同吗？</p>
+<p>通过 33 的图，并结合这里的题意可知，只有第一个区间前面的数和第二个区间后面的数会重复，而这里题意是 <code>编写一个函数来判断给定的目标值是否存在于数组中。</code>，所以我们把重复数给移除掉的话，是不影响结果的，这样就能用 33 的思路来解决了，具体思路见代码。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">search</span><span class="params">(<span class="built_in">vector</span>&lt;<span class="keyword">int</span>&gt;&amp; nums, <span class="keyword">int</span> target)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> l = <span class="number">0</span>, r = nums.size() - <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">int</span> R = r;</span><br><span class="line">        <span class="keyword">while</span> (R &gt;= <span class="number">0</span> &amp;&amp; nums[<span class="number">0</span>] == nums[R]) R--;</span><br><span class="line">        <span class="comment">// 数组元素全相同</span></span><br><span class="line">        <span class="keyword">if</span> (R &lt; <span class="number">0</span>) <span class="keyword">return</span> nums[<span class="number">0</span>] == target;</span><br><span class="line">        </span><br><span class="line">        l = <span class="number">0</span>, r = R;</span><br><span class="line">        <span class="keyword">while</span> (l &lt; r) &#123;</span><br><span class="line">            <span class="keyword">int</span> mid = (l + r + <span class="number">1</span>) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">if</span> (nums[mid] &gt;= nums[<span class="number">0</span>]) l = mid;</span><br><span class="line">            <span class="keyword">else</span> r = mid<span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (target &gt;= nums[<span class="number">0</span>]) &#123;</span><br><span class="line">            l = <span class="number">0</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            l++, r = R;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">while</span> (l &lt; r) &#123;</span><br><span class="line">            <span class="keyword">int</span> mid = (l + r + <span class="number">1</span>) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">if</span> (nums[mid] &lt;= target) l = mid;</span><br><span class="line">            <span class="keyword">else</span> r = mid<span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 前面 l++ 可能会导致 l &gt; r</span></span><br><span class="line">        <span class="keyword">return</span> nums[r] == target;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>用这种去重的思路，同样能解决 <a href="https://leetcode-cn.com/problems/find-minimum-in-rotated-sorted-array-ii/">154. 寻找旋转排序数组中的最小值 II</a>。</p>
+<h2 id="69-x-的平方根"><a href="#69-x-的平方根" class="headerlink" title="69. x 的平方根"></a>69. x 的平方根</h2><p><a href="https://leetcode-cn.com/problems/sqrtx/">69. x 的平方根</a></p>
+<ol>
+<li>确定边界？这里需要返回一个数开平方根后的整数，如果一个数开平方根后的值 <code>result</code> 恰好是整数，那就直接返回 <code>result</code> ；如果是小数呢？结合题目的 <code>示例 2</code> 可知，应该返回 <code>&lt;= result</code> 的最大整数，所以这里是找右边界；</li>
+<li><code>check</code> 函数？ <code>mid &lt;= x/mid</code></li>
+<li>区间更新？向右逼近，肯定是 <code>l = mid;</code></li>
+</ol>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">mySqrt</span><span class="params">(<span class="keyword">int</span> x)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> l = <span class="number">0</span>, r = x;</span><br><span class="line">        <span class="keyword">while</span> (l &lt; r) &#123;</span><br><span class="line">            <span class="comment">// +1ll, 防止 int 数据溢出</span></span><br><span class="line">            <span class="keyword">int</span> mid = (l+r+<span class="number">1ll</span>) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">if</span> (mid &lt;= x/mid) l = mid;</span><br><span class="line">            <span class="keyword">else</span> r = mid - <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> l;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h3><p>Q: 找左边界可以吗？<br>A: 当然是可以的，不过逻辑稍微会复杂点，因为 C++ 里除法是下取整，所以划分的区间是 <code>[0, [mid][下取整]]</code> 和 <code>[[mid][下取整]+1, x]</code>，所以最后得到答案是 <code>[mid][下取整]+1</code>，所以需要做 -1 操作。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Solution</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">mySqrt</span><span class="params">(<span class="keyword">int</span> x)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 防止 case: 1 时，后面出现 mid 为 0 的情况</span></span><br><span class="line">        <span class="keyword">if</span> (x &lt; <span class="number">2</span>) <span class="keyword">return</span> x;</span><br><span class="line">        <span class="keyword">int</span> l = <span class="number">0</span>, r = x;</span><br><span class="line">        <span class="keyword">while</span> (l &lt; r) &#123;</span><br><span class="line">            <span class="comment">// +1ll, 防止 int 数据溢出</span></span><br><span class="line">            <span class="keyword">int</span> mid = (l+(<span class="keyword">long</span> <span class="keyword">long</span>)r) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">if</span> (mid &gt;= x/mid) r = mid;</span><br><span class="line">            <span class="keyword">else</span> l = mid+<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (l == x/l) <span class="keyword">return</span> l;</span><br><span class="line">        <span class="keyword">return</span> l<span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>还是上一个做法比较简单，符合常规思考逻辑。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ol>
+<li>按照 <strong>解题思路</strong> 多做题目，熟能生巧；</li>
+<li>有些题目二分性质不是那么明显，不能套用模板，但是思路还是通用的（后面再讲）</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/" rel="tag"># 二分查找</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/01/21/compile-flutter-engine-using-Xcode/" rel="prev" title="用 Xcode 编译 Flutter Engine 源码">
+      <i class="fa fa-chevron-left"></i> 用 Xcode 编译 Flutter Engine 源码
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/02/24/matrix-flip/" rel="next" title="矩阵翻转">
+      矩阵翻转 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A8%A1%E6%9D%BF"><span class="nav-number">1.</span> <span class="nav-text">模板</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF"><span class="nav-number">1.0.1.</span> <span class="nav-text">解题思路</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0"><span class="nav-number">2.</span> <span class="nav-text">练习</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#704-%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE"><span class="nav-number">2.1.</span> <span class="nav-text">704. 二分查找</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#bsearch-1"><span class="nav-number">2.1.1.</span> <span class="nav-text">bsearch_1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#bsearch-2"><span class="nav-number">2.1.2.</span> <span class="nav-text">bsearch_2</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#34-%E5%9C%A8%E6%8E%92%E5%BA%8F%E6%95%B0%E7%BB%84%E4%B8%AD%E6%9F%A5%E6%89%BE%E5%85%83%E7%B4%A0%E7%9A%84%E7%AC%AC%E4%B8%80%E4%B8%AA%E5%92%8C%E6%9C%80%E5%90%8E%E4%B8%80%E4%B8%AA%E4%BD%8D%E7%BD%AE"><span class="nav-number">2.2.</span> <span class="nav-text">34. 在排序数组中查找元素的第一个和最后一个位置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#33-%E6%90%9C%E7%B4%A2%E6%97%8B%E8%BD%AC%E6%8E%92%E5%BA%8F%E6%95%B0%E7%BB%84"><span class="nav-number">2.3.</span> <span class="nav-text">33. 搜索旋转排序数组</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%80%E5%A4%A7%E5%80%BC"><span class="nav-number">2.3.1.</span> <span class="nav-text">最大值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%80%E5%B0%8F%E5%80%BC"><span class="nav-number">2.3.2.</span> <span class="nav-text">最小值</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#81-%E6%90%9C%E7%B4%A2%E6%97%8B%E8%BD%AC%E6%8E%92%E5%BA%8F%E6%95%B0%E7%BB%84-II"><span class="nav-number">2.4.</span> <span class="nav-text">81. 搜索旋转排序数组 II</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#69-x-%E7%9A%84%E5%B9%B3%E6%96%B9%E6%A0%B9"><span class="nav-number">2.5.</span> <span class="nav-text">69. x 的平方根</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%9D%E8%80%83"><span class="nav-number">2.5.1.</span> <span class="nav-text">思考</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">joakim.liu</p>
+  <div class="site-description" itemprop="description">你不解决问题，就会成为问题。iOS菜逗一枚。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/JoakimLiu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/JoakimLiu" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">joakim.liu</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://example.com/2021/01/23/binary-search/";
+    this.page.identifier = "2021/01/23/binary-search/";
+    this.page.title = "二分查找";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://http-joakimliu-github-io.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="本文是对官方文档Drawing and Printing Guide for iOS的一个翻译学习记录。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Drawing and Printing Guide for iOS">
+<meta property="og:url" content="http://example.com/2019/03/01/Drawing-and-Printing-Guide-for-iOS/index.html">
+<meta property="og:site_name" content="牛易疯先森的开发记录">
+<meta property="og:description" content="本文是对官方文档Drawing and Printing Guide for iOS的一个翻译学习记录。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://developer.apple.com/library/archive/documentation/2DDrawing/Conceptual/DrawingPrintingiOS/Art/coordinate_differences_2x.png">
+<meta property="og:image" content="https://developer.apple.com/library/archive/documentation/2DDrawing/Conceptual/DrawingPrintingiOS/Art/flipped_coordinates-2_2x.png">
+<meta property="og:image" content="https://developer.apple.com/library/archive/documentation/2DDrawing/Conceptual/DrawingPrintingiOS/Art/flipped_coordinates-1_2x.png">
+<meta property="og:image" content="https://developer.apple.com/library/archive/documentation/2DDrawing/Conceptual/DrawingPrintingiOS/Art/bezier_pentagon_2x.png">
+<meta property="og:image" content="https://developer.apple.com/library/archive/documentation/2DDrawing/Conceptual/DrawingPrintingiOS/Art/arc_layout_2x.png">
+<meta property="og:image" content="https://developer.apple.com/library/archive/documentation/2DDrawing/Conceptual/DrawingPrintingiOS/Art/curve_segments_2x.png">
+<meta property="article:published_time" content="2019-03-01T15:44:14.000Z">
+<meta property="article:modified_time" content="2021-01-22T14:55:23.846Z">
+<meta property="article:author" content="joakim.liu">
+<meta property="article:tag" content="AppleDocument">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://developer.apple.com/library/archive/documentation/2DDrawing/Conceptual/DrawingPrintingiOS/Art/coordinate_differences_2x.png">
+
+<link rel="canonical" href="http://example.com/2019/03/01/Drawing-and-Printing-Guide-for-iOS/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Drawing and Printing Guide for iOS | 牛易疯先森的开发记录</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">牛易疯先森的开发记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/03/01/Drawing-and-Printing-Guide-for-iOS/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Drawing and Printing Guide for iOS
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-03-01 23:44:14" itemprop="dateCreated datePublished" datetime="2019-03-01T23:44:14+08:00">2019-03-01</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本文是对官方文档<a href="https://developer.apple.com/library/archive/documentation/2DDrawing/Conceptual/DrawingPrintingiOS/Introduction/Introduction.html#//apple_ref/doc/uid/TP40010156-CH1-SW1">Drawing and Printing Guide for iOS</a>的一个翻译学习记录。</p>
+<a id="more"></a>
+
+<h1 id="About-Drawing-and-Printing-in-iOS"><a href="#About-Drawing-and-Printing-in-iOS" class="headerlink" title="About Drawing and Printing in iOS"></a>About Drawing and Printing in iOS</h1><p>本文档覆盖三个相关的部分：</p>
+<ul>
+<li>绘制自定义 UI 视图。 (自定义 UI 视图允许绘制无法使用标准UI元素轻松绘制的内容。 例如，绘图程序可能会为用户的绘图使用自定义视图，或者街机游戏可能会使用自定义视图来绘制精灵。)</li>
+<li>绘制到屏幕外的位图和 PDF 内容。 (Drawing into offscreen bitmap and PDF content. ) 无论您是打算稍后显示图像，将它们导出到文件，还是将图像打印到启用 AirPrint 的打印机，屏幕外绘图都可以在不中断用户工作流程的情况下执行此操作。</li>
+<li>为应用添加 AirPrint 支持。</li>
+</ul>
+<h2 id="At-a-Glance"><a href="#At-a-Glance" class="headerlink" title="At a Glance"></a>At a Glance</h2><p>iOS 原生图形系统结合了三种主要技术：UIKit ，Core Graphics 和 Core Animation 。 UIKit 在这些视图中提供视图和一些高级绘图功能， Core Graphics 在 UIKit 视图中提供额外的（低级）绘图支持， Core Animation 提供了将变换和动画应用于 UIKit 视图的功能。 Core Animation 还负责视图合成(view compositing)。</p>
+<h3 id="Custom-UI-Views-Allow-Greater-Drawing-Flexibility"><a href="#Custom-UI-Views-Allow-Greater-Drawing-Flexibility" class="headerlink" title="Custom UI Views Allow Greater Drawing Flexibility"></a>Custom UI Views Allow Greater Drawing Flexibility</h3><p>本文档介绍如何使用原生绘图技术绘制自定义 UI 视图。 这些技术包括 Core Graphics 和 UIKit 框架，支持 2D 绘图。 </p>
+<p>在考虑使用自定义 U I视图之前，应确保确实需要这样做。 原生绘图适用于处理更复杂的2D布局需求。 但是，由于自定义视图是处理器密集型(processor-intensive)的，因此应<strong>限制使用</strong>原生绘图技术执行的绘制量。</p>
+<p>作为自定义绘图的替代方案，iOS应用程序可以通过其他几种方式在屏幕上绘制内容。</p>
+<ul>
+<li>Using standard (built-in) views. </li>
+<li>Using Core Animation layers.</li>
+<li>Using OpenGL ES in a GLKit view or a custom view.  </li>
+<li>Using web content. </li>
+</ul>
+<p>根据创建的应用程序类型，可能会使用<strong>很少或不使用</strong>自定义绘图代码。 虽然沉浸式(immersive apps)应用程序通常广泛使用自定义绘图代码，但实用程序和生产力应用程序(utility and productivity apps)通常可以使用标准视图和控件来显示其内容。</p>
+<p>分情况来选择是否用自定义视图，尤其是那些需要<strong>动态实时改变</strong>的，则用自定义视图，例如：绘图应用，街机风格的游戏等，它们都是需要实时不断更新屏幕的。</p>
+<p>因为自定义视图通常是<strong>处理器密集型的（GPU的帮助较少）</strong>，如果可以使用标准视图执行所需操作，则应始终这样做。 此外，应该使自定义视图尽可能小，仅包含无法以任何其他方式绘制的内容，使用标准视图用于其他所有内容。 如果需要将标准 UI 元素与自定义绘图<strong>结合</strong>使用，请考虑使用 Core Animation 图层将自定义视图与标准视图叠加，以便<strong>尽可能少地</strong>绘制。(ps: 尽量减少自定义绘制，减轻 CPU 的工作)</p>
+<h4 id="A-Few-Key-Concepts-Underpin-Drawing-With-the-Native-Technologies"><a href="#A-Few-Key-Concepts-Underpin-Drawing-With-the-Native-Technologies" class="headerlink" title="A Few Key Concepts Underpin Drawing With the Native Technologies"></a>A Few Key Concepts Underpin Drawing With the Native Technologies</h4><p>使用 UIKit 和 Core Graphics 绘制内容时，除了<strong>视图绘制周期外</strong>，还应该熟悉一些以下概念：</p>
+<ul>
+<li>对于 <strong>drawRect:</strong> 方法， UIKit 创建用于渲染到显示的图形上下文(graphics context)。 此图形上下文包含绘图系统执行绘图命令所需的信息，包括填充和描边颜色，字体，剪切区域和线宽等属性。 还可以为位图图像和 PDF 内容创建和绘制自定义图形上下文。</li>
+<li>UIKit有一个默认坐标系(<strong>default coordinate system</strong>)，它绘图的原点位于视图的左上角; 正值向下延伸到该原点的右侧。 可以通过<strong>修改当前变换矩阵</strong>(the current transformation matrix)来更改默认坐标系相对于基础视图或窗口的大小，方向和位置，该矩阵将视图的坐标空间<strong>映射到</strong>设备屏幕。</li>
+<li>在 iOS 中，测量点中距离的逻辑坐标空间(<strong>logical coordinate space</strong>)不等于以像素为单位测量的<strong>设备坐标空间</strong>(device coordinate space)。 为了获得更高的精度，点以浮点值表示。</li>
+</ul>
+<h4 id="UIKit-Core-Graphics-and-Core-Animation-Give-Your-App-Many-Tools-For-Drawing"><a href="#UIKit-Core-Graphics-and-Core-Animation-Give-Your-App-Many-Tools-For-Drawing" class="headerlink" title="UIKit, Core Graphics, and Core Animation Give Your App Many Tools For Drawing"></a>UIKit, Core Graphics, and Core Animation Give Your App Many Tools For Drawing</h4><p>UIKit 和 Core Graphics 具有许多<strong>互补</strong>的图形功能，包括图形上下文，贝塞尔曲线路径，图像，位图，透明层，颜色，字体， PDF 内容以及绘图矩形和剪切区域。 此外， Core Graphics 具有与线属性，颜色空间，图案颜色，渐变，阴影和图像蒙版相关的功能。 Core Animation 框架则可以通过操纵和显示使用其他技术创建的内容来创建流畅的动画。</p>
+<h3 id="Apps-Can-Draw-Into-Offscreen-Bitmaps-or-PDFs"><a href="#Apps-Can-Draw-Into-Offscreen-Bitmaps-or-PDFs" class="headerlink" title="Apps Can Draw Into Offscreen Bitmaps or PDFs"></a>Apps Can Draw Into Offscreen Bitmaps or PDFs</h3><p>应用程序在离屏绘制内容通常很有用：</p>
+<ul>
+<li>在缩小照片以进行上传，将内容渲染到图像文件以用于存储目的时，或者使用 Core Graphics 生成用于显示的复杂图像时，通常使用屏幕外位图上下文。(ps: 用于存储)</li>
+<li>在绘制用户生成的内容以进行打印时，通常会使用屏外 PDF 上下文。</li>
+</ul>
+<p>创建离屏上下文后，可以像在自定义视图的 drawRect: 方法中绘制一样绘制它。</p>
+<h3 id="Apps-Have-a-Range-of-Options-for-Printing-Content"><a href="#Apps-Have-a-Range-of-Options-for-Printing-Content" class="headerlink" title="Apps Have a Range of Options for Printing Content"></a>Apps Have a Range of Options for Printing Content</h3><p>iOS 4.2 后支持的。</p>
+<h3 id="It’s-Easy-to-Update-Your-App-for-High-Resolution-Screens"><a href="#It’s-Easy-to-Update-Your-App-for-High-Resolution-Screens" class="headerlink" title="It’s Easy to Update Your App for High-Resolution Screens"></a>It’s Easy to Update Your App for High-Resolution Screens</h3><p>某些 iOS 设备具有高分辨率屏幕，因此应用必须准备好在这些设备和具有较低分辨率屏幕的设备上运行。 iOS 处理不同分辨率所需的大部分工作，但应用必须完成<strong>其余的</strong>工作。 这些任务<strong>包括提供</strong>特别命名的高分辨率图像，并修改与图层和图像相关的代码，以考虑当前的比例因子(scale factor)。</p>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><p>打印的完整例子，可以看以下源码</p>
+<ul>
+<li><a href="https://developer.apple.com/library/archive/samplecode/PrintPhoto/Introduction/Intro.html#//apple_ref/doc/uid/DTS40010366">PrintPhoto</a> </li>
+<li><a href="https://developer.apple.com/library/archive/samplecode/Recipes_+_Printing/Introduction/Intro.html#//apple_ref/doc/uid/DTS40011098">Sample Print Page Renderer</a> </li>
+<li><a href="https://developer.apple.com/library/archive/samplecode/PrintWebView/Introduction/Intro.html#//apple_ref/doc/uid/DTS40010311">UIKit Printing with UIPrintInteractionController and UIViewPrintFormatter</a></li>
+</ul>
+<h1 id="iOS-Drawing-Concepts"><a href="#iOS-Drawing-Concepts" class="headerlink" title="iOS Drawing Concepts"></a>iOS Drawing Concepts</h1><p>高质量的图形是应用程序用户界面的重要组成部分。 提供高质量的图形不仅使应用程序看起来很好，而且还使应用程序看起来像是系统其余部分的自然扩展。 iOS提供了两种在系统中创建高质量图形的主要途径：OpenGL 和使用 Quartz ，Core Animation 和 UIKit 的原生渲染。 本文档描述了原生渲染。 （要了解OpenGL绘图，请参阅<a href="https://developer.apple.com/library/archive/documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/Introduction/Introduction.html#//apple_ref/doc/uid/TP40008793">OpenGL ES Programming Guide</a>。）</p>
+<p>Quartz 是主要的绘图界面，支持基于路径的绘制，消除锯齿渲染，渐变填充图案，图像，颜色，坐标空间转换以及 PDF 文档创建，显示和解析。 UIKit 为线条艺术，为 Quartz 图像和颜色处理提供 Objective-C 包装。 Core Animation 为许多 UIKit 视图属性中的更改动画提供了底层支持，还可用于实现自定义动画。</p>
+<p>本章概述了 iOS 应用程序的绘图过程，以及每种支持的绘图技术的特定绘图技术。 还可以找到有关如何针对 iOS 平台优化绘图代码的提示和指导。</p>
+<p>要点：<strong>并非所有UIKit类都是线程安全的</strong>。 在应用程序主线程以外的线程上执行与绘图相关的操作之前，请务必查看文档。</p>
+<h2 id="The-UIKit-Graphics-System"><a href="#The-UIKit-Graphics-System" class="headerlink" title="The UIKit Graphics System"></a>The UIKit Graphics System</h2><p>在 iOS 中，无论是否涉及 OpenGL Quartz UIKit 或 Core Animation ，<strong>所有绘制到屏幕的内容都发生在   UIView 类的实例或其子类。 视图定义了发生绘图的屏幕部分</strong>。 如果使用系统提供的视图，则会自动处理此图形。 但是，如果定义自定义视图，则必须自己提供绘图代码。 如果使用 Quartz ， Core Animation 和 UIKit 进行绘制，则使用以下各节中描述的绘图概念。</p>
+<p>除了直接绘制到屏幕外， UIKit 还允许绘制到屏幕外的位图和PDF图形上下文。 在非屏幕上下文中绘制时，没有在视图中绘制，这意味着<strong>视图绘制周期等概念不适用</strong>（除非获取该图像并在图像视图中绘制它或类似图像）。 (ps: 离屏幕渲染不会走绘制的流程。视图绘制就是屏幕上绘制)</p>
+<h3 id="The-View-Drawing-Cycle"><a href="#The-View-Drawing-Cycle" class="headerlink" title="The View Drawing Cycle"></a>The View Drawing Cycle</h3><p>UIView 类的子类的基本绘图模型涉及<strong>按需更新内容</strong>。 UIView 类使更新过程更容易，更有效；不管怎样，<strong>通过收集你的更新请求，可以在最合适的时间将它们交付给绘图代码</strong>。</p>
+<p>当<strong>视图首次显示或需要重绘视图的一部分</strong>时，iOS 会要求视图通过调用它的 <strong>drawRect:</strong> 方法来绘制其内容。<br>有几个操作可以触发视图更新：</p>
+<ul>
+<li>移动或删除部分遮挡视图的其他视图</li>
+<li>通过将其 hidden 属性设置为 NO ，可以再次显示先前隐藏的视图</li>
+<li>滚动到屏幕外的视图，然后返回到屏幕上</li>
+<li>显式调用视图的 <code>setNeedsDisplay</code> 或 <code>setNeedsDisplayInRect:</code> 方法</li>
+</ul>
+<p>系统视图会自动重绘。 对于自定义视图，必须覆盖 <code>drawRect:</code> 方法并在其中执行所有绘制。 在 <code>drawRect:</code> 方法中，使用原生绘图技术绘制所需的形状，文本，图像，渐变或任何其他可视内容。 当自定义视图第一次显示时， iOS 会将一个矩形传递给视图的 <code>drawRect:</code> 方法，该方法包含<strong>视图的整个可见区域</strong>。 在后续调用期间，该矩形<strong>仅包含实际需要重绘的视图部分</strong>。 为获得<strong>最佳性能，应仅重绘受影响的内容</strong>。 (ps: 按需绘制)</p>
+<p>调用 drawRect:方法后，视图将自身标记为<strong>已更新</strong>，并等待新操作到达并触发另一个更新周期。 如果视图显示静态内容，那么您需要做的就是响应视图因滚动和其他视图的存在而导致的可见性变化。(ps: 还是按需绘制)</p>
+<p>但是，如果要更改视图的内容，则必须告诉视图重绘其内容。 为此，调用 <code>setNeedsDisplay</code> 或 <code>setNeedsDisplayInRect:</code> 方法以触发更新。 例如，如果每秒多次更新内容，则可能需要设置计时器以更新视图。 还可以更新视图以响应用户交互或在视图中创建新内容。</p>
+<p>要点：不要自己调用视图的 <code>drawRect:</code> 方法。 <strong>只有在屏幕重绘期间内</strong>置于 iOS 中的代码才能调用该方法。 在其他时候，<strong>不存在图形上下文，因此无法绘图</strong>。 （图形上下文将在下一节中介绍。）</p>
+<h3 id="Coordinate-Systems-and-Drawing-in-iOS"><a href="#Coordinate-Systems-and-Drawing-in-iOS" class="headerlink" title="Coordinate Systems and Drawing in iOS"></a>Coordinate Systems and Drawing in iOS</h3><p>当应用程序在iOS中绘制内容时，它必须在由坐标系定义的二维空间中定位绘制的内容。 这个概念乍一看似乎很简单，但事实并非如此。 iOS 中的应用有时必须在绘制时处理不同的坐标系。</p>
+<p>在 iOS 中，所有绘图都在图形上下文中进行。 <strong>从概念上讲，图形上下文是</strong>描述绘图应在何处以及如何发生的对象，包括基本绘图属性，例如绘制时使用的颜色，剪切区域，线宽和样式信息，字体信息，合成选项等。</p>
+<p>如下面这张图所示，每个图形上下文都有一个坐标系。 更确切地说，每个图形上下文都有三个坐标系：</p>
+<ul>
+<li>绘图（用户）坐标系(The drawing (user) coordinate system.)。 发出绘图命令时使用此坐标系。</li>
+<li>视图坐标系（基本空间）(The view coordinate system (base space).)。 该坐标系是相对于视图的固定坐标系。</li>
+<li>（物理）设备坐标系 (The (physical) device coordinate system.)。 该坐标系表示物理屏幕上的像素。</li>
+</ul>
+<p><img src="https://developer.apple.com/library/archive/documentation/2DDrawing/Conceptual/DrawingPrintingiOS/Art/coordinate_differences_2x.png" alt="The relationship between drawing coordinates, view coordinates, and hardware coordinates"></p>
+<p>iOS 的绘图框架创建图形上下文，用于绘制到特定目的地，例如：屏幕，位图，PDF 内容等，并且这些图形上下文为该目标建立初始绘图坐标系。 此初始绘图坐标系称为默认坐标系(<strong>default coordinate system</strong>)，是视图底层坐标系上的 1:1 映射。</p>
+<p>每个视图还具有当前变换矩阵（CTM），这是一种将当前绘图坐标系中的点映射到（固定）视图坐标系的数学矩阵。 应用程序可以修改此矩阵（如稍后所述）以更改将来绘制操作的行为。</p>
+<p>iOS 的每个绘图框架都<strong>基于当前图形上下文建立默认坐标系</strong>。 在iOS中，有两种主要类型的坐标系：</p>
+<ul>
+<li>An upper-left-origin coordinate system (ULO). UIKit and Core Animation frameworks</li>
+<li>A lower-left-origin coordinate system (LLO). Core Graphics</li>
+</ul>
+<p><img src="https://developer.apple.com/library/archive/documentation/2DDrawing/Conceptual/DrawingPrintingiOS/Art/flipped_coordinates-2_2x.png" alt="coordinate systems"></p>
+<p>注意：OS X中的默认坐标系是基于 LLO 的。 尽管 Core Graphics 和 AppKit 框架的绘图功能和方法非常适合此默认坐标系，但 AppKit 提供了编程支持，可以将绘图坐标系翻转为左上角原点。</p>
+<p>在调用视图的 drawRect: 方法之前， UIKit 通过为绘图操作提供图形上下文来建立绘制到屏幕的默认坐标系。 在视图的 drawRect: 方法中，应用程序可以设置图形状态参数（例如填充颜色）并绘制到当前图形上下文，而无需显式引用图形上下文。 此隐式图形上下文建立 ULO 默认坐标系。</p>
+<h3 id="Points-Versus-Pixels"><a href="#Points-Versus-Pixels" class="headerlink" title="Points Versus Pixels"></a>Points Versus Pixels</h3><p>具体的看 <a href="http://joakimliu.github.io/2019/02/24/wwdc-2011-129/">http://joakimliu.github.io/2019/02/24/wwdc-2011-129/</a> 里面有讲到。</p>
+<h3 id="Obtaining-Graphics-Contexts"><a href="#Obtaining-Graphics-Contexts" class="headerlink" title="Obtaining Graphics Contexts"></a>Obtaining Graphics Contexts</h3><p>大多数情况下，图形上下文<strong>已经为你配置好了</strong>。 每个视图对象都会自动创建一个图形上下文，以便代码可以在调用自定义 drawRect: 方法后立即开始绘制。 作为此配置的一部分，底层 UIView 类为当前绘图环境创建图形上下文（CGContextRef opaque类型）。</p>
+<p>如果要绘制视图以外的其他位置（例如，捕获PDF或位图文件中的一系列绘图操作），或者需要调用需要上下文对象的 Core Graphics 函数，则必须执行其他步骤，获取图形上下文对象。 以下部分解释了如何。</p>
+<p>有关图形上下文，修改图形状态信息以及使用图形上下文创建自定义内容的更多信息，请参阅<a href="https://developer.apple.com/library/archive/documentation/GraphicsImaging/Conceptual/drawingwithquartz2d/Introduction/Introduction.html#//apple_ref/doc/uid/TP30001066">Quartz 2D Programming Guide</a>。 有关与图形上下文结合使用的函数列表，请参阅 CGContext Reference ， CGBitmapContext Reference 和 CGPDFContext Reference 。</p>
+<h4 id="Drawing-to-the-Screen"><a href="#Drawing-to-the-Screen" class="headerlink" title="Drawing to the Screen"></a>Drawing to the Screen</h4><p>如果使用 Core Graphics 函数绘制视图，无论是在 drawRect: 方法还是其他地方，都需要一个图形上下文来绘制。 （许多这些函数的第一个参数必须是CGContextRef对象。）可以调用函数 UIGraphicsGetCurrentContext 来获取在 drawRect 中隐含的相同图形上下文的显式版本。 因为它是相同的图形上下文，所以绘图函数也应该引用ULO默认坐标系。</p>
+<p>如果要使用 Core Graphics 函数在 UIKit 视图中绘制，则应使用 UIKit 的 ULO 坐标系进行绘图操作。 或者，可以将翻转变换(flip transform)应用于 CTM ，然后使用 Core Graphics 原生 LLO 坐标系在 UIKit 视图中绘制对象。 “#Flipping the Default Coordinate System#”详细讨论了翻转变换。</p>
+<p><strong>UIGraphicsGetCurrentContext 函数始终返回当前有效的图形上下文</strong>。 例如，如果创建PDF上下文然后调用UIGraphicsGetCurrentContext ，将收到该 PDF 上下文。 如果使用 Core Graphics 函数绘制视图，<strong>则必须使用</strong> <code>UIGraphicsGetCurrentContext</code> 返回的图形上下文。</p>
+<h4 id="Drawing-to-Bitmap-Contexts-and-PDF-Contexts"><a href="#Drawing-to-Bitmap-Contexts-and-PDF-Contexts" class="headerlink" title="Drawing to Bitmap Contexts and PDF Contexts"></a>Drawing to Bitmap Contexts and PDF Contexts</h4><p>UIKit 提供了在位图图形上下文中渲染图像的功能，以及通过绘制PDF图形上下文来生成PDF内容的功能。 这两种方法都要求您首先分别调用创建图形上下文的函数 - 位图上下文或PDF上下文。 返回的对象充当后续绘图和状态设置调用的当前（和隐式）图形上下文。 在上下文中完成绘制后，可以调用另一个函数来关闭该上下文。</p>
+<p>UIKit 提供的位图上下文和PDF上下文都建立了 ULO 默认坐标系。 Core Graphics 具有相应的功能，用于在位图图形上下文中进行渲染以及在PDF图形上下文中进行绘制。 但是，应用程序直接通过 Core Graphic s创建的上下文建立了 LLO 默认坐标系。</p>
+<p>注意：在 iOS 中，建议使用 UIKit 函数绘制到位图上下文和 PDF 上下文。 但是，如果确实使用了 Core Graphics 替代方案并打算显示渲染结果，则必须调整代码以补偿默认坐标系中的差异。 有关详细信息，请参阅 “#Flipping the Default Coordinate System#”。</p>
+<h3 id="Color-and-Color-Spaces"><a href="#Color-and-Color-Spaces" class="headerlink" title="Color and Color Spaces"></a>Color and Color Spaces</h3><p>iOS 支持 Quartz 提供的全系列颜色空间; 但是，大多数应用程序应该只需要 RGB 颜色空间。 <strong>由于iOS设计为在嵌入式硬件上运行并在屏幕上显示图形，因此 RGB 颜色空间是最合适的颜色空间</strong>。</p>
+<p>UIColor 对象提供了使用 RGB ， HSB和灰度值指定颜色值的便捷方法。 以这种方式创建颜色时，您<strong>永远不需要指定颜色空间</strong>。 它由 UIColor 对象自动确定。</p>
+<p>您还可以使用 Core Graphics 框架中的 <code>CGContextSetRGBStrokeColor</code> 和 <code>CGContextSetRGBFillColor</code> 函数来创建和设置颜色。 虽然 Core Graphics 框架包括支持使用其他颜色空间创建颜色，以及创建自定义颜色空间，但不建议在绘图代码中使用这些颜色。 您的绘图代码<strong>应始终使用 RGB 颜色</strong>。</p>
+<h2 id="Drawing-with-Quartz-and-UIKit"><a href="#Drawing-with-Quartz-and-UIKit" class="headerlink" title="Drawing with Quartz and UIKit"></a>Drawing with Quartz and UIKit</h2><p>Quartz 是 iOS 中<strong>原生绘图技术的通用名称</strong>。 Core Graphics 框架是 Quartz 的核心，也是用于绘制内容的主要界面。 该框架提供了用于操作以下内容的数据类型和函数：</p>
+<ul>
+<li>Graphics contexts</li>
+<li>Paths</li>
+<li>Images and bitmaps</li>
+<li>Transparency layers</li>
+<li>Colors, pattern colors, and color spaces</li>
+<li>Gradients and shadings</li>
+<li>Fonts</li>
+<li>PDF content</li>
+</ul>
+<p>UIKit 通过为图形相关操作提供一组集中的类来构建 Quartz 的基本功能。 UIKit 图形类并不是一套全面的绘图工具– Core Graphics 已经提供了这些工具。 <strong>相反，它们为其他 UIKit 类提供绘图支持</strong>。 UIKit 支持包括以下类和功能：</p>
+<ul>
+<li>UIImage, which implements an immutable class for displaying images</li>
+<li>UIColor, which provides basic support for device colors</li>
+<li>UIFont, which provides font information for classes that need it</li>
+<li>UIScreen, which provides basic information about the screen</li>
+<li>UIBezierPath, which enables your app to draw lines, arcs, ovals, and other shapes.</li>
+<li>Functions for generating a JPEG or PNG representation of a UIImage object</li>
+<li>Functions for drawing to a bitmap graphics context</li>
+<li>Functions for generating PDF data by drawing to a PDF graphics context</li>
+<li>Functions for drawing rectangles and clipping the drawing area</li>
+<li>Functions for changing and getting the current graphics context</li>
+</ul>
+<h3 id="Configuring-the-Graphics-Context"><a href="#Configuring-the-Graphics-Context" class="headerlink" title="Configuring the Graphics Context"></a>Configuring the Graphics Context</h3><p>在调用 drawRect: 方法之前，视图对象会创建图形上下文并将其设置为当前上下文。 <strong>此上下文仅存在于 drawRect: 方法调用的生命周期中</strong>。 可以通过调用 <code>UIGraphicsGetCurrentContext</code> 函数来获取指向此图形上下文的指针。 此函数返回对 CGContextRef 类型的引用，将其传递给 Core Graphics 函数以修改当前图形状态。 下表列出了用于设置图形状态不同方面的主要功能。 有关函数的完整列表，请参阅<a href="https://developer.apple.com/documentation/coregraphics/cgcontextref?language=objc">CGContext Reference</a>。 该表还列出了 UIKit 存在的替代方案。</p>
+<table>
+<thead>
+<tr>
+<th>Graphics state</th>
+<th>Core Graphics functions</th>
+<th>UIKit alternative</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Current transformation matrix (CTM)</td>
+<td><a href="https://developer.apple.com/documentation/coregraphics/1456228-cgcontextrotatectm">CGContextRotateCTM</a> CGContextScaleCTM CGContextTranslateCTM CGContextConcatCTM</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Clipping area</td>
+<td>CGContextClipToRect</td>
+<td>UIRectClip function</td>
+</tr>
+<tr>
+<td>Line: Width, join, cap, dash, miter limit</td>
+<td>CGContextSetLineWidth CGContextSetLineJoin CGContextSetLineCap CGContextSetLineDash CGContextSetMiterLimit</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Accuracy of curve estimation</td>
+<td>CGContextSetFlatness</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Anti-aliasing setting</td>
+<td>CGContextSetAllowsAntialiasing</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Color: Fill and stroke settings</td>
+<td>CGContextSetRGBFillColor CGContextSetRGBStrokeColor</td>
+<td>UIColor class</td>
+</tr>
+<tr>
+<td>Alpha global value (transparency)</td>
+<td>CGContextSetRenderingIntent</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Rendering intent</td>
+<td>CGContextSetRenderingIntent</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Color space: Fill and stroke settings</td>
+<td>CGContextSetFillColorSpace CGContextSetStrokeColorSpace</td>
+<td>UIColor class</td>
+</tr>
+<tr>
+<td>Text: Font, font size, character spacing, text drawing mode</td>
+<td>CGContextSetFont CGContextSetFontSize CGContextSetCharacterSpacing</td>
+<td>UIFont class</td>
+</tr>
+<tr>
+<td>Blend mode</td>
+<td>CGContextSetBlendMode</td>
+<td>The UIImage class and various drawing functions let you specify which blend mode to use.</td>
+</tr>
+</tbody></table>
+<p><strong>图形上下文包含已保存的图形状态的栈</strong>。 当 Quartz 创建图形上下文时，栈为空。 使用 <code>CGContextSaveGState</code> 函数将当前图形状态的副本推送到栈。 此后，对图形状态所做的修改会影响后续的绘图操作，但不会影响存储在栈中的副本。 完成修改后，可以使用 <code>CGContextRestoreGState</code> 函数将保存的状态弹出堆栈顶部，从而返回到先前的图形状态。 以这种方式推送(push)和弹出(pop)图形状态是<strong>返回先前状态的快速方法，并且无需单独撤消每个状态更改</strong>。 它也是将状态的某些方面（例如剪切路径）恢复到其原始设置的唯一方法。</p>
+<h3 id="Creating-and-Drawing-Paths"><a href="#Creating-and-Drawing-Paths" class="headerlink" title="Creating and Drawing Paths"></a>Creating and Drawing Paths</h3><p><strong>路径是从一系列线和贝塞尔曲线创建的基于矢量的形状</strong>。 UIKit 包含 <code>UIRectFrame</code> 和 <code>UIRectFill</code> 函数（以及其他函数），用于在视图中绘制简单路径，例如矩形。 Core Graphics 还包括用于创建简单路径（如矩形和椭圆）的便捷功能。</p>
+<p>对于更复杂的路径，必须使用 UIKit 的 UIBezierPath 类自己创建路径，或者使用在 Core Graphics 框架中对 CGPathRef opaque 类型进行操作的函数。 虽然可以使用任一API构建<strong>没有图形上下文的路径</strong>，但路径中的点仍然必须引用当前坐标系（具有ULO或LLO方向），并且仍需要图形上下文来实际呈现路径。</p>
+<p>绘制路径时，必须设置当前上下文。 此上下文可以是自定义视图的上下文（在 <code>drawRect:</code>)中，位图上下文或 PDF 上下文。 坐标系确定路径的呈现方式。 UIBezierPath 假定 ULO 坐标系。 因此，如果您的视图被翻转（使用 LLO 坐标），则生成的形状可能会呈现与预期不同的形状。 <strong>为获得最佳结果，应始终指定相对于用于渲染的图形上下文的当前坐标系原点的点</strong>。</p>
+<p>注意：即使遵循此“规则”，弧(Arc)是需要额外工作的路径的一个方面。 如果使用 Core Graphic 函数创建路径，该函数定位 ULO 坐标系中的点，然后在 UIKit 视图中渲染路径，则弧“指向”的方向不同。 有关此主题的更多信息，请参阅”#Side Effects of Drawing with Different Coordinate Systems#”。</p>
+<p>要在iOS中创建路径，建议使用 UIBezierPath 而不是 CGPath 函数，除非需要一些仅 Core Graphics 提供的功能，例如向路径添加椭圆。 有关在 UIKit 中创建和渲染路径的更多信息，请参阅”#Drawing Shapes Using Bézier Paths#”。</p>
+<h3 id="Creating-Patterns-Gradients-and-Shadings"><a href="#Creating-Patterns-Gradients-and-Shadings" class="headerlink" title="Creating Patterns, Gradients, and Shadings"></a>Creating Patterns, Gradients, and Shadings</h3><p>Core Graphics 框架包含用于创建模板(pattern)，渐变和阴影的附加功能。 您可以使用这些类型创建非单色颜色，并使用它们填充您创建的路径。 <strong>模板是根据重复的图像或内容创建的</strong>。 渐变和阴影提供了不同的方法来创建从颜色到颜色的平滑过渡。</p>
+<p><a href="https://developer.apple.com/library/archive/documentation/GraphicsImaging/Conceptual/drawingwithquartz2d/Introduction/Introduction.html#//apple_ref/doc/uid/TP30001066">Quartz 2D Programming Guide</a> 中包含了创建和使用模式，渐变和阴影的详细信息。</p>
+<h3 id="Customizing-the-Coordinate-Space"><a href="#Customizing-the-Coordinate-Space" class="headerlink" title="Customizing the Coordinate Space"></a>Customizing the Coordinate Space</h3><p>默认情况下， UIKit 创建一个直接的 CTM ，将点映射到像素上。 虽然可以在不修改该矩阵的情况下完成所有绘图，但有时这样做很方便。</p>
+<p>首次调用视图的 drawRect: 方法时， CTM 已经配置好，使该坐标系（绘制）的原点与视图的原点匹配，正 X 轴向右延伸，正 Y 轴向下延伸。 但是，可以通过向其添加缩放，旋转和平移因子来更改 CTM ，从而更改默认坐标系相对于基础视图或窗口的大小，方向和位置。</p>
+<h4 id="Using-Coordinate-Transforms-to-Improve-Drawing-Performance"><a href="#Using-Coordinate-Transforms-to-Improve-Drawing-Performance" class="headerlink" title="Using Coordinate Transforms to Improve Drawing Performance"></a>Using Coordinate Transforms to Improve Drawing Performance</h4><p><strong>修改 CTM 是在视图中绘制内容的标准技术，因为它允许您重用路径，这可能会减少绘制时所需的计算量</strong>。 例如，如果要从点（20,20）开始绘制一个正方形，则可以创建一个移动到（20,20）的路径，然后绘制所需的一组线以完成该正方形。 但是，如果后面决定将该方块移动到该点（10,10），则必须使用新起点重新创建路径。 因为创建路径是相对昂贵的操作，所以最好创建一个原点为（0,0）的正方形并修改CTM，以便在所需的原点绘制正方形。</p>
+<p>在 Core Graphics 框架中，有两种方法可以修改CTM。 可以使用<a href="https://developer.apple.com/documentation/coregraphics/cgcontext">CGContext Reference</a>中定义的 CTM 操作函数直接修改 CTM 。 还可以创建<a href="https://developer.apple.com/documentation/coregraphics/cgaffinetransform">CGAffineTransform</a>结构，应用所需的任何转换，然后将该转换连接到 CTM 。 使用仿射变换可以对变换进行组装，然后将它们一次性应用到 CTM 。 还可以评估和转化仿射变换，使用它们来修改代代码中的点，大小和矩形值。 有关使用仿射变换的更多信息，请参阅<a href="https://developer.apple.com/library/archive/documentation/GraphicsImaging/Conceptual/drawingwithquartz2d/Introduction/Introduction.html#//apple_ref/doc/uid/TP30001066">Quartz 2D Programming Guide</a>的<a href="https://developer.apple.com/documentation/coregraphics/cgaffinetransform-rb5">CGAffineTransform Reference</a>。</p>
+<h4 id="Flipping-the-Default-Coordinate-System"><a href="#Flipping-the-Default-Coordinate-System" class="headerlink" title="Flipping the Default Coordinate System"></a>Flipping the Default Coordinate System</h4><p>在 UIKit 绘图中<strong>翻转会修改背景(backing)CALayer</strong>，以将具有 LLO 坐标系的绘图环境与 UIKit 的默认坐标系对齐。 如果只使用 UIKit 方法和绘图功能，则不需要翻转 CTM 。 但是，如果将 Core Graphics 或 Image I/O 函数调用与 UIKit 调用混合使用，则可能需要翻转 CTM 。</p>
+<p>尤其，如果通过直接调用 Core Graphics 函数绘制图像或 PDF 文档，则该对象将在视图的上下文中呈现为倒置。 必须翻转 CTM 才能正确显示图像和页面。</p>
+<p>要将绘制到 Core Graphics 上下文的对象翻转，以便在 UIKit 视图中显示时正确显示，<strong>必须分两步修改CTM</strong>。 将原点转换为绘图区域的左上角，然后应用缩放平移，将 y 坐标修改为 -1。 执行此操作的代码类似于以下内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">CGContextSaveGState(graphicsContext);</span><br><span class="line">CGContextTranslateCTM(graphicsContext, 0.0, imageHeight);</span><br><span class="line">CGContextScaleCTM(graphicsContext, 1.0, -1.0);</span><br><span class="line">CGContextDrawImage(graphicsContext, image, CGRectMake(0, 0, imageWidth, imageHeight));</span><br><span class="line">CGContextRestoreGState(graphicsContext);</span><br></pre></td></tr></table></figure>
+<p>如果创建使用 Core Graphics 图像对象初始化的UIImage对象，<strong>UIKit 会为您执行翻转变换</strong>。 每个 UIImage 对象都由 CGImageRef opaque 类型支持(backed)。 可以通过 CGImage 属性访问 Core Graphics 对象，并对图像进行一些操作。 （Core Graphics 具有 UIKit 中不可用的图像相关功能。）完成后，可以从修改后的 CGImageRef 对象重新创建 UIImage 对象。</p>
+<p>注意：可以使用 Core Graphics 函数 <code>CGContextDrawImage</code> 将图像绘制到任何渲染目标。 此函数有两个参数，第一个用于图形上下文，第二个用于矩形，用于定义图像的大小及其在绘图表面（如视图）中的位置。 使用 CGContextDrawImage 绘制图像时，如果不将当前坐标系调整为LLO方向，<strong>则图像在UIKit视图中显示为倒置</strong>。 此外，<strong>传递给此函数的矩形的原点是相对于调用函数时当前坐标系的原点</strong>。</p>
+<h4 id="Side-Effects-of-Drawing-with-Different-Coordinate-Systems"><a href="#Side-Effects-of-Drawing-with-Different-Coordinate-Systems" class="headerlink" title="Side Effects of Drawing with Different Coordinate Systems"></a>Side Effects of Drawing with Different Coordinate Systems</h4><p>当使用一个绘图技术的默认坐标系绘制对象然后在另一个绘图技术的图形上下文中渲染时，会显示一些渲染奇怪现象。 可能需要调整代码以解决这些副作用。</p>
+<h5 id="Arcs-and-Rotations"><a href="#Arcs-and-Rotations" class="headerlink" title="Arcs and Rotations"></a>Arcs and Rotations</h5><p>如果使用 CGContextAddArc 和 CGPathAddArc 等函数绘制路径并假设 LLO 坐标系，则需要翻转 CTM 以在 UIKit 视图中正确渲染弧。 但是，如果使用相同的函数创建包含位于 ULO 坐标系中的点的弧，然后在 UIKit 视图中渲染路径，将注意到弧是其原始的更改版本。 现在，弧的终止端点指向与使用 UIBezierPath 类创建的弧所做的端点相反的方向。 例如，向下箭头现在指向上方（如图1-5所示），弧“弯曲”的方向也不同。 所以必须更改 Core Graphics 绘制弧的方向以考虑基于 ULO 的坐标系; 此方向由这些函数的 startAngle 和 endAngle 参数控制。</p>
+<p><img src="https://developer.apple.com/library/archive/documentation/2DDrawing/Conceptual/DrawingPrintingiOS/Art/flipped_coordinates-1_2x.png" alt="Figure 1-5  Arc rendering in Core Graphics versus UIKit"></p>
+<p>如果旋转对象，则可以观察到相同类型的镜像效果（例如，通过调用 <code>CGContextRotateCTM</code> ）。 如果使用引用 ULO 坐标系的 Core Graphics 调用旋转对象，则在 UIKit 中渲染时对象的方向将反转。 必须在代码中考虑不同的轮换方向; 使用 CGContextRotateCTM ，可以通过反转角度参数的符号来执行此操作（例如，负值变为正值）。</p>
+<h5 id="Shadows"><a href="#Shadows" class="headerlink" title="Shadows"></a>Shadows</h5><p>阴影从其对象落下的方向由偏移值指定，该偏移的含义是绘图框架的约定。 在 UIKit 中，正 x 和 y 偏移使阴影向下并且在对象的右侧。 在 Core Graphics 中，正 x 和 y 偏移会使阴影上升到对象的右侧。 翻转 CTM 以使对象与 UIKit 的默认坐标系对齐不会影响对象的阴影，因此阴影无法正确跟踪其对象。 要使其正确跟踪，必须适当修改当前坐标系的偏移值。</p>
+<h2 id="Applying-Core-Animation-Effects"><a href="#Applying-Core-Animation-Effects" class="headerlink" title="Applying Core Animation Effects"></a>Applying Core Animation Effects</h2><p>Core Animation 是一个 Objective-C 框架，为快速，轻松地创建流畅的实时动画提供基础设施。 <strong>核心动画本身并不是绘图技术，因为它不提供用于创建形状，图像或其他类型内容的原始例程。 相反，它是一种操纵和显示 您使用其他技术创建的 内容 的技术。</strong></p>
+<p>大多数应用程序都可以从 iOS 中以某种形式使用 Core Animation 中受益。 动画向用户提供有关正在发生的事情的反馈。 例如，当用户浏览“设置”应用时，屏幕会根据用户是否在首选项层次结构中向下导航或返回到根节点而滑入和滑出视图。 这种反馈很重要，并为用户提供上下文信息。 它还增强了应用程序的视觉风格。</p>
+<p>在大多数情况下，您可以轻松地获得 Core Animation 的好处。 例如， UIView 类的几个属性（包括视图的框架，中心，颜色和不透明度等）可以配置为在其值发生变化时触发动画。 您必须做一些工作才能让 UIKit 知道您希望执行这些动画，但动画本身会自动创建并运行。 有关如何触发内置视图动画的信息，请参阅<a href="https://developer.apple.com/documentation/uikit/uiview">UIView Class Reference</a>中的动画视图。</p>
+<p>当超越基本动画时，您必须更直接地与 Core Animation 类和方法进行交互。 以下部分提供有关 Core Animation 的信息，并向您展示如何使用其类和方法在 iOS 中创建典型动画。 有关 Core Animation 及其使用方法的其他信息，请参阅<a href="https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/CoreAnimation_guide/Introduction/Introduction.html#//apple_ref/doc/uid/TP40004514">Core Animation Programming Guide</a>。</p>
+<h3 id="About-Layers"><a href="#About-Layers" class="headerlink" title="About Layers"></a>About Layers</h3><p>核心动画中的关键技术是图层对象。 图层是轻量级对象，<strong>在本质上与视图类似，但实际上是模型对象，它们封装了要显示的内容的几何，时间和视觉属性</strong>。 内容本身以三种方式之一提供：</p>
+<ul>
+<li>You can assign a CGImageRef to the contents property of the layer object.</li>
+<li>You can assign a delegate to the layer and let the delegate handle the drawing.</li>
+<li>You can subclass CALayer and override one of the display methods.</li>
+</ul>
+<p>操作图层对象的属性时，实际操作的是模型级数据，用于确定应如何显示关联内容。 <strong>该内容的实际渲染是与代码分开处理的</strong>，并经过大量优化以确保其快速。 <strong>您所要做的就是设置图层内容，配置动画属性，然后让 Core Animation 接管</strong>。有关图层及其使用方式的更多信息，请参阅<a href="https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/CoreAnimation_guide/Introduction/Introduction.html#//apple_ref/doc/uid/TP40004514">Core Animation Programming Guide</a>。</p>
+<h3 id="About-Animations"><a href="#About-Animations" class="headerlink" title="About Animations"></a>About Animations</h3><p>在动画图层时， Core Animation 使用单独的动画对象来控制动画的时间和行为。 CAAnimation 类及其子类提供了可在代码中使用的不同类型的动画行为。 可以创建将属性从一个值迁移到另一个值的简单动画，也可以创建复杂的<strong>关键帧动画</strong>，即通过提供的一组值和计时功能来跟踪动画。</p>
+<p>Core Animation 还允许<strong>将多个动画组合到一个单元中，称为事务</strong>。  CATransaction 对象将动画组作为一个单元进行管理。 还可以使用此类的方法来设置动画的持续时间。</p>
+<p>有关如何创建自定义动画的示例，请参阅<a href="https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/Animation_Types_Timing/Introduction/Introduction.html#//apple_ref/doc/uid/TP40006166">Animation Types and Timing Programming Guide</a>。</p>
+<h3 id="Accounting-for-Scale-Factors-in-Core-Animation-Layers"><a href="#Accounting-for-Scale-Factors-in-Core-Animation-Layers" class="headerlink" title="Accounting for Scale Factors in Core Animation Layers"></a>Accounting for Scale Factors in Core Animation Layers</h3><p>直接使用 Core Animation 图层提供内容的应用<strong>可能需要调整其绘图代码以考虑比例因子</strong>。 通常，当在视图的 <code>drawRect:</code> 方法中绘制时，或者在<strong>图层委托</strong>的 <code>drawLayer:inContext:</code> 方法中绘制时，系统会自动调整图形上下文以考虑比例因子。 但是，当视图执行以下操作之一时，<strong>可能仍然需要了解或更改该比例因子</strong>：</p>
+<ul>
+<li>创建具有不同比例因子的其他 Core Animation 图层，并将它们合成为自己的内容 “Creates additional Core Animation layers with different scale factors and composites them into its own content”</li>
+<li>直接设置 Core Animation 图层的 contents 属性 “Sets the contents property of a Core Animation layer directly”</li>
+</ul>
+<p><strong>Core Animation 的合成引擎</strong>查看每个图层的 contentsScale 属性，以确定在合成期间是否需要缩放该图层的内容。 如果应用创建<strong>没有关联视图的图层</strong>，则每个新图层对象的比例因子最初设置为 1.0 。 如果不更改该比例因子，并且随后在高分辨率屏幕上绘制该图层，则会自动缩放图层的内容以补偿(compensate)比例因子的差异。 如果不希望缩放内容，可以通过为 contentsScale 属性设置新值来将图层的比例因子更改为 2.0 ，但如果这样做但是不提供高分辨率内容，则现有内容可能会比期待的要小。 要解决该问题，则需要为图层提供更高分辨率的内容。</p>
+<p>要点：图层的 contentsGravity 属性 在确定标准分辨率图层内容是否在高分辨率屏幕上缩放时 起作用。 默认情况下，此属性设置为值 kCAGravityResize ，这会导致图层内容缩放以适合图层的边界。 将该属性更改为非尺寸选项可消除否则会发生的自动缩放。 在这种情况下，您可能需要相应地调整内容或比例因子。</p>
+<p>当直接设置图层的 contents 属性时，<strong>调整图层的内容</strong>以适应不同的比例因子是最合适的。 <strong>Quartz图像没有比例因子的概念，因此直接与像素一起工作</strong>。 因此，在创建计划用于图层内容的 CGImageRef 对象之前，请检查比例因子并相应地调整图像的大小。 具体来说，从应用程序包中加载适当大小的图像，或使用  <code>UIGraphicsBeginImageContextWithOptions</code> 函数创建一个图像，<strong>其比例因子与图层的比例因子相匹配</strong>。 如果不创建高分辨率位图，则可以如前所述缩放现有位图。</p>
+<p>有关如何指定和加载高分辨率图像的信息，请参阅”#Loading Images into Your App#”。 有关如何创建高分辨率图像的信息，请参阅”#Drawing to Bitmap Contexts and PDF Contexts#”。</p>
+<h1 id="Drawing-Shapes-Using-Bezier-Paths"><a href="#Drawing-Shapes-Using-Bezier-Paths" class="headerlink" title="Drawing Shapes Using Bézier Paths"></a>Drawing Shapes Using Bézier Paths</h1><p>在 iOS 3.2 及更高版本中，可以使用 UIBezierPath 类创建基于<strong>矢量的路径</strong>。 UIBezierPath 类是 Core Graphics 框架中与路径相关的功能的 Objective-C 包装器。 可以使用此类定义简单形状，例如椭圆和矩形，以及包含多个直线和曲线线段的复杂形状。(ps: UIKit 都对 Core Graphics 的相关功能进行了封装。)</p>
+<p>可以使用路径对象在应用程序的用户界面中绘制形状(draw shapes)。 可以绘制路径的轮廓，填充它所包含的空间，或两者。 还可以使用路径为当前图形上下文定义剪切区域，然后可以使用该剪辑区域修改该上下文中的后续绘制操作。(ps: 这里有一个 dmeo: <a href="https://developer.apple.com/library/archive/samplecode/QuartzDemo/Introduction/Intro.html#//apple_ref/doc/uid/DTS40007531">Quartz2D for iOS</a>)</p>
+<h2 id="Bezier-Path-Basics"><a href="#Bezier-Path-Basics" class="headerlink" title="Bézier Path Basics"></a>Bézier Path Basics</h2><p>UIBezierPath 对象是 CGPathRef 数据类型的包装器。 <strong>路径是使用直线和曲线段构建的基于矢量的形状</strong>。 您可以使用线段创建矩形和多边形，也可以使用曲线段创建圆弧，圆和复杂的曲线形状。 每个段由一个或多个点（在当前坐标系中）和一个绘图命令组成，该命令定义这些点是如何解释（ps: interpreted 这里翻译成处理会更好）。</p>
+<p>每组连接的线和曲线段形成所谓的子路径。 子路径中一行或曲线段的末尾<strong>定义下一行的开头</strong>。 单个 UIBezierPat h对象可以包含一个或多个定义整个路径的子路径，由moveToPoint：命令分隔，这些命令可以有效地提升绘图笔并将其移动到新位置。</p>
+<p>构建和使用路径对象的过程是分开的。 构建路径是第一个过程，涉及以下步骤：</p>
+<ol>
+<li> 创建路径对象。</li>
+<li> 设置UIBezierPath对象的任何相关绘图属性，例如描边路径的lineWidth或lineJoinStyle属性或已填充路径的usesEvenOddFillRule属性。 这些绘图属性适用于整个路径。</li>
+<li> 使用moveToPoint：方法设置初始段的起始点。</li>
+<li> 添加线和曲线段以定义子路径。</li>
+<li> （可选）通过调用closePath关闭子路径，<strong>closePath从最后一个段的末尾到第一个段的开头绘制一条直线段</strong>。</li>
+<li> （可选）重复步骤3,4和5以定义其他子路径。</li>
+</ol>
+<p>构建路径时，应该相对于原点（0,0）排列路径的点。 这样做可以更轻松地在以后移动路径。 在绘制过程中，路径的点将按原样应用于当前图形上下文的坐标系。 如果您的路径相对于原点定向，当重新定位时，你所需要做的就，将具有平移因子的仿射变换应用于当前图形上下文。 <strong>修改图形上下文（与路径对象本身相对）的优点是，您可以通过保存和恢复图形状态轻松撤消转换</strong>。</p>
+<p>要绘制路径对象，请使用描边和填充方法(stroke and fill)。 这些方法在当前图形上下文中渲染路径的线段和曲线段。 渲染过程涉及使用路径对象的属性栅格化线和曲线段。 <strong>栅格化过程不会修改路径对象本身</strong>。 因此，您可以在当前上下文或另一个上下文中多次渲染相同的路径对象。<br>(ps: 栅格化到底是个什么鬼？)</p>
+<h2 id="Adding-Lines-and-Polygons-to-Your-Path"><a href="#Adding-Lines-and-Polygons-to-Your-Path" class="headerlink" title="Adding Lines and Polygons to Your Path"></a>Adding Lines and Polygons to Your Path</h2><p>线条和多边形是 使用 <code>moveToPoint:</code> 和 <code>addLineToPoint:</code> 方法逐点构建的 简单形状。 <code>moveToPoint:</code> 方法设置 要创建的形状的 起点。 从那个点起，您可以使用 <code>addLineToPoint:</code> 方法创建形状的线条。 还可以连续创建线条，每条线条都在前一个点和您指定的新点之间形成。</p>
+<p>清单2-1显示了使用单独的线段创建五边形形状所需的代码。 （图2-1显示了 使用适当的笔触和填充颜色设置绘制此形状的 结果，如”#Rendering the Contents of a Bézier Path Object#”所述。）此代码设置形状的初始点，然后添加四个连接的线段。 通过调用closePath方法添加第五个段，该方法将最后一个点（0,40）与第一个点（100,0）连接起来。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; Listing 2-1  Creating a pentagon shape</span><br><span class="line"></span><br><span class="line">UIBezierPath *aPath &#x3D; [UIBezierPath bezierPath];</span><br><span class="line"> </span><br><span class="line">&#x2F;&#x2F; Set the starting point of the shape.</span><br><span class="line">[aPath moveToPoint:CGPointMake(100.0, 0.0)];</span><br><span class="line"> </span><br><span class="line">&#x2F;&#x2F; Draw the lines.</span><br><span class="line">[aPath addLineToPoint:CGPointMake(200.0, 40.0)];</span><br><span class="line">[aPath addLineToPoint:CGPointMake(160, 140)];</span><br><span class="line">[aPath addLineToPoint:CGPointMake(40.0, 140)];</span><br><span class="line">[aPath addLineToPoint:CGPointMake(0.0, 40.0)];</span><br><span class="line">[aPath closePath];</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://developer.apple.com/library/archive/documentation/2DDrawing/Conceptual/DrawingPrintingiOS/Art/bezier_pentagon_2x.png" alt="Figure 2-1  Shape drawn with methods of the UIBezierPath class"></p>
+<p>使用closePath方法不仅会结束描述形状的子路径，还会在第一个和最后一个点之间绘制一条线段。 这是完成多边形而不必绘制最终线的便捷方法。</p>
+<h2 id="Adding-Arcs-to-Your-Path"><a href="#Adding-Arcs-to-Your-Path" class="headerlink" title="Adding Arcs to Your Path"></a>Adding Arcs to Your Path</h2><p>UIBezierPath 类支持使用弧段初始化新路径对象。<code>bezierPathWithArcCenter:radius:startAngle:endAngle:clockwise:</code> 方法的参数 定义了包含所需弧的圆以及弧本身的起点和终点。 图2-2显示了创建弧的组件，包括定义弧的圆和用于指定弧的角度测量。 在这种情况下，弧沿顺时针方向创建。 （以逆时针方向绘制圆弧将改为绘制圆的虚线部分。）创建此弧的代码如清单2-2所示。</p>
+<p><img src="https://developer.apple.com/library/archive/documentation/2DDrawing/Conceptual/DrawingPrintingiOS/Art/arc_layout_2x.png" alt="Figure 2-2  An arc in the default coordinate system"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; Listing 2-2  Creating a new arc path</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; pi is approximately equal to 3.14159265359.</span><br><span class="line">#define   DEGREES_TO_RADIANS(degrees)  ((pi * degrees)&#x2F; 180)</span><br><span class="line"> </span><br><span class="line">- (UIBezierPath *)createArcPath</span><br><span class="line">&#123;</span><br><span class="line">   UIBezierPath *aPath &#x3D; [UIBezierPath bezierPathWithArcCenter:CGPointMake(150, 150)</span><br><span class="line">                           radius:75</span><br><span class="line">                           startAngle:0</span><br><span class="line">                           endAngle:DEGREES_TO_RADIANS(135)</span><br><span class="line">                           clockwise:YES];</span><br><span class="line">   return aPath;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果要将弧段合并到路径的中间，则必须直接修改路径对象的CGPathRef数据类型。 有关使用Core Graphics函数修改路径的更多信息，请参阅”#Modifying the Path Using Core Graphics Functions#”。</p>
+<h2 id="Adding-Curves-to-Your-Path"><a href="#Adding-Curves-to-Your-Path" class="headerlink" title="Adding Curves to Your Path"></a>Adding Curves to Your Path</h2><p>UIBezierPath 类支持将三次(Cubic)和二次(Quadratic) 贝塞尔曲线添加到路径。 曲线段从当前点开始，到您指定的点结束。 使用起点和终点之间的切线(tangent)以及一个或多个控制点来定义曲线的形状。 图2-3显示了两种曲线类型的近似值以及控制点与曲线形状之间的关系。 每个段的精确曲率涉及所有点之间的复杂数学关系，并且在线文档和<a href="http://en.wikipedia.org/wiki/Bezier_curve">维基百科</a>都有详细记录。</p>
+<p><img src="https://developer.apple.com/library/archive/documentation/2DDrawing/Conceptual/DrawingPrintingiOS/Art/curve_segments_2x.png" alt="Figure 2-3  Curve segments in a path"></p>
+<p>要将曲线添加到路径，请使用以下方法：</p>
+<ul>
+<li>Cubic curve: addCurveToPoint:controlPoint1:controlPoint2:</li>
+<li>Quadratic curve: addQuadCurveToPoint:controlPoint:</li>
+</ul>
+<p>由于<strong>曲线依赖于路径的当前点</strong>，因此必须在调用上述任一方法之前设置当前点。 完成曲线后，当前点将更新为您指定的新结束点。</p>
+<h2 id="Creating-Oval-and-Rectangular-Paths"><a href="#Creating-Oval-and-Rectangular-Paths" class="headerlink" title="Creating Oval and Rectangular Paths"></a>Creating Oval and Rectangular Paths</h2><p>椭圆和矩形是使用曲线和线段组合构建的常见路径类型。 UIBezierPath类包含bezierPathWithRect：和bezierPathWithOvalInRect：方便方法，用于创建椭圆或矩形形状的路径。这两种方法都创建了一个新的路径对象，并使用指定的形状对其进行初始化。您可以立即使用返回的路径对象，也可以根据需要添加更多形状。</p>
+<p>如果要将矩形添加到现有路径对象，则必须使用moveToPoint：，addLineToPoint：和closePath方法，就像对任何其他多边形一样。对矩形的最后一侧使用closePath方法是 添加路径的最后一行并且还标记矩形子路径的末尾的 便捷方式。</p>
+<p>如果要在现有路径中添加椭圆，最简单的方法是使用Core Graphics。 虽然您可以使用addQuadCurveToPoint：controlPoint：来近似椭圆曲面，但CGPathAddEllipseInRect函数使用起来更简单，更准确。 有关更多信息，请参阅”#Modifying the Path Using Core Graphics Functions#”。</p>
+<h2 id="Modifying-the-Path-Using-Core-Graphics-Functions"><a href="#Modifying-the-Path-Using-Core-Graphics-Functions" class="headerlink" title="Modifying the Path Using Core Graphics Functions"></a>Modifying the Path Using Core Graphics Functions</h2><p>UIBezierPath 类实际上只是 CGPathRef 数据类型的包装器以及与该路径关联的绘图属性。 虽然通常使用U IBezierPath 类的方法添加线段和曲线段，但该类还公开了一个 CGPath 属性，可以使用该属性直接修改路径数据类型。 当您希望使用 Core Graphics 框架的功能构建路径时，可以使用此属性。</p>
+<p>有两种方法可以修改与 UIBezierPath 对象关联的路径。 可以使用 Core Graphics 函数完全修改路径，也可以混合使用 Core Graphics 函数和 UIBezierPath 方法。 在某些方面，使用 Core Graphics 调用完全修改路径更容易。 可以创建可变 CGPathRef 数据类型并调用修改其路径信息所需的任何函数。 完成后，将路径对象分配给相应的 UIBezierPath 对象，如清单2-3所示。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; Listing 2-3  Assigning a new CGPathRef to a UIBezierPath object</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; Create the path data.</span><br><span class="line">CGMutablePathRef cgPath &#x3D; CGPathCreateMutable();</span><br><span class="line">CGPathAddEllipseInRect(cgPath, NULL, CGRectMake(0, 0, 300, 300));</span><br><span class="line">CGPathAddEllipseInRect(cgPath, NULL, CGRectMake(50, 50, 200, 200));</span><br><span class="line"> </span><br><span class="line">&#x2F;&#x2F; Now create the UIBezierPath object.</span><br><span class="line">UIBezierPath *aPath &#x3D; [UIBezierPath bezierPath];</span><br><span class="line">aPath.CGPath &#x3D; cgPath;</span><br><span class="line">aPath.usesEvenOddFillRule &#x3D; YES;</span><br><span class="line"> </span><br><span class="line">&#x2F;&#x2F; After assigning it to the UIBezierPath object, you can release</span><br><span class="line">&#x2F;&#x2F; your CGPathRef data type safely.</span><br><span class="line">CGPathRelease(cgPath);</span><br></pre></td></tr></table></figure>
+<p>如果选择使用 Core Graphics 函数和 UIBezierPath 方法的<strong>混合，则必须在两者之间来回小心地移动路径信息</strong>。 因为 UIBezierPath 对象拥有其基础 CGPathRef 数据类型，<strong>所以不能简单地检索该类型并直接修改它。 相反，必须制作可变副本，修改副本，然后将副本分配回CGPath属性</strong>，如清单2-4所示。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; Listing 2-4  Mixing Core Graphics and UIBezierPath calls</span><br><span class="line"></span><br><span class="line">UIBezierPath *aPath &#x3D; [UIBezierPath bezierPathWithOvalInRect:CGRectMake(0, 0, 300, 300)];</span><br><span class="line"> </span><br><span class="line">&#x2F;&#x2F; Get the CGPathRef and create a mutable version.</span><br><span class="line">CGPathRef cgPath &#x3D; aPath.CGPath;</span><br><span class="line">CGMutablePathRef  mutablePath &#x3D; CGPathCreateMutableCopy(cgPath);</span><br><span class="line"> </span><br><span class="line">&#x2F;&#x2F; Modify the path and assign it back to the UIBezierPath object.</span><br><span class="line">CGPathAddEllipseInRect(mutablePath, NULL, CGRectMake(50, 50, 200, 200));</span><br><span class="line">aPath.CGPath &#x3D; mutablePath;</span><br><span class="line"> </span><br><span class="line">&#x2F;&#x2F; Release both the mutable copy of the path.</span><br><span class="line">CGPathRelease(mutablePath);</span><br></pre></td></tr></table></figure>
+
+<h2 id="Rendering-the-Contents-of-a-Bezier-Path-Object"><a href="#Rendering-the-Contents-of-a-Bezier-Path-Object" class="headerlink" title="Rendering the Contents of a Bézier Path Object"></a>Rendering the Contents of a Bézier Path Object</h2><p>创建 UIBezierPath 对象后，可以使用其描边和填充方法在当前图形上下文中渲染它。但是，在调用这些方法之前，通常还需要执行一些其他任务来确保正确绘制路径：</p>
+<ul>
+<li>使用 UIColor 类的方法设置所需的描边和填充颜色。</li>
+<li>将形状放在目标视图中所需的位置。<br>如果创建了相对于点（0,0）的路径，则可以将适当的仿射变换应用于当前绘图上下文。例如，要从点（10,10）开始绘制形状，将调用 <code>CGContextTranslateCTM</code> 函数并为水平和垂直平移值指定 10 。首选调整图形上下文（而不是路径对象中的点），因为可以通过保存和恢复以前的图形状态来更轻松地撤消更改。</li>
+<li>更新路径对象的绘图属性。在渲染路径时， UIBezierPath 实例的绘图属性会覆盖与图形上下文关联的值。</li>
+</ul>
+<p>清单2-5显示了 <code>drawRect:</code> 方法的示例实现，该方法在自定义视图中绘制椭圆。椭圆的边界矩形的左上角位于视图坐标系中的点（50,50）处。因为填充操作直接绘制到路径边界，所以此方法在描边之前填充路径。这可以防止填充颜色遮挡一半的描边线。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; Listing 2-5  Drawing a path in a view</span><br><span class="line"></span><br><span class="line">- (void)drawRect:(CGRect)rect</span><br><span class="line">&#123;</span><br><span class="line">    &#x2F;&#x2F; Create an oval shape to draw.</span><br><span class="line">    UIBezierPath *aPath &#x3D; [UIBezierPath bezierPathWithOvalInRect:</span><br><span class="line">                                CGRectMake(0, 0, 200, 100)];</span><br><span class="line"> </span><br><span class="line">    &#x2F;&#x2F; Set the render colors.</span><br><span class="line">    [[UIColor blackColor] setStroke];</span><br><span class="line">    [[UIColor redColor] setFill];</span><br><span class="line"> </span><br><span class="line">    CGContextRef aRef &#x3D; UIGraphicsGetCurrentContext();</span><br><span class="line"> </span><br><span class="line">    &#x2F;&#x2F; If you have content to draw after the shape,</span><br><span class="line">    &#x2F;&#x2F; save the current state before changing the transform.</span><br><span class="line">    &#x2F;&#x2F;CGContextSaveGState(aRef);</span><br><span class="line"> </span><br><span class="line">    &#x2F;&#x2F; Adjust the view&#39;s origin temporarily. The oval is</span><br><span class="line">    &#x2F;&#x2F; now drawn relative to the new origin point.</span><br><span class="line">    CGContextTranslateCTM(aRef, 50, 50);</span><br><span class="line"> </span><br><span class="line">    &#x2F;&#x2F; Adjust the drawing options as needed.</span><br><span class="line">    aPath.lineWidth &#x3D; 5;</span><br><span class="line"> </span><br><span class="line">    &#x2F;&#x2F; Fill the path before stroking it so that the fill</span><br><span class="line">    &#x2F;&#x2F; color does not obscure the stroked line.</span><br><span class="line">    [aPath fill];</span><br><span class="line">    [aPath stroke];</span><br><span class="line"> </span><br><span class="line">    &#x2F;&#x2F; Restore the graphics state before drawing any other content.</span><br><span class="line">    &#x2F;&#x2F;CGContextRestoreGState(aRef);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h2 id="Doing-Hit-Detection-on-a-Path"><a href="#Doing-Hit-Detection-on-a-Path" class="headerlink" title="Doing Hit-Detection on a Path"></a>Doing Hit-Detection on a Path</h2><p>要确定是否在路径的填充部分上发生了触摸事件，可以使用 UIBezierPath 的 <code>containsPoint:</code> 方法。此方法针对路径对象中所有<strong>已关闭</strong>的子路径测试指定点，如果它位于任何这些子路径上或内部，则返回YES。</p>
+<p><strong>要点：</strong> containsPoint: 方法和Core Graphics命中测试功能<strong>仅在封闭路径上</strong>运行。对于打开的子路径上的命中，这些方法始终返回 NO 。如果要在打开的子路径上执行命中检测，则必须先创建路径对象的副本，然后在测试点之前关闭打开的子路径。</p>
+<p>如果要对<strong>路径的描边部分（而不是填充区域）进行命中测试</strong>(on the stroked portion of the path (instead of the fill area))，则必须使 用Core Graphics 。 <code>CGContextPathContainsPoint</code> 函数允许测试当前分配给图形上下文的路径的填充或描边部分上的点。清单2-6显示了一个方法，用于测试指定的点是否与指定的路径相交。 inFill 参数允许调用者指定是否应针对路径的填充或描边部分测试该点。调用者传入的路径必须包含一个或多个已关闭的<strong>子路径</strong>，以使命中检测成功。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; Listing 2-6  Testing points against a path object</span><br><span class="line"></span><br><span class="line">- (BOOL)containsPoint:(CGPoint)point onPath:(UIBezierPath *)path inFillArea:(BOOL)inFill</span><br><span class="line">&#123;</span><br><span class="line">   CGContextRef context &#x3D; UIGraphicsGetCurrentContext();</span><br><span class="line">   CGPathRef cgPath &#x3D; path.CGPath;</span><br><span class="line">   BOOL    isHit &#x3D; NO;</span><br><span class="line"> </span><br><span class="line">   &#x2F;&#x2F; Determine the drawing mode to use. Default to</span><br><span class="line">   &#x2F;&#x2F; detecting hits on the stroked portion of the path.</span><br><span class="line">   CGPathDrawingMode mode &#x3D; kCGPathStroke;</span><br><span class="line">   if (inFill)</span><br><span class="line">   &#123;</span><br><span class="line">      &#x2F;&#x2F; Look for hits in the fill area of the path instead.</span><br><span class="line">      if (path.usesEvenOddFillRule)</span><br><span class="line">         mode &#x3D; kCGPathEOFill;</span><br><span class="line">      else</span><br><span class="line">         mode &#x3D; kCGPathFill;</span><br><span class="line">   &#125;</span><br><span class="line"> </span><br><span class="line">   &#x2F;&#x2F; Save the graphics state so that the path can be</span><br><span class="line">   &#x2F;&#x2F; removed later.</span><br><span class="line">   CGContextSaveGState(context);</span><br><span class="line">   CGContextAddPath(context, cgPath);</span><br><span class="line"> </span><br><span class="line">   &#x2F;&#x2F; Do the hit detection.</span><br><span class="line">   isHit &#x3D; CGContextPathContainsPoint(context, point, mode);</span><br><span class="line"> </span><br><span class="line">   CGContextRestoreGState(context);</span><br><span class="line"> </span><br><span class="line">   return isHit;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="Drawing-and-Creating-Images"><a href="#Drawing-and-Creating-Images" class="headerlink" title="Drawing and Creating Images"></a>Drawing and Creating Images</h1><p>大多数情况下，使用标准视图显示图像非常简单。 但是，有两种情况您可能需要做额外的工作：</p>
+<ul>
+<li>如果要将图像显示为自定义视图的一部分，则必须在视图的 <code>drawRect:</code> 方法中自行绘制图像。 “#Drawing Images#” 解释了为什么。</li>
+<li>如果要在屏幕外渲染图像（稍后绘制或保存到文件中），则必须创建位图图像上下文。 要了解更多信息，请阅读”#Creating New Images Using Bitmap Graphics Contexts#”。</li>
+</ul>
+<h2 id="Drawing-Images"><a href="#Drawing-Images" class="headerlink" title="Drawing Images"></a>Drawing Images</h2><p>为了获得最佳性能，如果使用 UIImageView 类可以满足图像绘制需求，则应使用此图像对象初始化 UIImageView 对象。 但是，如果<strong>需要显式绘制图像</strong>，则可以存储图像并稍后在视图的d <code>rawRect:</code> 方法中使用它。下面的代码是从 bundle 加载图片。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">NSString *imagePath &#x3D; [[NSBundle mainBundle] pathForResource:@&quot;myImage&quot; ofType:@&quot;png&quot;];</span><br><span class="line">UIImage *myImageObj &#x3D; [[UIImage alloc] initWithContentsOfFile:imagePath];</span><br><span class="line"> </span><br><span class="line">&#x2F;&#x2F; Store the image into a property of type UIImage *</span><br><span class="line">&#x2F;&#x2F; for use later in the class&#39;s drawRect: method.</span><br><span class="line">self.anImage &#x3D; myImageObj;</span><br></pre></td></tr></table></figure>
+<p>要在视图的 <code>drawRect:</code> 方法中显式绘制生成的图像，可以使用 UIImage 中提供的任何绘图方法。 这些方法允许指定视图中要绘制图像的位置，因此不需要在绘制之前创建和应用单独的变换。</p>
+<p>以下代码段在视图中的点（10,10）处绘制上面加载的图像。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">- (void)drawRect:(CGRect)rect</span><br><span class="line">&#123;</span><br><span class="line">    ...</span><br><span class="line"> </span><br><span class="line">    &#x2F;&#x2F; Draw the image.</span><br><span class="line">    [self.anImage drawAtPoint:CGPointMake(10, 10)];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>要点：如果使用 <code>CGContextDrawImage</code> 函数直接绘制位图图像，则默认情况下图像数据沿 y 轴反转。 这是因为Quartz 图像假定坐标系具有左下角的原点，而正坐标轴从该点向上和向右延伸。 虽然可以在绘制之前应用变换，但绘制 Quartz 图像的简单（和推荐）方法是将它们<strong>包装在 UIImage 对象中，该对象可自动补偿坐标空间中的这种差异</strong>。 有关使用 Core Graphics 创建和绘制图像的更多信息，请参阅<a href="https://developer.apple.com/library/archive/documentation/GraphicsImaging/Conceptual/drawingwithquartz2d/Introduction/Introduction.html#//apple_ref/doc/uid/TP30001066">Quartz 2D Programming Guide</a>。</p>
+<h2 id="Creating-New-Images-Using-Bitmap-Graphics-Contexts"><a href="#Creating-New-Images-Using-Bitmap-Graphics-Contexts" class="headerlink" title="Creating New Images Using Bitmap Graphics Contexts"></a>Creating New Images Using Bitmap Graphics Contexts</h2><p>大部分时间，在绘图时，你的目标是在屏幕上显示某些内容。但是，<strong>将某些内容绘制到屏幕外缓冲区有时很有用</strong>。例如，可能希望创建现有图像的缩略图，绘制到缓冲区中以便将其保存到文件中，等等。为了支持这些需求，可以创建位图图像上下文，使用 UIKit 框架或 Core Graphics 函数绘制它，然后从上下文中获取图像对象。</p>
+<p>在 UIKit 中，步骤如下：</p>
+<ol>
+<li><p>调用 <code>UIGraphicsBeginImageContextWithOptions</code> 来创建位图上下文并将其推送到图形堆栈。<br> 对于第一个参数（大小），传递 CGSize 值以指定位图上下文的维度（<strong>以点为单位</strong>）。// Core Graphics 是以像素为单位的<br> 对于第二个参数（不透明），如果图像包含透明度（Alpha通道），则传递 NO。否则，传递 YES 以最大化性能。<br> 对于最终参数（比例），对于为设备主屏幕适当缩放的位图传递 0.0 ，或者传递您选择的比例因子。<br> 例如，以下代码段创建一个 200 x 200 像素的位图。 （<strong>像素数通过将图像的大小乘以比例因子来确定。</strong>） <code>UIGraphicsBeginImageContextWithOptions（CGSizeMake（100.0, 100.0），NO，2.0）;</code></p>
+<p> 注意：通常应该避免调用类似名称的 <code>UIGraphicsBeginImageContext</code> 函数（除了作为向后兼容性的后备），因为它始终创建比例因子为 1.0 的图像。如果底层设备具有高分辨率屏幕，则使用  <code>UIGraphicsBeginImageContext</code> 创建的图像在渲染时可能不会显示为平滑。</p>
+</li>
+<li><p> 使用 UIKit 或 Core Graphics 例程将图像的内容绘制到新创建的图形上下文中。</p>
+</li>
+<li><p> 调用 <code>UIGraphicsGetImageFromCurrentImageContex</code>t 函数，根据绘制的内容生成并返回 UIImage 对象。如果需要，还可以继续绘制并再次调用此方法以生成其他图像。</p>
+</li>
+<li><p> 调用 <code>UIGraphicsEndImageContext</code> 从图形堆栈中弹出上下文。</p>
+</li>
+</ol>
+<p>清单3-1中的方法得到一个 image 通过互联网下载并将其绘制到基于图像的上下文中，缩小到应用程序图标的大小。然后，它获取从位图数据创建的 UIImage 对象，并将其分配给实例变量。请注意，位图的大小(<code>UIGraphicsBeginImageContextWithOptions</code>的第一个参数)和绘制内容的大小（imageRect的大小）应该匹配。如果内容大于位图，则内容的一部分将被剪切而不会出现在结果图像中。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; Listing 3-1  Drawing a scaled-down image to a bitmap context and obtaining the resulting image</span><br><span class="line"></span><br><span class="line">- (void)connectionDidFinishLoading:(NSURLConnection *)connection &#123;</span><br><span class="line">    UIImage *image &#x3D; [[UIImage alloc] initWithData:self.activeDownload];</span><br><span class="line">    if (image !&#x3D; nil &amp;&amp; image.size.width !&#x3D; kAppIconHeight &amp;&amp; image.size.height !&#x3D; kAppIconHeight) &#123;</span><br><span class="line">        CGRect imageRect &#x3D; CGRectMake(0.0, 0.0, kAppIconHeight, kAppIconHeight);</span><br><span class="line">        UIGraphicsBeginImageContextWithOptions(itemSize, NO, [UIScreen mainScreen].scale);</span><br><span class="line">        [image drawInRect:imageRect];</span><br><span class="line">        self.appRecord.appIcon &#x3D; UIGraphicsGetImageFromCurrentImageContext();  &#x2F;&#x2F; UIImage returned.</span><br><span class="line">        UIGraphicsEndImageContext();</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        self.appRecord.appIcon &#x3D; image;</span><br><span class="line">    &#125;</span><br><span class="line">    self.activeDownload &#x3D; nil;</span><br><span class="line">    [image release];</span><br><span class="line">    self.imageConnection &#x3D; nil;</span><br><span class="line">    [delegate appImageDidLoad:self.indexPathInTableView];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>还可以调用 Core Graphics 函数来绘制生成的位图图像的内容; 清单3-2中的代码片段绘制了 PDF 页面的缩小图像，给出了一个示例。 请注意，代码在调用 <code>CGContextDrawPDFPage</code> 之前翻转图形上下文，以将绘制的图像与 UIKit 的默认坐标系对齐。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">Listing 3-2  Drawing to a bitmap context using Core Graphics functions</span><br><span class="line">&#x2F;&#x2F; Other code precedes...</span><br><span class="line"> </span><br><span class="line">CGRect pageRect &#x3D; CGPDFPageGetBoxRect(page, kCGPDFMediaBox);</span><br><span class="line">pdfScale &#x3D; self.frame.size.width&#x2F;pageRect.size.width;</span><br><span class="line">pageRect.size &#x3D; CGSizeMake(pageRect.size.width * pdfScale, pageRect.size.height * pdfScale);</span><br><span class="line">UIGraphicsBeginImageContextWithOptions(pageRect.size, YES, pdfScale);</span><br><span class="line">CGContextRef context &#x3D; UIGraphicsGetCurrentContext();</span><br><span class="line"> </span><br><span class="line">&#x2F;&#x2F; First fill the background with white.</span><br><span class="line">CGContextSetRGBFillColor(context, 1.0,1.0,1.0,1.0);</span><br><span class="line">CGContextFillRect(context,pageRect);</span><br><span class="line">CGContextSaveGState(context);</span><br><span class="line"> </span><br><span class="line">&#x2F;&#x2F; Flip the context so that the PDF page is rendered right side up</span><br><span class="line">CGContextTranslateCTM(context, 0.0, pageRect.size.height);</span><br><span class="line">CGContextScaleCTM(context, 1.0, -1.0);</span><br><span class="line"> </span><br><span class="line">&#x2F;&#x2F; Scale the context so that the PDF page is rendered at the</span><br><span class="line">&#x2F;&#x2F; correct size for the zoom level.</span><br><span class="line">CGContextScaleCTM(context, pdfScale,pdfScale);</span><br><span class="line">CGContextDrawPDFPage(context, page);</span><br><span class="line">CGContextRestoreGState(context);</span><br><span class="line">UIImage *backgroundImage &#x3D; UIGraphicsGetImageFromCurrentImageContext();</span><br><span class="line">UIGraphicsEndImageContext();</span><br><span class="line">backgroundImageView &#x3D; [[UIImageView alloc] initWithImage:backgroundImage];</span><br><span class="line"> </span><br><span class="line">&#x2F;&#x2F; Other code follows...</span><br></pre></td></tr></table></figure>
+<p>如果您更喜欢完全使用 Core Graphics 来绘制位图图形上下文，则可以使用 <code>CGBitmapContextCreate</code> 函数创建位图上下文并将图像内容绘制到其中。 完成绘制后，调用 <code>CGBitmapContextCreateImage</code> 函数以从位图上下文中获取 CGImageRef 对象。 您可以直接绘制 Core Graphics 图像或使用它来初始化 UIImage 对象。 完成后，在图形上下文中调用 CGContextRelease 函数。</p>
+<h2 id="Generating-PDF-Content"><a href="#Generating-PDF-Content" class="headerlink" title="Generating PDF Content"></a>Generating PDF Content</h2><p>ps:暂时没用到。不看</p>
+<h2 id="Printing"><a href="#Printing" class="headerlink" title="Printing"></a>Printing</h2><p>ps:暂时没用到。不看</p>
+<h2 id="Improving-Drawing-Performance"><a href="#Improving-Drawing-Performance" class="headerlink" title="Improving Drawing Performance"></a>Improving Drawing Performance</h2><p><strong>在任何平台上绘图都是一项相对昂贵的操作，优化绘图代码应始终是开发过程中的重要一步</strong>。 下面列出了几种确保绘图代码尽可能最佳的技巧。 除了这些提示以外，还应始终使用可用的性能工具来测试代码并删除热点和冗余。</p>
+<ul>
+<li>Draw minimally (在每个更新周期中，应该只更新视图中实际更改的部分。 如果使用 UIView 的 <code>drawRect:</code> 方法来绘制图形，请使用传递给该方法的更新矩形来限制绘图的范围。 对于 OpenGL 绘图，您必须自己跟踪更新。)</li>
+<li>Call setNeedsDisplay: judiciously (如果正在调用 <code>setNeedsDisplay:</code> , 请始终花时间计算需要重绘的实际区域。 不要只传递包含整个视图的矩形。 此外，不要调用 <code>setNeedsDisplay:</code> 除非确实需要重绘内容。 如果内容实际上没有更改，请不要重绘。)</li>
+<li>Mark opaque views as such (合成内容不透明的视图比合成部分透明的视图要少得多。 要使视图不透明，视图的内容不得包含<strong>任何透明度</strong>，并且视图的 opaque 属性必须设置为YES。)</li>
+<li>Reuse table cells and views during scrolling (应该不惜一切代价避免在滚动期间创建新视图。 <strong>花时间创建新视图减少了更新屏幕的可用时间，从而导致不均匀的滚动行为</strong>。)</li>
+<li>Reuse paths by modifying the current transformation matrix (通过修改当前转换矩阵，可以使用单个路径在屏幕的不同部分上绘制内容。 有关详细信息，请参阅”#Using Coordinate Transforms to Improve Drawing Performance#”。)</li>
+<li>Avoid clearing the previous content during scrolling (默认情况下， UIKit 在调用其<code>drawRect:</code> 方法之前会清除视图的当前上下文缓冲区以更新同一区域。 如果要响应视图中的滚动事件，<strong>则在滚动更新期间反复清除此区域可能会非常昂贵</strong>。 要禁用该行为，可以将 <code>clearsContextBeforeDrawing</code> 属性中的值更改为 NO 。)</li>
+<li>Minimize graphics state changes while drawing (更改图形状态需要底层图形子系统的工作。 如果您需要绘制使用类似状态信息的内容，请尝试将该内容绘制在一起<strong>以减少所需的状态更改次数</strong>。)</li>
+<li>Use Instruments to debug your performance (核心动画工具可以帮助您发现应用中的绘图性能问题。 特别是：Flash Updated Regions 可让您轻松查看视图的哪些部分实际更新。 Color Misaligned Images 可帮助您查看对齐不良的图像，从而导致图像模糊和性能不佳。有关更多信息，请参阅 <a href="https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/InstrumentsUserGuide/index.html#//apple_ref/doc/uid/TP40004652">Instruments User Guide</a> 中的 <a href="https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/InstrumentsUserGuide/ExportingandImportingTraceData.html#//apple_ref/doc/uid/TP40004652-CH14">Measuring Graphics Performance in Your iOS Device</a>。)</li>
+</ul>
+<h1 id="Supporting-High-Resolution-Screens-In-Views"><a href="#Supporting-High-Resolution-Screens-In-Views" class="headerlink" title="Supporting High-Resolution Screens In Views"></a>Supporting High-Resolution Screens In Views</h1><p>针对 iOS SDK 4.0 及更高版本构建的应用程序，需要准备好在具有不同屏幕分辨率的设备上运行。 幸运的是，iOS可以轻松支持多种屏幕分辨率。 处理不同类型屏幕的大部分工作都是由系统框架完成的。 但是，应用仍需要做一些工作来更新基于光栅的图像(raster-based images)，并且根据应用程序，可能需要执行其他工作以利用可用的额外像素。</p>
+<p>有关此主题的重要背景信息，请参阅”#Points Versus Pixels#”。</p>
+<h2 id="Checklist-for-Supporting-High-Resolution-Screens"><a href="#Checklist-for-Supporting-High-Resolution-Screens" class="headerlink" title="Checklist for Supporting High-Resolution Screens"></a>Checklist for Supporting High-Resolution Screens</h2><p>要为具有高分辨率屏幕的设备更新应用程序，您需要执行以下操作：</p>
+<ul>
+<li>为应用包中的每个图像资源提供高分辨率图像，如”#Updating Your Image Resource Files#”中所述。</li>
+<li>提供高分辨率应用和文档图标，如”#Updating Your App’s Icons and Launch Images#”中所述。</li>
+<li>对于基于矢量的形状和内容，请像以前一样继续使用自定义 Core Graphics 和 UIKi t绘图代码。 如果要为绘制的内容添加额外的细节，请参阅点”#Points Versus Pixels#”以获取有关如何执行此操作的信息。</li>
+<li>如果使用 OpenGL ES 进行绘制，请确定是否要选择加入高分辨率绘图并相应地设置图层的比例因子，如”#Drawing High-Resolution Content Using OpenGL ES or GLKit#”中所述。</li>
+<li>对于自定义图像，请修改图像创建代码以将当前比例因子考虑在内，如”#Drawing to Bitmap Contexts and PDF Contexts#”中所述。</li>
+<li>如果应用使用核心动画，请根据需要调整代码以补偿比例因子，如”#Accounting for Scale Factors in Core Animation Layers#”中所述。</li>
+</ul>
+<h2 id="Drawing-Improvements-That-You-Get-for-Free"><a href="#Drawing-Improvements-That-You-Get-for-Free" class="headerlink" title="Drawing Improvements That You Get for Free"></a>Drawing Improvements That You Get for Free</h2><p>iOS 中的绘图技术提供了大量支持，无论底层屏幕的分辨率如何，都可以帮助您使渲染内容看起来很好：</p>
+<ul>
+<li>标准 UIKit 视图（文本视图，按钮，表视图等）可以在任何分辨率下自动呈现。</li>
+<li>基于矢量的内容（UIBezierPath ， CGPathRef ， PDF）自动利用任何其他像素来为形状渲染更清晰的线条。</li>
+<li>文本以更高的分辨率自动呈现。</li>
+<li>UIKit 支持自动加载图像的高分辨率变体(@2x)。</li>
+</ul>
+<p>如果您的应用<strong>仅使用原生绘图技术进行渲染，那么支持更高分辨率的屏幕，您需要做的唯一就是提供高分辨率版本的图像</strong>。</p>
+<h2 id="Updating-Your-Image-Resource-Files"><a href="#Updating-Your-Image-Resource-Files" class="headerlink" title="Updating Your Image Resource Files"></a>Updating Your Image Resource Files</h2><p>在 iOS 4 中运行的应用现在应该为每个图像资源包含两个单独的文件。 一个文件提供给定图像的标准分辨率版本，第二个文件提供同一图像的高分辨率版本。 每对图像文件的命名约定如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">标准: &lt;ImageName&gt; &lt;device_modifier&gt;.&lt;filename_extension&gt;</span><br><span class="line">高分辨率: &lt;ImageName&gt; @2x &lt;device_modifier&gt;.&lt;filename_extension&gt;</span><br></pre></td></tr></table></figure>
+<p>每个名称的 <ImageName> 和 <filename_extension> 部分指定文件的通常名称和扩展名。 <strong><device_modifier>部分是可选的，包含字符串<del>ipad或</del>iphone</strong>。 如果要为 iPad 和 iPhone 指定不同版本的图像，请包含其中一个修饰符(modifier)。 为高分辨率图像添加 @2x 修饰符是新的，让系统知道图像是标准图像的高分辨率变体。</p>
+<p>要点：修饰符的顺序至关重要。 如果错误地将 @2x 放在设备修饰符之后， iOS 将无法找到该图像。</p>
+<p>在创建图像的高分辨率版本时，请将新版本放在应用包中与原始版本相同的位置。</p>
+<h3 id="Loading-Images-into-Your-App"><a href="#Loading-Images-into-Your-App" class="headerlink" title="Loading Images into Your App"></a>Loading Images into Your App</h3><p>UIImage 类处理将高分辨率图像加载到应用程序所需的所有工作。 创建新图像对象时，使用相同的名称来请求图像的标准版本和高分辨率版本。 例如，如果有两个名为 Button.png 和 <a href="mailto:&#x42;&#117;&#x74;&#x74;&#x6f;&#110;&#64;&#50;&#x78;&#46;&#112;&#110;&#103;">&#x42;&#117;&#x74;&#x74;&#x6f;&#110;&#64;&#50;&#x78;&#46;&#112;&#110;&#103;</a> 的图像文件，则可以使用以下代码来请求您的按钮图像：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UIImage *anImage &#x3D; [UIImage imageNamed:@&quot;Button&quot;];</span><br></pre></td></tr></table></figure>
+<p>注意：在 iOS 4 及更高版本中，可以在指定图像名称时省略文件扩展名。</p>
+<p>在具有高分辨率屏幕的设备上 <code>imageNamed</code> ， <code>imageWithContentsOfFile:</code> 和 <code>initWithContentsOfFile:</code> 方法会自动查找所请求图像的版本，其名称中包含 @2x 修饰符。如果找到一个，则会加载该图像。<strong>如果您未提供给定图像的高分辨率版本，则图像对象仍会加载标准分辨率图像（如果存在）并在绘图期间对其进行缩放</strong>。</p>
+<p>加载图像时， UIImage 对象会根据图像文件的后缀<strong>自动将大小和比例属性设置为适当的值</strong>。对于标准分辨率图像，它将 scale 属性设置为 1.0 ，并将图像的大小设置为图像的像素尺寸。对于文件名中带有 @2x 后缀的图像，<strong>它将scale属性设置为 2.0 ，并将 width 和 height 值减半以补偿比例因子。这些减半的值与您需要在逻辑坐标空间中用于渲染图像的基于点的尺寸正确关联</strong>。</p>
+<p>注意：<strong>如果使用 Core Graphics 创建图像，请记住 Quartz 图像没有明确的比例因子，因此它们的比例因子假定为1.0</strong>。 如果要从 CGImageRef 数据类型创建 UIImage 对象，请使用 <code>initWithCGImage:scale:orientation:</code> 来执行此操作。 该方法允许您将特定比例因子与 Quartz 图像数据相关联。</p>
+<p>在绘制过程中， UIImage 对象会自动考虑其比例因子。 因此，只要在应用包中提供正确的图像资源，用于渲染图像的任何代码都应该相同。</p>
+<h3 id="Using-an-Image-View-to-Display-Multiple-Images"><a href="#Using-an-Image-View-to-Display-Multiple-Images" class="headerlink" title="Using an Image View to Display Multiple Images"></a>Using an Image View to Display Multiple Images</h3><p>如果应用程序使用 UIImageView 类为突出显示或动画显示多个图像，则分配给该视图的<strong>所有图像必须使用相同的比例因子</strong>。 可以使用图像视图显示单个图像或为多个图像设置动画，还可以提供高光图像。 因此，如果您为其中一个图像提供高分辨率版本，那么所有图像也必须具有高分辨率版本。(ps: 分辨率都得相同。)</p>
+<h3 id="Updating-Your-App’s-Icons-and-Launch-Images"><a href="#Updating-Your-App’s-Icons-and-Launch-Images" class="headerlink" title="Updating Your App’s Icons and Launch Images"></a>Updating Your App’s Icons and Launch Images</h3><p>除了更新应用的自定义图像资源外，还应该为应用的图标和启动图像提供新的高分辨率图标。 更新这些图像资源的过程与所有其他图像资源相同。 创建图像的新版本，将 @2x 修饰符字符串添加到相应的图像文件名，并在处理原始图像时处理图像。 例如，对于应用程序图标，将高分辨率图像文件名添加到应用程序的 Info.plist 文件的 CFBundleIconFiles 键。</p>
+<p>有关为应用程序指定图标和启动图像的信息，请参阅<a href="https://developer.apple.com/library/archive/documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/Introduction/Introduction.html#//apple_ref/doc/uid/TP40007072">App Programming Guide for iOS</a>中的<a href="https://developer.apple.com/library/archive/documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/Inter-AppCommunication/Inter-AppCommunication.html#//apple_ref/doc/uid/TP40007072-CH6">App-Related Resources</a>。</p>
+<h2 id="Drawing-High-Resolution-Content-Using-OpenGL-ES-or-GLKit"><a href="#Drawing-High-Resolution-Content-Using-OpenGL-ES-or-GLKit" class="headerlink" title="Drawing High-Resolution Content Using OpenGL ES or GLKit"></a>Drawing High-Resolution Content Using OpenGL ES or GLKit</h2><p>ps:暂时没用到。不看</p>
+<h1 id="Loading-Images"><a href="#Loading-Images" class="headerlink" title="Loading Images"></a>Loading Images</h1><p>出于功能和美学的原因，图像是 app 用户界面的普遍元素。 它们可以成为应用程序跟其他应用不同的关键因素。</p>
+<p>应用程序使用的许多图像（包括启动图像和应用程序图标）都作为文件存储在应用程序的主程序包中。 可以启动特定于设备类型的图像和图标（iPad与iPhone和iPod touch），并针对高分辨率显示进行了优化。 可以在 <a href="https://developer.apple.com/library/archive/documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/Introduction/Introduction.html#//apple_ref/doc/uid/TP40007072">App Programming Guide for iOS</a> 的 <a href="https://developer.apple.com/library/archive/documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/PerformanceTips/PerformanceTips.html#//apple_ref/doc/uid/TP40007072-CH7">Advanced App Tricks</a> 和 <a href="https://developer.apple.com/library/archive/documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/Inter-AppCommunication/Inter-AppCommunication.html#//apple_ref/doc/uid/TP40007072-CH6">App-Related Resources</a>中找到这些捆绑图像文件(bundled image files) 的完整描述。 “#Updating Your Image Resource Files#”讨论了使图像文件与高分辨率屏幕兼容的调整。</p>
+<p>此外， iOS 还支持使用 UIKit 和 Core Graphics 框架加载和显示图像。 如何确定用于绘制图像的类和函数取决于您打算如何使用它们。 但是，只要有可能，建议使用 UIKit 类在代码中表示图像。 表C-1列出了一些使用方案以及处理它们的建议选项。</p>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Recommended usage</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Display an image as the content of a view</td>
+<td>使用 UIImageView 类显示图像。 此选项假定视图的唯一内容是图像。 但仍然可以在图像视图的顶部层叠其他视图以绘制其他控件或内容。</td>
+</tr>
+<tr>
+<td>Display an image as an adornment for part of a view</td>
+<td>使用 UIImage 类加载并绘制图像。</td>
+</tr>
+<tr>
+<td>Save some bitmap data into an image object</td>
+<td>可以像在”#Creating New Images Using Bitmap Graphics Contexts#”中描述的 UIKit 函数或核心图形函数来执行此操作。</td>
+</tr>
+<tr>
+<td>Save an image as a JPEG or PNG file</td>
+<td>从原始图像数据创建 UIImage 对象。 调用<code>UIImageJPEGRepresentation</code> 或 <code>UIImagePNGRepresentation</code> 函数来获取NSData对象，并使用该对象的方法将数据保存到文件中。</td>
+</tr>
+</tbody></table>
+<h2 id="System-Support-for-Images"><a href="#System-Support-for-Images" class="headerlink" title="System Support for Images"></a>System Support for Images</h2><p>UIKit 框架以及 iOS 的低级系统框架提供了创建，访问，绘图，编写和操作图像的广泛可能性。</p>
+<h3 id="UIKit-Image-Classes-and-Functions"><a href="#UIKit-Image-Classes-and-Functions" class="headerlink" title="UIKit Image Classes and Functions"></a>UIKit Image Classes and Functions</h3><p>UIKit框架有三个类和一个协议，它们以某种方式与图像相关：</p>
+<ul>
+<li>UIImage (此类的对象表示 UIKit 框架中的图像。 可以从几个不同的源创建它们，包括文件和 Quartz 图像对象。<strong>该类的方法能够使用不同的混合模式(blend modes)和不透明度值(opacity values)将图像绘制到当前图形上下文</strong>。  UIImage 类自动处理任何所需的转换，例如应用适当的比例因子（考虑高分辨率显示），并且在给定 Quartz 图像时，修改图像的坐标系以使其与默认的坐标系匹配 UIKit(y起源位于左上角))</li>
+<li>UIImageView (此类的对象是显示单个图像或为一系列图像设置动画的视图。 <strong>如果图像是视图的唯一内容，请使用 UIImageView 类而不是绘制图像</strong>。)</li>
+<li>UIImagePickerController 和 UIImagePickerControllerDelegate (此类和协议为应用程序提供了获取用户提供的图像（照片）和视频的方法。 该类提供和管理用户界面，用于选择和拍摄 照片和视频。 当用户选择照片时，它会将选定的 UIImage 对象传递给委托，该委托必须实现协议方法。)</li>
+</ul>
+<p>除了这些类之外，UIKit 还声明了可以使用图像执行各种任务的函数：</p>
+<ul>
+<li>Drawing into an image-backed graphics context. (<code>UIGraphicsBeginImageContext</code> 函数创建一个屏幕外位图图形上下文。可以在此图形上下文中绘制，然后从中提取 UIImage 对象。 （有关其他信息，请参阅”#Drawing Images#”。）)</li>
+<li>Getting or caching image data. (<strong>每个 UIImage 对象都有一个可以直接访问的支持 Core Graphics 图像对象(CGImageRef</strong>) (“backing Core Graphics image object (CGImageRef)”)。 然后，<strong>可以将 Core Graphics 对象传递给 Image I/O 框架以保存数据</strong>。 还可以通过调用 <code>UIImagePNGRepresentation</code> 或 <code>UIImageJPEGRepresentation</code> 函数将 UIImage 对象中的图像数据转换为 PNG 或 JPEG 格式。 然后，可以访问数据对象中的字节，并可以将图像数据写入文件。)</li>
+<li>Writing an image to the Photo Album on a device. (调用 <code>UIImageWriteToSavedPhotosAlbum</code> 函数，传入UIImage对象，将该图像放入设备上的相册中。)</li>
+</ul>
+<p>“#Drawing Images#”标识了使用这些UIKit类和函数时的场景。</p>
+<h3 id="Other-Image-Related-Frameworks"><a href="#Other-Image-Related-Frameworks" class="headerlink" title="Other Image-Related Frameworks"></a>Other Image-Related Frameworks</h3><p>可以使用除 UIKit 之外的多个系统框架来创建，访问，修改和写入图像。 如果发现无法使用 UIKit 方法或函数完成某个与图像相关的任务，则这些较低级别框架之一的功能可能能够执行您想要的操作。 其中一些功能可能需要 Core Graphics 图像对象（CGImageRef）。 可以通过 CGImage 属性访问支持 UIImage 对象的 CGImageRef 对象。</p>
+<p>注意：如果存在 UIKit 方法或函数来完成给定的图像相关任务，则应使用它而不是任何相应的低级函数。</p>
+<p>相关的框架有 </p>
+<ul>
+<li>Core Graphics framework</li>
+<li>Image I/O framework (读取和写入各种图片格式。支持快速的编码、解码图片，图片元数据，图片缓存)</li>
+<li>Assets Library </li>
+</ul>
+<h3 id="Supported-Image-Formats"><a href="#Supported-Image-Formats" class="headerlink" title="Supported Image Formats"></a>Supported Image Formats</h3><p>表C-2列出了 iOS 直接支持的图像格式。 在这些格式中，<strong>PNG 格式是最适合在您的应用中使用的格式</strong>。 通常，UIKit 支持的图像格式与 Image I/O 框架支持的格式相同。<br>(ps: 具体的看官方文档吧。)</p>
+<h2 id="Maintaining-Image-Quality"><a href="#Maintaining-Image-Quality" class="headerlink" title="Maintaining Image Quality"></a>Maintaining Image Quality</h2><p>为用户界面提供高质量的图像应该是<strong>设计的首要任务</strong>。图像提供了一种显示复杂图形的合理有效方式，应该在适当的地方使用。为应用创建图片时，请牢记以下准则：</p>
+<ul>
+<li>Use the PNG format for images.   (使用PNG格式的图像。 <strong>PNG 格式提供无损图像内容，这意味着将图像数据保存为 PNG 格式然后将其读回会产生完全相同的像素值。 PNG 具有优化的存储格式，旨在更快地读取图像数据。它是 iOS 的首选图像格式</strong>。)</li>
+<li>Create images so that they do not need resizing.  (创建图像，以便它们不需要调整大小。如果您计划使用特定大小的图像，请确保以该大小创建相应的图像资源。不要创建更大的图像并将其缩小以适应，<strong>因为缩放需要额外的 CPU 周期并需要插值。如果需要以可变大小显示图像，请包含不同大小的图像的多个版本，并从相对接近目标大小的图像缩小</strong>。)</li>
+<li>Remove alpha channels from opaque PNG files.   (从不透明的 PNG 文件中删除 Alpha 通道。如果PNG 图像的每个像素都是不透明的，则删除 Alpha 通道可<strong>以避免混合包含该图像的图层。这大大简化了图像的合成，并提高了绘图性能。</strong>)</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/AppleDocument/" rel="tag"># AppleDocument</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/02/24/wwdc-2011-129/" rel="prev" title="Practical Drawing for iOS Developers(Quartz 2D Programming Guide)">
+      <i class="fa fa-chevron-left"></i> Practical Drawing for iOS Developers(Quartz 2D Programming Guide)
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/03/02/wwdc-2014-419/" rel="next" title="Advanced Graphics and Animations for iOS Apps">
+      Advanced Graphics and Animations for iOS Apps <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#About-Drawing-and-Printing-in-iOS"><span class="nav-number">1.</span> <span class="nav-text">About Drawing and Printing in iOS</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#At-a-Glance"><span class="nav-number">1.1.</span> <span class="nav-text">At a Glance</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Custom-UI-Views-Allow-Greater-Drawing-Flexibility"><span class="nav-number">1.1.1.</span> <span class="nav-text">Custom UI Views Allow Greater Drawing Flexibility</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#A-Few-Key-Concepts-Underpin-Drawing-With-the-Native-Technologies"><span class="nav-number">1.1.1.1.</span> <span class="nav-text">A Few Key Concepts Underpin Drawing With the Native Technologies</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#UIKit-Core-Graphics-and-Core-Animation-Give-Your-App-Many-Tools-For-Drawing"><span class="nav-number">1.1.1.2.</span> <span class="nav-text">UIKit, Core Graphics, and Core Animation Give Your App Many Tools For Drawing</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Apps-Can-Draw-Into-Offscreen-Bitmaps-or-PDFs"><span class="nav-number">1.1.2.</span> <span class="nav-text">Apps Can Draw Into Offscreen Bitmaps or PDFs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Apps-Have-a-Range-of-Options-for-Printing-Content"><span class="nav-number">1.1.3.</span> <span class="nav-text">Apps Have a Range of Options for Printing Content</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#It%E2%80%99s-Easy-to-Update-Your-App-for-High-Resolution-Screens"><span class="nav-number">1.1.4.</span> <span class="nav-text">It’s Easy to Update Your App for High-Resolution Screens</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96"><span class="nav-number">1.2.</span> <span class="nav-text">其他</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#iOS-Drawing-Concepts"><span class="nav-number">2.</span> <span class="nav-text">iOS Drawing Concepts</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#The-UIKit-Graphics-System"><span class="nav-number">2.1.</span> <span class="nav-text">The UIKit Graphics System</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#The-View-Drawing-Cycle"><span class="nav-number">2.1.1.</span> <span class="nav-text">The View Drawing Cycle</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Coordinate-Systems-and-Drawing-in-iOS"><span class="nav-number">2.1.2.</span> <span class="nav-text">Coordinate Systems and Drawing in iOS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Points-Versus-Pixels"><span class="nav-number">2.1.3.</span> <span class="nav-text">Points Versus Pixels</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Obtaining-Graphics-Contexts"><span class="nav-number">2.1.4.</span> <span class="nav-text">Obtaining Graphics Contexts</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Drawing-to-the-Screen"><span class="nav-number">2.1.4.1.</span> <span class="nav-text">Drawing to the Screen</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Drawing-to-Bitmap-Contexts-and-PDF-Contexts"><span class="nav-number">2.1.4.2.</span> <span class="nav-text">Drawing to Bitmap Contexts and PDF Contexts</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Color-and-Color-Spaces"><span class="nav-number">2.1.5.</span> <span class="nav-text">Color and Color Spaces</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Drawing-with-Quartz-and-UIKit"><span class="nav-number">2.2.</span> <span class="nav-text">Drawing with Quartz and UIKit</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Configuring-the-Graphics-Context"><span class="nav-number">2.2.1.</span> <span class="nav-text">Configuring the Graphics Context</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Creating-and-Drawing-Paths"><span class="nav-number">2.2.2.</span> <span class="nav-text">Creating and Drawing Paths</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Creating-Patterns-Gradients-and-Shadings"><span class="nav-number">2.2.3.</span> <span class="nav-text">Creating Patterns, Gradients, and Shadings</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Customizing-the-Coordinate-Space"><span class="nav-number">2.2.4.</span> <span class="nav-text">Customizing the Coordinate Space</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Using-Coordinate-Transforms-to-Improve-Drawing-Performance"><span class="nav-number">2.2.4.1.</span> <span class="nav-text">Using Coordinate Transforms to Improve Drawing Performance</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Flipping-the-Default-Coordinate-System"><span class="nav-number">2.2.4.2.</span> <span class="nav-text">Flipping the Default Coordinate System</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Side-Effects-of-Drawing-with-Different-Coordinate-Systems"><span class="nav-number">2.2.4.3.</span> <span class="nav-text">Side Effects of Drawing with Different Coordinate Systems</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Arcs-and-Rotations"><span class="nav-number">2.2.4.3.1.</span> <span class="nav-text">Arcs and Rotations</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Shadows"><span class="nav-number">2.2.4.3.2.</span> <span class="nav-text">Shadows</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Applying-Core-Animation-Effects"><span class="nav-number">2.3.</span> <span class="nav-text">Applying Core Animation Effects</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#About-Layers"><span class="nav-number">2.3.1.</span> <span class="nav-text">About Layers</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#About-Animations"><span class="nav-number">2.3.2.</span> <span class="nav-text">About Animations</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Accounting-for-Scale-Factors-in-Core-Animation-Layers"><span class="nav-number">2.3.3.</span> <span class="nav-text">Accounting for Scale Factors in Core Animation Layers</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Drawing-Shapes-Using-Bezier-Paths"><span class="nav-number">3.</span> <span class="nav-text">Drawing Shapes Using Bézier Paths</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Bezier-Path-Basics"><span class="nav-number">3.1.</span> <span class="nav-text">Bézier Path Basics</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Adding-Lines-and-Polygons-to-Your-Path"><span class="nav-number">3.2.</span> <span class="nav-text">Adding Lines and Polygons to Your Path</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Adding-Arcs-to-Your-Path"><span class="nav-number">3.3.</span> <span class="nav-text">Adding Arcs to Your Path</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Adding-Curves-to-Your-Path"><span class="nav-number">3.4.</span> <span class="nav-text">Adding Curves to Your Path</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Creating-Oval-and-Rectangular-Paths"><span class="nav-number">3.5.</span> <span class="nav-text">Creating Oval and Rectangular Paths</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Modifying-the-Path-Using-Core-Graphics-Functions"><span class="nav-number">3.6.</span> <span class="nav-text">Modifying the Path Using Core Graphics Functions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Rendering-the-Contents-of-a-Bezier-Path-Object"><span class="nav-number">3.7.</span> <span class="nav-text">Rendering the Contents of a Bézier Path Object</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Doing-Hit-Detection-on-a-Path"><span class="nav-number">3.8.</span> <span class="nav-text">Doing Hit-Detection on a Path</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Drawing-and-Creating-Images"><span class="nav-number">4.</span> <span class="nav-text">Drawing and Creating Images</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Drawing-Images"><span class="nav-number">4.1.</span> <span class="nav-text">Drawing Images</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Creating-New-Images-Using-Bitmap-Graphics-Contexts"><span class="nav-number">4.2.</span> <span class="nav-text">Creating New Images Using Bitmap Graphics Contexts</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Generating-PDF-Content"><span class="nav-number">4.3.</span> <span class="nav-text">Generating PDF Content</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Printing"><span class="nav-number">4.4.</span> <span class="nav-text">Printing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Improving-Drawing-Performance"><span class="nav-number">4.5.</span> <span class="nav-text">Improving Drawing Performance</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Supporting-High-Resolution-Screens-In-Views"><span class="nav-number">5.</span> <span class="nav-text">Supporting High-Resolution Screens In Views</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Checklist-for-Supporting-High-Resolution-Screens"><span class="nav-number">5.1.</span> <span class="nav-text">Checklist for Supporting High-Resolution Screens</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Drawing-Improvements-That-You-Get-for-Free"><span class="nav-number">5.2.</span> <span class="nav-text">Drawing Improvements That You Get for Free</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Updating-Your-Image-Resource-Files"><span class="nav-number">5.3.</span> <span class="nav-text">Updating Your Image Resource Files</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Loading-Images-into-Your-App"><span class="nav-number">5.3.1.</span> <span class="nav-text">Loading Images into Your App</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Using-an-Image-View-to-Display-Multiple-Images"><span class="nav-number">5.3.2.</span> <span class="nav-text">Using an Image View to Display Multiple Images</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Updating-Your-App%E2%80%99s-Icons-and-Launch-Images"><span class="nav-number">5.3.3.</span> <span class="nav-text">Updating Your App’s Icons and Launch Images</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Drawing-High-Resolution-Content-Using-OpenGL-ES-or-GLKit"><span class="nav-number">5.4.</span> <span class="nav-text">Drawing High-Resolution Content Using OpenGL ES or GLKit</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Loading-Images"><span class="nav-number">6.</span> <span class="nav-text">Loading Images</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#System-Support-for-Images"><span class="nav-number">6.1.</span> <span class="nav-text">System Support for Images</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#UIKit-Image-Classes-and-Functions"><span class="nav-number">6.1.1.</span> <span class="nav-text">UIKit Image Classes and Functions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Other-Image-Related-Frameworks"><span class="nav-number">6.1.2.</span> <span class="nav-text">Other Image-Related Frameworks</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Supported-Image-Formats"><span class="nav-number">6.1.3.</span> <span class="nav-text">Supported Image Formats</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Maintaining-Image-Quality"><span class="nav-number">6.2.</span> <span class="nav-text">Maintaining Image Quality</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">joakim.liu</p>
+  <div class="site-description" itemprop="description">你不解决问题，就会成为问题。iOS菜逗一枚。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/JoakimLiu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/JoakimLiu" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">joakim.liu</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://example.com/2019/03/01/Drawing-and-Printing-Guide-for-iOS/";
+    this.page.identifier = "2019/03/01/Drawing-and-Printing-Guide-for-iOS/";
+    this.page.title = "Drawing and Printing Guide for iOS";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://http-joakimliu-github-io.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>

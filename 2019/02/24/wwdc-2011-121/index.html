@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="WWDCUnderstanding UIKit Rendering 主要讲了显示青蛙的一个 demo ，讲了 round rotate anti-aliased shadow 等效果，先讲了之前做的为什么会错误，后面讲了正确的做法，这个 session 比较简单，相关内容，后续关于渲染的 session 都有讲到。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Understanding UIKit Rendering(View Programming Guide for iOS)">
+<meta property="og:url" content="http://example.com/2019/02/24/wwdc-2011-121/index.html">
+<meta property="og:site_name" content="牛易疯先森的开发记录">
+<meta property="og:description" content="WWDCUnderstanding UIKit Rendering 主要讲了显示青蛙的一个 demo ，讲了 round rotate anti-aliased shadow 等效果，先讲了之前做的为什么会错误，后面讲了正确的做法，这个 session 比较简单，相关内容，后续关于渲染的 session 都有讲到。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2011/121/rotation.png?raw=true">
+<meta property="og:image" content="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2011/121/scale.png?raw=true">
+<meta property="og:image" content="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2012/238/callstack1.png?raw=true">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4mvL9zxZfXLveK3GYqwqGPIOwAFtAky2W0xYzzdgl2UHkBmOFA0PfbXTgJfYagDkssKFPKAvaq6mp8KDJRmxez3R1CtRavG2ryTtrVjgV5xVZW-VHB-umAjTS1o7HwbqAzMDnB9IW8gUgBmJd1ZaycHi1ijfYdtytwBdRicFEpCFLQU1Hb1w-bq6mC90hJIk-y?width=414&height=435&cropmode=none">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4m4H0CSxMBwS0AuvFfuSSN9jtGvtKOfqXaTB0ek6qapzf40uB8joOLQsEjHfueZem-WBpMO_D6rkqnQY_d5_G_icZVLokQMWEDWd9k0OlYYe4O8jDPutz5lnQFQr0Wuv8nvRN7q4DvSoBfvQ3BHM-UT0jrxhODa5Zk_gjUSeyOUFMjgOyMQbc7MW2XcjxdhuVm?width=441&height=709&cropmode=none">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4mjoc7cVu7qdkWvsokJldvtRib0qslwzxvflIS5FCdsSInXjIS9MWDDIZk2IiUG9uCaxCZvglqMc9_SAwIohRtsIHvisSE-RzQt-Lg7AWcchmcR0FPcpNYc8jRer-tM-kQ4WKBSXBzuOZJUqFANQ54955WzHrA14zf0OeAkDTR37yy7rWfJF6gY8kvEcsJGTL9?width=395&height=442&cropmode=none">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4miuulU-u2af7Gz0Vy2yJTqLJheX_AWMSSlzsFR9WZsCx7N08CQXmYPgE6jfvcJaU00Q7ZqYc9ycvBpvo57tGWtNVqXSmTg8uT2BQ3W2EAdlbPajvy5LdWdR_gCkS29k_ykPP7PRg3NxP1XFuXA8IBkfGWVXfxgIXmV3fGZBfPga74M-E5_wKZ8bfWz6C19I2-?width=540&height=309&cropmode=none">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4mOeo_tCulrIyVWqIceEgQwQhnpMMLjudYX9aug_HTRR5vuKHtoKjNiNI-MQoq6xdwW6OjitGzficLl-NHDR05dBfjQEFrxO4oEOgMDjj75CxvkjaJHuW0byQ0kFOQct7oMtXsMVIJcbqtoZNjnnV9pDzUPhBuTD9x8Z5Jfxb0S3sovfmWgxEvT-l3s5s9eBB1?width=648&height=384&cropmode=none">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4mS_HQXyHyANPa_UGwQiRusJ31aAuVyK-j8gHJxOOvH60EOfa6viO0X1xZVZQ_rHvbiRseILkRF0EBwjbiVr5vSHXUU93Gy3N3AyBwZ07X_kK4K0D1zJYneEc51IVK1xTgeSBqxsSG4Yfkb3hzqChhqUB2kX2Oj1Aq-WhTq7XDRmt8rQUJdP_IrNjNyCugKgm-?width=574&height=298&cropmode=none">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4mGo9C1t2koREVcOXUvJdB2s6EvKMtrMdT5Ry_lsRodCdRihCb6nVMPBmeBfk8Xg7_0l7oAG-w02ARlPLhLMbxmQw58y4cPI8gQTr-F0_nH1aYtsU3VvZqfDwwL3hp2iJcecFUpHgZe67ZHX9bLjSY0iu5JwNlaeuop3rW_fPz1AEnSvDpnz8zukH7SaiJ4MNt?width=549&height=216&cropmode=none">
+<meta property="og:image" content="https://sat02pap001files.storage.live.com/y4mxd97sB0zTkOonWadF6pz0dxep_YtT54B6d5Jb1cWLXc63jeN8Po0OLxZlh6JogO8JP2Xsp1F8e2DIogiEwScyFfQsvNtHLShe_1UhLIMEIRePEvb3KgEZMA_KlgCyRa0F9HEwdpGie06f4Q1h01XhVoUxUVndpZ0st0B3Yqnp9UVBtcvNb0mpHkLeA9mWIpU?width=925&height=525&cropmode=none">
+<meta property="article:published_time" content="2019-02-24T02:23:28.000Z">
+<meta property="article:modified_time" content="2021-05-24T15:33:13.503Z">
+<meta property="article:author" content="joakim.liu">
+<meta property="article:tag" content="WWDC">
+<meta property="article:tag" content="AppleDocument">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2011/121/rotation.png?raw=true">
+
+<link rel="canonical" href="http://example.com/2019/02/24/wwdc-2011-121/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Understanding UIKit Rendering(View Programming Guide for iOS) | 牛易疯先森的开发记录</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">牛易疯先森的开发记录</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2019/02/24/wwdc-2011-121/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Understanding UIKit Rendering(View Programming Guide for iOS)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-02-24 10:23:28" itemprop="dateCreated datePublished" datetime="2019-02-24T10:23:28+08:00">2019-02-24</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/" itemprop="url" rel="index"><span itemprop="name">读书笔记</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="WWDC"><a href="#WWDC" class="headerlink" title="WWDC"></a>WWDC</h1><p><a href="https://developer.apple.com/videos/play/wwdc2011/121/">Understanding UIKit Rendering</a> 主要讲了显示青蛙的一个 demo ，讲了 round rotate anti-aliased shadow 等效果，先讲了之前做的为什么会错误，后面讲了正确的做法，这个 session 比较简单，相关内容，后续关于渲染的 session 都有讲到。</p>
+<a id="more"></a>
+
+<h2 id="UIView-and-CALayer"><a href="#UIView-and-CALayer" class="headerlink" title="UIView and CALayer"></a>UIView and CALayer</h2><p>在 iOS 中，每个视图(UIView)都由相应的图层(CALayer)对象支持，被称为图层支持的视图(layer-backed view)。对于不同的绘制要求，我们可以用不同类型的 layer 。 layer 决定视图在屏幕哪里显示。</p>
+<h3 id="Geometry"><a href="#Geometry" class="headerlink" title="Geometry"></a>Geometry</h3><p>frame 包含视图的最小矩形。 不管进行了 transform or scale or rotation 等操作， bound 都不会变，变的是 frame 。因为 frame 不是 layer 的存储属性(store) , 而是计算(computed)属性 , 而是由其他两个属性计算而来的(center(基于父坐标系)、bound(基于自己的坐标系))。 可以有下面的两张图来表示，黄色字体代表 bound ， 白色字体代表 frame 。</p>
+<p><img src="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2011/121/rotation.png?raw=true" alt="rotation"><br><img src="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2011/121/scale.png?raw=true" alt="rotation"></p>
+<p>所以，在 view 中， frame 是由 bounds.size、center、transform 组成的。而在 layer 中，则由 bounds.size、position、affineTransform、transform(这是三维的变换)、anchorPoint 组成的。</p>
+<p>bound 也是可以改变的，用来显示大区域视图的部分内容， bound 区域外面的内容是不会渲染的，用 clipsToBounds 属性控制。</p>
+<p>绘制的内容可以来自于：</p>
+<ul>
+<li>view.layer.contents (这是 iOS 的底层绘制机制，很少几乎不会直接设置，所以 UIKit 有提供下面两种方法)</li>
+<li>UIImageView (推荐用)</li>
+<li>drawRect:</li>
+</ul>
+<p>UIImageView vs. drawRect: (主要指内存消耗)</p>
+<ul>
+<li>Stretch: UIImageView 0 内存消耗， UIImageView 放大的时候还可以动画， drawRect 也可以，但是看起来可能会很糟糕。</li>
+<li>Tile: 尽管 UIImageView 让 GPU 去处理最终的 tile 从而填充整个屏幕，会有一点点消耗，但是相对于 drawRect: 来说，这一点开销还是可以忽略的。</li>
+</ul>
+<h2 id="CATransaction-and-when-views-get-rendered"><a href="#CATransaction-and-when-views-get-rendered" class="headerlink" title="CATransaction and when views get rendered"></a>CATransaction and when views get rendered</h2><p>有一种情况，你可能改变了 frame 和 transform ，但它们并没有同时显示，而是只显示了其中一个变化。想知道为什么，就得知道视图<strong>什么时候</strong>开始渲染。 设置属性的时候就会在 runloop 中创建<strong>隐式事务(implicit transaction)</strong>, 此时隐式事务是<strong>打开</strong>的，随后你设置的相关改变都会被<strong>放入</strong>这个隐式事务，然后一起提交，一旦 runloop 开启下个循环， Core animation 就会<strong>提交</strong>这个隐式事务，然后就能在屏幕上显示了。</p>
+<p>有的时候，你可能设置了属性，但是没有显示，可能是<strong>阻塞</strong>了主线程， runloop 下个循环没法开启，所以 Core animation 没有提交事务，也就没渲染成功。</p>
+<p>有隐式事务，那肯定就有显式(implicit)事务，我们尽量使用隐式事务，除非是做动画或者想控制时间。</p>
+<p>我们 lldb 调试时候，经常会看到<br><img src="https://github.com/JoakimLiu/BlogPhoto/blob/master/wwdc/2012/238/callstack1.png?raw=true" alt="CA::Transaction::commint"></p>
+<h2 id="Quality-and-Performance"><a href="#Quality-and-Performance" class="headerlink" title="Quality and Performance"></a>Quality and Performance</h2><p>发现渲染问题，让想要提高它的最普遍的方法是寻找 <code>offscreen rendering</code>, 然后避免它。</p>
+<h3 id="Avoid-Offscreen-Rendering"><a href="#Avoid-Offscreen-Rendering" class="headerlink" title="Avoid Offscreen Rendering"></a>Avoid Offscreen Rendering</h3><p>不是离屏渲染(offscreen rendering)的情况下， core animation 会在屏幕上开始渲染最底层的视图，然后渲染相应的子视图<strong>（从下到上）</strong>。<br>如果一个视图的是离屏渲染的，那么它的子视图也是离屏渲染的。离屏渲染大概有两个问题吧</p>
+<ul>
+<li>额外的 memory, 创建 off-screen buffer</li>
+<li>额外的时间，在 off-screen 和 on-screen 切换</li>
+</ul>
+<p>如果 core animation 每一帧都得做这样的事情，是很昂贵的。<br>ps: <a href="https://www.jianshu.com/p/ca51c9d3575b">离屏渲染优化详解：实例示范+性能测试</a> 有讲很多优化的例子。</p>
+<h4 id="Layer-Rasterization"><a href="#Layer-Rasterization" class="headerlink" title="Layer Rasterization"></a>Layer Rasterization</h4><p>图层光栅化，可以减少离屏渲染的影响，它会<strong>缓存</strong>渲染的位图，减少了 <code>off-screen</code> 和 <code>on-screen</code> 切换的时间。当然它<strong>只适应于上下两帧内容一样</strong>的情况，如果不一样，还是跟之前一样，还是会有性能问题。<strong>但是</strong>，如果你没有离屏渲染，而去使用光栅化，会损耗性能，<strong>因为</strong>它不能重用缓存，每一帧还是在 <code>off-screen</code> 和 <code>on-screen</code> 切换。(切记，出现问题的时候，一定要记录当前的数据，然后再去做调试优化，再拿当前的数据和之前的作对比。)</p>
+<h3 id="Clipping-and-masking"><a href="#Clipping-and-masking" class="headerlink" title="Clipping and masking"></a>Clipping and masking</h3><p><code>corner</code> 和 <code>gradient mask</code> 也会引发离屏渲染。可以用以下方法：</p>
+<ul>
+<li>[CALayer contentsRect], 使用大图片时可以考虑用一下，比 corner 性能要好。</li>
+<li>[UIView drawRect:], 提前渲染好。</li>
+<li>Transparent overlay, 遮罩来处理。</li>
+</ul>
+<h3 id="Group-opacity"><a href="#Group-opacity" class="headerlink" title="Group opacity"></a>Group opacity</h3><p>在父视图上设置，父视图和它的子视图都有同样的 alpha 效果，它也会产生离屏渲染。可以用以下方法：</p>
+<ul>
+<li>drawRect: 方法中提前渲染好。</li>
+<li>光栅化， <code>shouldRasterize = YES</code></li>
+</ul>
+<h3 id="Shadows"><a href="#Shadows" class="headerlink" title="Shadows"></a>Shadows</h3><p>设置阴影方法不当也会引起离屏渲染。</p>
+<p>不要用</p>
+<ul>
+<li>[CALayer shadowOffset]</li>
+<li>[CALayer shadowColor]</li>
+</ul>
+<p>而用</p>
+<ul>
+<li>[CALayer shadowPath]</li>
+<li>CoreGraphics shadows</li>
+</ul>
+<h3 id="Edge-anti-aliasing"><a href="#Edge-anti-aliasing" class="headerlink" title="Edge anti-aliasing"></a>Edge anti-aliasing</h3><p>当位图的分辨率<strong>明显低于</strong>设备的分辨率时，会出现锯齿状边缘。为了使得看起来更加平滑(smooth)。我们可以对围绕形状轮廓的像素使用不同的颜色。通过以这种方式混合颜色，形状看起来光滑。<br><img src="https://sat02pap001files.storage.live.com/y4mvL9zxZfXLveK3GYqwqGPIOwAFtAky2W0xYzzdgl2UHkBmOFA0PfbXTgJfYagDkssKFPKAvaq6mp8KDJRmxez3R1CtRavG2ryTtrVjgV5xVZW-VHB-umAjTS1o7HwbqAzMDnB9IW8gUgBmJd1ZaycHi1ijfYdtytwBdRicFEpCFLQU1Hb1w-bq6mC90hJIk-y?width=414&height=435&cropmode=none" alt="A comparison of aliased and anti-aliasing drawing"></p>
+<h1 id="Apple-Document"><a href="#Apple-Document" class="headerlink" title="Apple Document"></a>Apple Document</h1><p><a href="https://developer.apple.com/library/archive/documentation/WindowsViews/Conceptual/ViewPG_iPhoneOS/Introduction/Introduction.html#//apple_ref/doc/uid/TP40009503-CH1-SW2">View Programming Guide for iOS</a></p>
+<h2 id="About-Windows-and-Views"><a href="#About-Windows-and-Views" class="headerlink" title="About Windows and Views"></a>About Windows and Views</h2><p>在 iOS 下，我们用 View 和 Window 在屏幕上面呈现 App 的内容， Window 不会直接呈现可视化的内容，只是为程序的 View 提供一个 container <strong>载体</strong>。<br>(ps: 所以，用 Xcode Debug 展示最下面是黑色的，还有用 Xcode 创建新的工程，single view controller 也是黑色的)</p>
+<h3 id="At-a-Glance"><a href="#At-a-Glance" class="headerlink" title="At a Glance"></a>At a Glance</h3><p>每一个 App 至少有一个 window 和一个用于显示其内容的 View, UIKit 为我们提供系统控件。当然，当系统控件满足不了我们需求的时候，我们可以<strong>自定义控件并管理绘图和事件处理</strong>。</p>
+<h4 id="Views-Manage-Your-Application’s-Visual-Content"><a href="#Views-Manage-Your-Application’s-Visual-Content" class="headerlink" title="Views Manage Your Application’s Visual Content"></a>Views Manage Your Application’s Visual Content</h4><p>view 或者它的子类对象在 App 的 Window 上管理着 App 的<strong>矩形区域</strong>(<code>Views are responsible for drawing content, handling multitouch events, and managing the layout of any subviews.</code>)。 drawing 涉及到 Core Graphics, OpenGL ES, UIKit 等绘制技术在矩形区域里面绘制物体、图片、文本等。 视图通过手势识别器(gesture recognizers)或者直接处理触摸事(touch events)来响应其矩形区域中的触摸事件。 在 View 的层级里面，父视图有责任去定位和调整子视图的位置，并且能够动态的改变它们，使它们自适应旋转、动画等一些改变条件。 我们可以假想多个 View 堆积成我们的用户界面，每个 View 都呈现着不同的内容。</p>
+<h4 id="Windows-Coordinate-the-Display-of-Your-Views"><a href="#Windows-Coordinate-the-Display-of-Your-Views" class="headerlink" title="Windows Coordinate the Display of Your Views"></a>Windows Coordinate the Display of Your Views</h4><p>Window 处理着 App <strong>整个的用户界面</strong>（它与 view 或者 vc 一起工作，去管理可视化 view 的交互和改变），大多数情况下，App 的 Window 不会改变。当 window 创建好后，它不会改变，只通过改变 View 现实。每一个应用至少有一个 Window 在主屏幕呈现 App 的用户界面。当外部显示器连接到设备时， App 会创建第二个 Window 去显示内容。 </p>
+<h4 id="Animations-Provide-the-User-with-Visible-Feedback-for-Interface-Changes"><a href="#Animations-Provide-the-User-with-Visible-Feedback-for-Interface-Changes" class="headerlink" title="Animations Provide the User with Visible Feedback for Interface Changes"></a>Animations Provide the User with Visible Feedback for Interface Changes</h4><p>animation 在当前 View 的层级上为用户提供可视的变化。可以改变 View 的透明度<code>transparency</code>、位置、大小、背景颜色或者其他属性。 Core Animation layer object, 能够更好的做好动画。(ps: <code>Core Animation Programming Guide</code> 有讲。)</p>
+<h4 id="The-Role-of-Interface-Builder"><a href="#The-Role-of-Interface-Builder" class="headerlink" title="The Role of Interface Builder"></a>The Role of Interface Builder</h4><p>用户界面就是一个 App 去形象化的组织和配置 Window 和 View 。(ps: 这里 Apple 又推荐用 xib 了)</p>
+<h2 id="View-and-Window-Architecture"><a href="#View-and-Window-Architecture" class="headerlink" title="View and Window Architecture"></a>View and Window Architecture</h2><p>view 和 window 用来呈现内容和处理与界面的交互，自定义的视图也得继承自它们。理解它们这些基础控件是怎么操作的会很有好处。</p>
+<h3 id="View-Architecture-Fundamentals"><a href="#View-Architecture-Fundamentals" class="headerlink" title="View Architecture Fundamentals"></a>View Architecture Fundamentals</h3><p><strong>视图对象</strong>在屏幕上定义矩形区域，并处理<strong>该区域中的绘图和触摸事件</strong>。 视图还可以充当其他视图的父级，并协调这些视图的位置和大小调整。 UIView 类完成了管理视图之间这些关系的大部分工作，但我们也可以根据需要自定义默认行为。</p>
+<p>视图与核心动画层结合使用，以处理<strong>视图内容的渲染和动画</strong>。 UIKit 中的每个视图都有一个图层对象（通常是CALayer类的一个实例）支持，<strong>该图层对象管理视图的后备存储并处理与视图相关的动画</strong>。 我们执行的大多数操作都应该通过 UIView 接口。 但是，在需要更多控制视图的渲染或动画行为的情况下，可以通过其图层执行操作。</p>
+<p>背后的 layer 对象是 Core Animation 的渲染对象，<strong>最终用于管理屏幕上实际位图的硬件缓冲区</strong>。</p>
+<p>Core Animation layer objects 的使用对性能有重要的影响。 view 对象的实际绘图代码越少越好，当你绘制的时候， Core Animation <strong>将会缓存结果</strong>，以便后面能够尽量的重用。重用已经渲染后的内容能够消除昂贵的绘制周期去更新视图，重用在动画的时候也非常重要。(ps: Core Animation layer object 的相关东西，<code>Core Animation Programming Guide</code> 有讲。)</p>
+<h4 id="View-Hierarchies-and-Subview-Management"><a href="#View-Hierarchies-and-Subview-Management" class="headerlink" title="View Hierarchies and Subview Management"></a>View Hierarchies and Subview Management</h4><p>View 除了提供自己的内容以外，还能作为其他 View 的容器，这就是 subView superView 的关系。 subView 的内容能够掩盖全部或部分它 superView 的内容，即有<strong>层级关系</strong>。</p>
+<p>如果 subview 部分透明，那么 subview 、superview 它们两个的内容就会混合在一起显示在屏幕上面。</p>
+<p>视图有一个有序的数组来存储它的子视图，后添加的在最顶层。改变父视图的大小会使子视图的大小和位置改变（这里 autoresize 等属性就能处理这些事情）。视图的层级结构也决定了 App 去响应事件，当 touch 触摸事件发生在某个特定的视图上，系统就会直接发送一个包含 touch information 的 event object 给该视图去处理。它是向上传递的，如果父视图处理不了，就丢给它的父视图，一直沿着响应链 responder chain 传递，一直会传递到 application object ，不过它一般会丢弃它（这里就涉及到了响应链的知识）。</p>
+<h4 id="The-View-Drawing-Cycle"><a href="#The-View-Drawing-Cycle" class="headerlink" title="The View Drawing Cycle"></a>The View Drawing Cycle</h4><p>视图类采取按需绘图模型来展示内容（即<strong>按需处理绘制</strong>）。当视图<strong>首次</strong>出现在屏幕上时，系统会要求它绘制其内容，系统会捕获<strong>此内容的快照</strong>，然后用这个快照去展示视图的视觉效果。如果你不改变视图的内容，那么视图的绘制代码就不会再次执行。这个快照图片(snapshot image)对于所涉及的视图的大部分操作是<strong>可以重用</strong>的。如果确实更改了内容，<strong>则通知</strong>系统视图已更改。然后，视图重复绘制视图并捕获新结果的快照的过程。</p>
+<p>当视图内容改变的时候，你不用直接去重新绘制这些改变。你只需调用 <code>setNeedsDisplay</code> 或者 <code>setNeedsDisplayInRect</code> 系统方法，这些方法会告诉系统在<strong>下一次循环会重新绘制。系统会等到这次循环结束才会开始任何绘制操作</strong>。 这个延时中，你有机会做各种事情，比如：使多个视图无效，在层次结构中添加或删除视图，隐藏视图，调整视图大小以及重新定位视图，这些所有的改变会在同时反应出来。(ps: 就是 implicit transaction)</p>
+<p>注意：改变视图的<strong>几何构造</strong> geometry（在 view.h 文件里面，搜索 geometry 就会看到 geometry 的相关属性 frame、bounds、center 等等）<strong>不会自动使系统去重绘视图的内容</strong>。 contentMode 属性决定了 geometry 变化时，视图的内容怎么改变。大部分模式会在视图的边界里面拉伸或者重新放置已经存在的 snapshot, <strong>不会创建一个新的</strong>。</p>
+<p>当渲染视图内容时，实际绘制过程会<strong>根据视图及其配置而有所不同</strong>。系统视图通常实现私有绘图方法来呈现其内容。 这些相同的系统视图通常会公开可用于配置视图实际外观的接口。 对于自定义视图子类，通常会覆盖视图的 <code>drawRect:</code> 方法，并使用该方法绘制视图的内容。还有其他方法可以提供视图的内容，例如直接设置底层的内容(layer.contents)，但是覆盖 <code>drawRect:</code> 方法是最常用的技术。(ps: <code>Core Animation Programming Guide</code> 中的 “Providing a Layer’s Contents” 有提到三种方法设置内容。)</p>
+<p>有关如何为自定义视图绘制内容的详细信息，请参阅”#Implementing Your Drawing Code#”。</p>
+<h3 id="Content-Modes"><a href="#Content-Modes" class="headerlink" title="Content Modes"></a>Content Modes</h3><p>每个视图都有一个内容模式，用于控制视图如何<strong>重新利用</strong>其内容以响应视图几何中的更改，以及是否重新利用其内容。 首次显示视图时，它会像往常一样呈现其内容，并在底层位图(bitmap)中捕获结果。 之后，<strong>对视图几何体的更改并不总是会导致重新创建位图</strong>。 相反， contentMode 属性中的值确定是否缩放位图以适应新边界，还是仅固定到视图的一个角或边缘。(ps: 最终都是位图去展示的)</p>
+<p>content mode 作用于改变视图的 frame bounds transform 属性。见下图</p>
+<p><img src="https://sat02pap001files.storage.live.com/y4m4H0CSxMBwS0AuvFfuSSN9jtGvtKOfqXaTB0ek6qapzf40uB8joOLQsEjHfueZem-WBpMO_D6rkqnQY_d5_G_icZVLokQMWEDWd9k0OlYYe4O8jDPutz5lnQFQr0Wuv8nvRN7q4DvSoBfvQ3BHM-UT0jrxhODa5Zk_gjUSeyOUFMjgOyMQbc7MW2XcjxdhuVm?width=441&height=709&cropmode=none" alt="Content mode comparisons"></p>
+<p>内容模式适用于重新利用视图内容，但是特别希望自定义视图在缩放和调整大小操作期间重绘时，还可以将内容模式设置为 <code>UIViewContentModeRedraw</code> 。将视图的内容模式设置为此值，会强制系统调用视图的 <code>drawRect:</code> 方法以响应几何体更改。通常，应尽可能<strong>避免使用此值</strong>，并且当然<strong>不应将其与标准系统视图一起使用</strong>。</p>
+<h3 id="Stretchable-Views"><a href="#Stretchable-Views" class="headerlink" title="Stretchable Views"></a>Stretchable Views</h3><p>可以将视图的一部分指定为可伸缩的，以便在视图大小发生变化时，只会影响可伸展部分中的内容。 <strong>通常将可伸展区域用于按钮或其他视图</strong>，其中视图的一部分定义了可重复(repeatable pattern)的模式。 指定的可伸展区域可以允许沿视图的一个或两个轴拉伸。 当然，沿两个轴拉伸视图时，视图的边缘也必须定义可重复的图案以避免变形(distortion)。 下图显示了这种失真如何在视图中显现出来。 原理就是，复制每个视图的原始像素的颜色以填充较大视图中的相应区域(ps: 跟抗锯齿差不多哈)。</p>
+<p><img src="https://sat02pap001files.storage.live.com/y4mjoc7cVu7qdkWvsokJldvtRib0qslwzxvflIS5FCdsSInXjIS9MWDDIZk2IiUG9uCaxCZvglqMc9_SAwIohRtsIHvisSE-RzQt-Lg7AWcchmcR0FPcpNYc8jRer-tM-kQ4WKBSXBzuOZJUqFANQ54955WzHrA14zf0OeAkDTR37yy7rWfJF6gY8kvEcsJGTL9?width=395&height=442&cropmode=none" alt="Stretching the background of a button"></p>
+<p>可以使用 contentStretch 属性指定视图的可伸展区域。 此属性接受一个矩形，它是标准值，其值的范围为 0.0-1.0 。 在拉伸视图时，系统会将这些标准化值<strong>乘以</strong>视图的当前边界和比例因子，以确定需要拉伸哪个或哪些像素。 使用标准化值可以<strong>减少每次视图边界更改时更新 contentStretch 属性的需要</strong>。</p>
+<p>视图的内容模式(content mode)也在确定视图的可伸展区域(stretchable area)的使用方式方面发挥作用。 <strong>可伸缩区域仅在内容模式导致视图的内容缩放时使用</strong>。 这意味着仅使用 UIViewContentModeScaleToFill UIViewContentModeScaleAspectFit 和 UIViewContentModeScaleAspectFill 内容模式支持可伸展视图。 如果指定将内容固定到边缘或角落的内容模式则视图将忽略可伸展区域（因此实际上不会缩放内容，ps: 其实就是上面三种模式以外的内容模式，即内容模式大致分为两种，一种是缩放去适应视图，另外一种只是将内容移动到视图的一个边角。）。</p>
+<p>注意：当指定为视图背景时，创建伸缩的 UIImage 对象时<strong>推荐用</strong> contentStretch 属性。 stretchable view 整个被用在 Core Animation layer, 能够提供更好的性能。</p>
+<p>(ps: contentStretch 能够指定拉伸的区域，但是只适用于 ScaleToFill、ScaleAspectFit、ScaleAspectFill 这三种内容模式。)</p>
+<h3 id="Built-In-Animation-Support"><a href="#Built-In-Animation-Support" class="headerlink" title="Built-In Animation Support"></a>Built-In Animation Support</h3><p><code>One of the benefits of having a layer object behind every view is that you can animate many view-related changes easily.</code> (在每个视图后面都有一个图层对象的好处之一是，可以<strong>轻松地为许多与视图相关的更改设置动画</strong>。)</p>
+<p>用内置的动画支持，你只需做两件事，告诉 UIKit 你想要执行一个动画，然后改变相关属性的值</p>
+<ul>
+<li>Tell UIKit that you want to perform an animation.</li>
+<li>Change the value of the property.</li>
+</ul>
+<p>视图的以下属性可以用于动画</p>
+<ul>
+<li>frame—Use this to animate position and size changes for the view.</li>
+<li>bounds—Use this to animate changes to the size of the view.</li>
+<li>center—Use this to animate the position of the view.</li>
+<li>transform—Use this to rotate or scale the view.</li>
+<li>alpha—Use this to change the transparency of the view.</li>
+<li>backgroundColor—Use this to change the background color of the view.</li>
+<li>contentStretch—Use this to change how the view’s contents stretch.</li>
+</ul>
+<p>下降到 layer 层，可以更多的控制时间以及动画属性。可以参考</p>
+<ul>
+<li><a href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/CoreAnimation_guide/Introduction/Introduction.html#//apple_ref/doc/uid/TP40004514">Core Animation Programming Guide</a></li>
+<li><a href="https://developer.apple.com/library/archive/documentation/GraphicsImaging/Conceptual/CoreAnimation_Cookbook/Introduction/Introduction.html#//apple_ref/doc/uid/TP40005406">Core Animation Cookbook</a></li>
+</ul>
+<h2 id="View-Geometry-and-Coordinate-Systems"><a href="#View-Geometry-and-Coordinate-Systems" class="headerlink" title="View Geometry and Coordinate Systems"></a>View Geometry and Coordinate Systems</h2><p>UIKit 默认的坐标系统是从左上角开始并且轴向右、向下延伸。坐标值用的是浮点类型的，它能使你更加<strong>精确的</strong>计算出位置和内容而不用管底层屏幕分辨率。当然每个view、window 都有属于自己的 local coordinate system ，即有的时候我们需要将在 view 上的坐标转换(convert)到 controller.view 上面显示(视图和窗口有提供相关的方法去转换，这点得注意)。</p>
+<p>要点：一些 iOS 技术定义的坐标系统跟 UIKit 不同， Core Graphics 和 OpenGL ES 使用左下角为起始点， y 轴是向上的。</p>
+<h3 id="The-Relationship-of-the-Frame-Bounds-and-Center-Properties"><a href="#The-Relationship-of-the-Frame-Bounds-and-Center-Properties" class="headerlink" title="The Relationship of the Frame, Bounds, and Center Properties"></a>The Relationship of the Frame, Bounds, and Center Properties</h3><p>frame 在其 superview 中指定位置大小， bounds 在自己的坐标系统中指定大小， center 在 superview 中的中心点。(ps: frame 是包裹视图内容的最小矩形区域。 session 2011.121 P23)</p>
+<p>frame 和 center 主要是操作当前 view 的几何结构，主要是操作视图的大小和位置。如果你只改变视图的位置，推荐用 center ，尤其是在缩放或旋转的时候，即使已将缩放或旋转因子添加到视图的变换中，center 属性中的值也<strong>始终有效</strong>。 对于 frame 属性中的值也是如此，如果视图的变换<strong>不等于 identity 变换</strong>，则该属性<strong>被视为无效</strong>。<br>bounds 一般用于绘制的时候。</p>
+<p>当 frame 改变时，center、bounds 会改变；center 改变时，frame 会改变；bounds 改变时，frame 会改变。 clipsToBounds 属性设置当 subview 超出 superview 时是否被裁剪，如果不被裁剪，那么超出部分不会响应事件。</p>
+<p><img src="https://sat02pap001files.storage.live.com/y4miuulU-u2af7Gz0Vy2yJTqLJheX_AWMSSlzsFR9WZsCx7N08CQXmYPgE6jfvcJaU00Q7ZqYc9ycvBpvo57tGWtNVqXSmTg8uT2BQ3W2EAdlbPajvy5LdWdR_gCkS29k_ykPP7PRg3NxP1XFuXA8IBkfGWVXfxgIXmV3fGZBfPga74M-E5_wKZ8bfWz6C19I2-?width=540&height=309&cropmode=none" alt="Relationship between a view&#39;s frame and bounds"></p>
+<p>ps: 还可以参考 <a href="http://stackoverflow.com/questions/1210047/cocoa-whats-the-difference-between-the-frame-and-the-bounds">http://stackoverflow.com/questions/1210047/cocoa-whats-the-difference-between-the-frame-and-the-bounds</a></p>
+<h3 id="Coordinate-System-Transformations"><a href="#Coordinate-System-Transformations" class="headerlink" title="Coordinate System Transformations"></a>Coordinate System Transformations</h3><p>坐标系转换提供了一种快速轻松地更改视图（或其内容）的方法。 仿射变换(affine transform)是一种数学矩阵，它指定<strong>一个坐标系中的点如何映射到不同坐标系中的点</strong>。 我们可以将仿射变换应用于整个视图，以更改视图相对于其父视图的大小，位置或方向。 还可以在绘图代码中使用仿射变换对各个渲染内容执行相同类型的操作。 因此，<strong>如何应用仿射变换取决于上下文</strong>：</p>
+<ul>
+<li>要修改整个视图，请在视图的 transform 属性中修改仿射变换。</li>
+<li>在 <code>drawRect:</code> 方法中修改视图的特定内容，修改活动图形上下文(active graphics context)关联的仿射变换。</li>
+</ul>
+<p>当然<strong>不要使用此属性对视图进行永久性更改</strong>，例如在其 superview 的坐标空间中修改其位置或调整视图大小。 对于这种类型的更改，应该修改视图的框架矩形。</p>
+<p><strong>注意</strong>：当改变视图的 transform 属性时，所有的变化只是相对于视图的中心点(center)进行的。</p>
+<p>当前变换矩阵(current transformation matrix, CTM)是在任何给定时间使用的仿射变换。 在操作整个视图的几何体时，CTM 是存储在视图的 transform 属性中的仿射变换。 在 <code>drawRect:</code> 方法中，CTM 是与活动图形上下文关联的仿射变换。</p>
+<p>每个子视图的坐标系建立在其祖先的坐标系上。 因此，当修改视图的 transform 属性时，该更改会影响视图及其所有子视图。但是，这些更改仅影响屏幕上视图的最终呈现。因为每个视图都绘制其内容并相对于其自己的边界布置其子视图，所以它可以在绘制和布局期间忽略其父视图的变换。可以参考下图</p>
+<p><img src="https://sat02pap001files.storage.live.com/y4mOeo_tCulrIyVWqIceEgQwQhnpMMLjudYX9aug_HTRR5vuKHtoKjNiNI-MQoq6xdwW6OjitGzficLl-NHDR05dBfjQEFrxO4oEOgMDjj75CxvkjaJHuW0byQ0kFOQct7oMtXsMVIJcbqtoZNjnnV9pDzUPhBuTD9x8Z5Jfxb0S3sovfmWgxEvT-l3s5s9eBB1?width=648&height=384&cropmode=none" alt="Rotating a view and its content"></p>
+<p><strong>要点</strong>：如果视图的 transform 属性不是 identity 变换时，则该视图的 frame 属性的值是<strong>未定义的</strong>，必须忽略。 将变换应用于视图时，必须使用视图的 bounds 和 center 属性来获取视图的大小和位置。 任何子视图的 frame 仍然有效，因为它们相对于视图的 bounds 。</p>
+<p>有关如何在绘图期间使用变换来定位内容的信息，请看 <a href="https://developer.apple.com/library/archive/documentation/2DDrawing/Conceptual/DrawingPrintingiOS/Introduction/Introduction.html#//apple_ref/doc/uid/TP40010156">Drawing and Printing Guide for iOS</a></p>
+<h3 id="Points-Versus-Pixels"><a href="#Points-Versus-Pixels" class="headerlink" title="Points Versus Pixels"></a>Points Versus Pixels</h3><p>在 iOS 中，使用称为点(point)的单位的浮点值指定所有坐标值和距离。 一个点的可测量大小因设备而异，并且在很大程度上是无关紧要的。 关于点的主要理解是它们为绘图提供了固定的参考框架。</p>
+<p>虽然用户坐标空间中的坐标有时会直接映射到设备屏幕上的像素，但绝不能认为是这种情况。相反，应该始终记住以下内容：</p>
+<p><code>One point does not necessarily correspond to one pixel on the screen.</code> 跟分辨率来的。</p>
+<p>在设备级别，在视图中指定的所有坐标(points)必须在某个时刻转换为像素(pixels)。 然而，<strong>用户坐标空间</strong>中的点到<strong>设备坐标空间</strong> 中的像素的映射通常由 <strong>系统</strong> 处理。 UIKit 和 Core Graphics 都使用主要基于矢量(vector-based)的绘图模型，其中所有坐标值都使用点指定。 因此，如果使用 Core Graphics 绘制曲线，则无论底层屏幕的分辨率如何，都使用相同的值指定曲线。</p>
+<p>当需要使用图像或其他基于像素的技术(如OpenGL ES)时，iOS 可以帮助管理这些像素。 对于作为应用程序包中的资源存储的静态图像文件，iOS 定义了以不同像素密度(pixel densities)指定图像以及加载与当前屏幕分辨率最匹配的图像的转换约定。 视图还提供有关当前比例因子(scale factor)的信息，以便可以手动调整任何基于像素的绘图代码以适应更高分辨率的屏幕。 有关处理不同屏幕分辨率的基于像素的内容的技术，请参阅<br><a href="https://developer.apple.com/library/archive/documentation/2DDrawing/Conceptual/DrawingPrintingiOS/SupportingHiResScreensInViews/SupportingHiResScreensInViews.html#//apple_ref/doc/uid/TP40010156-CH15">Supporting High-Resolution Screens In Views</a>。</p>
+<h3 id="The-Runtime-Interaction-Model-for-Views"><a href="#The-Runtime-Interaction-Model-for-Views" class="headerlink" title="The Runtime Interaction Model for Views"></a>The Runtime Interaction Model for Views</h3><p>每当用户与用户界面交互时，或者自己的代码以编程方式更改某些内容时， UIKit 内部都会发生复杂的事件序列来处理该交互。在该序列中的特定点，UIKit 会调用视图类，并让他们有机会代表应用程序做出响应。 了解这些标注点对于了解视图系统非常重要。 下图显示了以用户触摸屏幕开始并以图形系统更新屏幕内容作为响应而结束的事件的基本顺序。 对于任何以编程方式启动的操作，也会发生相同的事件序列。</p>
+<p><img src="https://sat02pap001files.storage.live.com/y4mS_HQXyHyANPa_UGwQiRusJ31aAuVyK-j8gHJxOOvH60EOfa6viO0X1xZVZQ_rHvbiRseILkRF0EBwjbiVr5vSHXUU93Gy3N3AyBwZ07X_kK4K0D1zJYneEc51IVK1xTgeSBqxsSG4Yfkb3hzqChhqUB2kX2Oj1Aq-WhTq7XDRmt8rQUJdP_IrNjNyCugKgm-?width=574&height=298&cropmode=none" alt="Figure 1-7 UIKit interactions with your view objects"></p>
+<ol>
+<li>用户触摸屏幕；</li>
+<li>硬件将触摸事件报告给 UIKit framework；</li>
+<li>UIKit 包装 touch 成 UIEvent 对象，然后将它分发给相应的视图；（这就响应链了，更多细节，可以查看<a href="https://developer.apple.com/library/ios/documentation/EventHandling/Conceptual/EventHandlingiPhoneOS/Introduction/Introduction.html#//apple_ref/doc/uid/TP40009541">Event Handing Guide for iOS</a>）</li>
+<li>视图的事件处理代码会响应事件(当然，这些操作取决于我们自己)。 例如：<ol>
+<li>改变视图或者它子视图的属性：frame、bounds、alpha 等等；</li>
+<li>调用 setNeedsLayout 方法将视图（或其子视图）标记为需要布局更新；</li>
+<li>调用 setNeedsDisplay 或 setNeedsDisplayInRect: 方法将视图（或其子视图）标记为需要重绘；</li>
+<li>通知控制器改变一些数据；</li>
+</ol>
+</li>
+<li>如果视图的 geometry 因任何原因而发生了更改， UIKit 将根据以下规则更新其子视图：<ol>
+<li>如果它的子视图配置了autoresizing，那么 UIKit 会处理，详情请看 <a href="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/ViewPG_iPhoneOS/CreatingViews/CreatingViews.html#//apple_ref/doc/uid/TP40009503-CH5-SW5">Handling Layout Changes Automatically Using Autoresizing Rules</a>； </li>
+<li>如果视图实现了 layoutSubviews 方法，UIKit 会调用它；可以在自定义视图中覆盖此方法，并使用它来调整任何子视图的位置和大小。(ps: 这里列举了滚动显示大图各个细小部分的例子)。</li>
+</ol>
+</li>
+<li>如果任何视图的任何部分被标记为需要重绘，UIKit 会要求视图重绘。 对于显式定义 <code>drawRect:</code> 方法的自定义视图， UIKit 会调用该方法。 对此方法的实现<strong>应该尽快重绘视图的指定区域</strong>，而不是其他任何内容。 此时不要进行其他布局更改，也不要对应用程序的数据模型进行其他更改。 此方法的目的是更新视图的可视内容。 标准系统视图<strong>通常不实现 drawRect: 方法，而是在此时管理其绘图</strong>。</li>
+<li>任何更新的视图都与应用程序的其他可见内容合成，并发送到图形硬件。</li>
+<li>图形硬件将渲染的内容传输到屏幕。</li>
+</ol>
+<p>(ps: 这里可以对照 session 2014.419 P5 来仔细看看)</p>
+<p>注意：前面的更新模型主要适用于使用标准系统视图和绘图技术的应用程序。 使用 OpenGL ES 进行绘图的应用程序通常配置单个全屏视图并直接绘制到关联的 OpenGL ES 图形上下文。 在这种情况下，视图仍然可以处理触摸事件，但由于它是全屏的，因此不需要布置子视图。 有关使用OpenGL ES的更多信息，请参阅<a href="https://developer.apple.com/library/archive/documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/Introduction/Introduction.html#//apple_ref/doc/uid/TP40008793">OpenGL ES Programming Guide</a></p>
+<p>在上面的一组步骤中，<strong>自定义视图的主要集成点是</strong>：</p>
+<ol>
+<li>事件处理方法：<ol>
+<li>touchesBegan:withEvent:</li>
+<li>touchesMoved:withEvent:</li>
+<li>touchesEnded:withEvent:</li>
+<li>touchesCancelled:withEvent:</li>
+</ol>
+</li>
+<li>layoutSubviews方法</li>
+<li>drawRect: 方法</li>
+</ol>
+<p>这些是最常被覆盖的视图方法，但可能不需要覆盖所有这些方法。 如果使用手势识别器来处理事件，则无需覆盖任何事件处理方法。 同样，如果视图不包含子视图或其大小未更改，则没有理由覆盖 layoutSubviews 方法。 最后，只有当视图的内容可以在运行时更改并且使用 native 技术(如 UIKit 或 Core Graphics)进行绘制时，才需要 <code>drawRect:</code> 方法。</p>
+<p><strong>同样重要的是要记住，这些是主要的集成点，但不是唯一的集成点</strong>。 UIView类的几个方法被设计为子类的覆盖点。 我们应该查看<a href="https://developer.apple.com/documentation/uikit/uiview">UIView类</a>参考中的方法描述，以了解哪些方法可能适合在自定义实现中覆盖。</p>
+<h2 id="Tips-for-Using-Views-Effectively"><a href="#Tips-for-Using-Views-Effectively" class="headerlink" title="Tips for Using Views Effectively"></a>Tips for Using Views Effectively</h2><p><code>Important: Before optimizing your drawing code, you should always gather data about your view’s current performance. Measuring the current performance lets you confirm whether there actually is a problem and, if there is, gives you a baseline measurement against which you can compare future optimizations.</code><br><strong>要点</strong>：优化绘图代码之前，你应该始终收集关于视图当前性能的数据。衡量当前的性能，以便知道问题在哪，并且给一个基准用于未来优化的对比。类似于 60fps 吧</p>
+<h3 id="Views-Do-Not-Always-Have-a-Corresponding-View-Controller"><a href="#Views-Do-Not-Always-Have-a-Corresponding-View-Controller" class="headerlink" title="Views Do Not Always Have a Corresponding View Controller"></a>Views Do Not Always Have a Corresponding View Controller</h3><p>在 App 中， view 和 viewcontroller 一对一的关系是很少见的。所以这里得 <strong>明确 viewcontroller 的职责</strong>：改变 view 在屏幕上的位置、将 view 从屏幕上面移除、释放内存、旋转 view 等。如果避开这些行为会引起你的App行为错误或者在出乎意料的情况。</p>
+<h3 id="Minimize-Custom-Drawing"><a href="#Minimize-Custom-Drawing" class="headerlink" title="Minimize Custom Drawing"></a>Minimize Custom Drawing</h3><p>减少自定义的绘图。只有当前系统不能提供你所需要的外表和能力时才自定义绘图。（如果当前视图组合能够完成你的效果时，你完全可以组合）</p>
+<h3 id="Take-Advantage-of-Content-Modes"><a href="#Take-Advantage-of-Content-Modes" class="headerlink" title="Take Advantage of Content Modes"></a>Take Advantage of Content Modes</h3><p>内容模式可最大限度地 <strong>缩短重绘视图所花费的时间</strong> 。 默认情况下，视图使用 UIViewContentModeScaleToFill 内容模式，该模式缩放视图的现有内容以适合视图的框架矩形。 你可以根据需要更改此模式的不同方式去调整内容，但如果可以，则应避免使用 <code>UIViewContentModeRedraw</code> 内容模式。 <strong>无论哪种内容模式生效，都可以通过调用 setNeedsDisplay 或 setNeedsDisplayInRect: 来强制视图重绘其内容</strong>。</p>
+<h3 id="Declare-Views-as-Opaque-Whenever-Possible"><a href="#Declare-Views-as-Opaque-Whenever-Possible" class="headerlink" title="Declare Views as Opaque Whenever Possible"></a>Declare Views as Opaque Whenever Possible</h3><p>UIKit 使用每个视图的 opaque 属性来确定视图是否可以优化合成操作。 对于自定义视图，将此属性的值设置为 YES 会告诉 UIKit 它不需要在视图后面呈现任何内容。<strong>较少的渲染可以提高绘图代码的性能</strong>，并且通常会受到鼓励。 当然，如果将 opaque 属性设置为 YES ，则视图<strong>必须使用完全不透明的内容完全填充其边界矩形</strong>。</p>
+<h3 id="Adjust-Your-View’s-Drawing-Behavior-When-Scrolling"><a href="#Adjust-Your-View’s-Drawing-Behavior-When-Scrolling" class="headerlink" title="Adjust Your View’s Drawing Behavior When Scrolling"></a>Adjust Your View’s Drawing Behavior When Scrolling</h3><p>滚动可以在很短的时间内产生大量的视图更新。 如果视图的绘图代码未正确调整，则视图的滚动性能可能会很低(sluggish:迟钝)。 不要试图确保视图的内容始终保持原始状态，而是考虑在滚动操作开始时更改视图的行为。 例如，可以<strong>临时降低</strong>渲染内容的质量，或在滚动过程中<strong>更改</strong>内容模式。 滚动停止后，可以将视图返回到先前的状态，并根据需要更新内容。 (ps: 尽量减少滚动时的完全渲染)。 (ps: <a href="https://github.com/johnil/VVeboTableViewDemo">VVeboTableViewDemo</a> 有讲到)</p>
+<p>ps: 滚动的时候减少绘图等相关耗时、耗资源的操作，滚动结束后再恢复先前状态。</p>
+<h3 id="Do-Not-Customize-Controls-by-Embedding-Subviews"><a href="#Do-Not-Customize-Controls-by-Embedding-Subviews" class="headerlink" title="Do Not Customize Controls by Embedding Subviews"></a>Do Not Customize Controls by Embedding Subviews</h3><p>虽然从技术上讲可以将子视图添加到标准系统控件 - 从 UIControl 继承的对象 - 但是永远不应该以这种方式自定义它们。 <strong>支持自定义的控件，它本身中明确且文档说明的接口来实现</strong>。 例如，UIButton 类包含用于设置按钮的标题和背景图像的方法。通过在按钮内部嵌入自定义图像视图或标签来绕过这些方法，可能会导致应用程序现在或在将来某个时候因为按钮的实现发生更改而表现不正确(ps: 别到 UIButton 上添加 image 和 label 来完成你的需求，因为 UIButton 已经有内置的支持了；要多看系统控件接口说明)。</p>
+<h1 id="Windows"><a href="#Windows" class="headerlink" title="Windows"></a>Windows</h1><p>每个至少需要一个 window（UIWindow类的实例对象）。有的甚至需要多个 window。一个 window 有几个责任</p>
+<ul>
+<li>It contains your application’s visible content.（包含App的可视内容）</li>
+<li>It plays a key role in the delivery of touch events to your views and other application objects.（在touch event分发中起到非常重要的角色）</li>
+<li>It works with your application’s view controllers to facilitate orientation changes.（与App的控制器合作，方便方向变化）</li>
+</ul>
+<p>在 iOS 中，window 没有 title bars, close box 或者其他可见的装饰。window 一直都是一个或者多个 view 的<strong>黑色容器</strong>（所以在Xcode的View debug中，最下层是黑色的）。同样的，App不会用新的window去展示新的内容，只需改变 window frontmost 最前面的 view 即可。大多数 App 在它的生命周期只会创建使用一个 window, 该 window 横跨设备的整个屏幕，在 App 生命周期用 nib 或者代码创建的。当然 App 也可以创建一个附加的window(external display)去显示其他的内容，比如来电话了，当然了其他所有的 window 一般都是系统创建的。</p>
+<h2 id="Tasks-That-Involve-Windows"><a href="#Tasks-That-Involve-Windows" class="headerlink" title="Tasks That Involve Windows"></a>Tasks That Involve Windows</h2><p>对于许多应用程序，应用程序与其窗口交互的<strong>唯一时间是它在启动时创建窗口</strong>。 但是，可以使用应用程序的窗口对象执行一些与应用程序相关的任务：</p>
+<ul>
+<li>Use the window object to convert points and rectangles to or from the window’s local coordinate system. （坐标转换，特定view本地坐标系统于window对应坐标系统的转换，详情请参阅”#Converting Coordinates in the View Hierarchy#”）</li>
+<li>Use window notifications to track window-related changes. （用window通知跟踪window相关的变化，详情请参阅”#Monitoring Window Changes#”）</li>
+</ul>
+<h2 id="Creating-and-Configuring-a-Window"><a href="#Creating-and-Configuring-a-Window" class="headerlink" title="Creating and Configuring a Window"></a>Creating and Configuring a Window</h2><p>当需要其他 window 时，应该<strong>按需创建</strong>。只要程序一启动就创建window，创建配置 window 不是一件耗资源的事情。当然，如果你的App一启动就直接进入后台，你应该让它到前台时才显示(visible)。</p>
+<h3 id="Creating-Windows-in-Interface-Builder"><a href="#Creating-Windows-in-Interface-Builder" class="headerlink" title="Creating Windows in Interface Builder"></a>Creating Windows in Interface Builder</h3><p>要点：在 Interface Builder 中创建窗口时，建议在属性检查器中启用“启动时全屏”选项。 如果未启用此选项且窗口小于目标设备的屏幕，则某些视图将不会接收到触摸事件。 这是因为窗口（像所有视图一样）不会在其边界矩形之外接收触摸事件。 由于默认情况下视图不会剪切到窗口的边界，因此视图仍然显示为可见但它们不能接收到事件。 在启动时启用全屏选项可确保窗口的大小适合当前屏幕。 ps: bounds clip touch</p>
+<h3 id="Creating-a-Window-Programmatically"><a href="#Creating-a-Window-Programmatically" class="headerlink" title="Creating a Window Programmatically"></a>Creating a Window Programmatically</h3><p><strong>创建的 window 大小应该和屏幕大小一样</strong>。你不应该为了适应状态栏或者其他的元素而改变window的大小。<strong>状态栏一直浮在 window 的上面，所有你要做的是使 window 上面的 view 的大小去适应状态栏</strong>，如果你 viewcontroller 的话，viewcontroller 会根据状态栏自动改变它 view 的大小。</p>
+<h3 id="Adding-Content-to-Your-Window"><a href="#Adding-Content-to-Your-Window" class="headerlink" title="Adding Content to Your Window"></a>Adding Content to Your Window</h3><p>一般是 viewcontroller 的 view 去承载所有需要展示的内容。使用 root view object 简化改变界面的过程，<strong>如果要展示新内容，你只需替换它的root view object</strong> 。</p>
+<p>用view、普通viewcontroller的view作为window的root view，<strong>需要减去状态栏的高度</strong>，而用tabbar or navigation or split-view controller的view提供的<strong>则不需要</strong>，因为这些viewcontroller会自动去改变。(ps: 主要讲了状态栏高度的相关问题)</p>
+<h3 id="Changing-the-Window-Level"><a href="#Changing-the-Window-Level" class="headerlink" title="Changing the Window Level"></a>Changing the Window Level</h3><p>每一个window都会有一个windowLevel属性去决定与其他相关window的位置。 normal window level指示window呈现App相关的内容。高一点的window level是显示在App内容上面的，如系统system status或者alert messages。尽管你自己可以改变window level，但是系统会帮你做。比如，当你想要显示或隐藏状态栏，或者显示alert view时，系统会创建需要的window去显示这些内容。(ps: alert view的window层级比normal要高，写弹出popup view的时候可以注意一下)。</p>
+<h2 id="Monitoring-Window-Changes"><a href="#Monitoring-Window-Changes" class="headerlink" title="Monitoring Window Changes"></a>Monitoring Window Changes</h2><p>UIWindowDidBecomeVisibleNotification、UIWindowDidBecomeHiddenNotification window 显示、隐藏。这个跟App在前台、后台<strong>没有关系</strong>，只跟App的内容是否显示有关系。</p>
+<p>UIWindowDidBecomeKeyNotification、UIWindowDidResignKeyNotification 表面哪个是主 window。<br>可帮助应用程序跟踪哪个窗口<strong>是关键窗口 - 即哪个窗口当前正在接收键盘事件和其他非触摸相关事件</strong>。 触摸事件被传递到发生触摸的窗口，而没有相关坐标值的事件将被传递到应用程序的关键窗口。 一次只有一个窗口是关键窗口。(Q: 发生到主window上面的事件会丢弃掉？还有 没有相关坐标的事件？ A: 这里应该是指异常事件，如果触摸事件没被响应，不也会被丢弃)</p>
+<h2 id="Displaying-Content-on-an-External-Display"><a href="#Displaying-Content-on-an-External-Display" class="headerlink" title="Displaying Content on an External Display"></a>Displaying Content on an External Display</h2><p>外部显示器显示内容，应该说的是视屏输出吧，即将手机的视屏投影到其他大屏幕上面观看(爱奇艺 mac app 有这个功能)。</p>
+<h3 id="Handling-Screen-Connection-and-Disconnection-Notifications"><a href="#Handling-Screen-Connection-and-Disconnection-Notifications" class="headerlink" title="Handling Screen Connection and Disconnection Notifications"></a>Handling Screen Connection and Disconnection Notifications</h3><h3 id="Configuring-a-Window-for-an-External-Display"><a href="#Configuring-a-Window-for-an-External-Display" class="headerlink" title="Configuring a Window for an External Display"></a>Configuring a Window for an External Display</h3><h3 id="Configuring-the-Screen-Mode-of-an-External-Display"><a href="#Configuring-the-Screen-Mode-of-an-External-Display" class="headerlink" title="Configuring the Screen Mode of an External Display"></a>Configuring the Screen Mode of an External Display</h3><h1 id="Views"><a href="#Views" class="headerlink" title="Views"></a>Views</h1><p>view object是 App 与用户交互的主要途径，它有许多的责任。这里列举一些：</p>
+<ul>
+<li>布局和管理子视图：根据父视图定义自己的默认大小行为；管理它的子视图；在需要的时候布局子视图的大小位置；够将自己的坐标系统转换成其他view或者window的坐标系统。</li>
+<li>绘图和动画：在它的矩形区域绘图；一些属性能够动画过渡到新的值。</li>
+<li>事件处理：能够接收 touch events; 参与响应链。</li>
+</ul>
+<h2 id="Creating-and-Configuring-View-Objects"><a href="#Creating-and-Configuring-View-Objects" class="headerlink" title="Creating and Configuring View Objects"></a>Creating and Configuring View Objects</h2><h3 id="Creating-View-Objects-Using-Interface-Builde"><a href="#Creating-View-Objects-Using-Interface-Builde" class="headerlink" title="Creating View Objects Using Interface Builde"></a>Creating View Objects Using Interface Builde</h3><h3 id="Creating-View-Objects-Programmatically"><a href="#Creating-View-Objects-Programmatically" class="headerlink" title="Creating View Objects Programmatically"></a>Creating View Objects Programmatically</h3><h3 id="Setting-the-Properties-of-a-View"><a href="#Setting-the-Properties-of-a-View" class="headerlink" title="Setting the Properties of a View"></a>Setting the Properties of a View</h3><ul>
+<li>alpha，hidden，opaque (这些属性改变view的的不透明度。alpha、hidden是直接影响view的不透明度。opaque属性告诉系统是否复合view，设为YES能够消除不必要的复合操作从而提升性能)</li>
+<li>bounds，frame，center，transform (这些影响view的大小位置。如果当前的变换不是恒等的变换，那么frame属性是不确定的，并且会被忽略。(ps: 这应该就是有的动画里面需要定义一个唯一的字符串的意思吧，YYKit的CALayer+YYAdd文件里面有，类似于[self setValue:@(v) forKeyPath:@”transform.rotation.y”])</li>
+<li>autoresizingMask, autoresizesSubviews (这些属性影响view以及其subviews自定改变大小的行为。autoresizingMask控制view响应父视图bounds的改变。autoresizesSubviews控制它的subviews是否resized。)</li>
+<li>contentMode, contentStretch, contentScaleFactor (这些属性影响 view 内容的渲染，contentMode，contentStretch 属性决定当视图的宽高变化时它的内容怎样变化。 contentScaleFactor 只用于在高分辨率下你需要自定义重绘视图的情况)</li>
+<li>gestureRecognizers, userInteractionEnabled, multipleTouchEnabled, exclusiveTouch (这些影响view的触摸事件处理)</li>
+<li>backgroundColor, subviews, drawRect: method, layer, (layerClass method) (这些属性帮助你管理view的实际内容，为了更多先进的内容，你可以直接操作 view Core Animation layer 。如果想指定 view 整个不同类型的 layer，必须重载 layerClass 方法。)</li>
+</ul>
+<h3 id="Tagging-Views-for-Future-Identification"><a href="#Tagging-Views-for-Future-Identification" class="headerlink" title="Tagging Views for Future Identification"></a>Tagging Views for Future Identification</h3><p>tag值执行搜索是在运行时，<strong>它比遍历view的层级查找速度要快</strong>。 要搜索标记视图，请使用UIView的 <code>viewWithTag:</code> 方法。 此方法执行接收器及其子视图的深度优先搜索。 它不搜索视图层次结构的父视图或其他部分。 因此，从层次结构的根视图调用此方法将搜索层次结构中的所有视图，但是从特定子视图调用它仅搜索视图的子集。</p>
+<h2 id="Creating-and-Managing-a-View-Hierarchy"><a href="#Creating-and-Managing-a-View-Hierarchy" class="headerlink" title="Creating and Managing a View Hierarchy"></a>Creating and Managing a View Hierarchy</h2><p>管理 View 的层级也非常重要，view的组织影响App的展示以及App怎么响应事件。</p>
+<h3 id="Adding-and-Removing-Subviews"><a href="#Adding-and-Removing-Subviews" class="headerlink" title="Adding and Removing Subviews"></a>Adding and Removing Subviews</h3><p>用 <code>bringSubviewToFront:</code>, <code>sendSubviewToBack:</code>, or <code>exchangeSubviewAtIndex:withSubviewAtIndex:</code> 等方法管理层级，比直接移除后重新添加效率要高(ps: autolayout 的时候也推荐用 active ro deactive 而不是移除和添加)。</p>
+<p><code>One place where you might add subviews to a view hierarchy is in the loadView or viewDidLoad methods of a view controller. If you are building your views programmatically, you put your view creation code in the loadView method of your view controller. Whether you create your views programmatically or load them from a nib file, you could include additional view configuration code in the viewDidLoad method.</code>  可以在视图控制器的 loadView 或 viewDidLoad 方法中，在视图层次结构中添加子视图。 如果以编程方式构建视图，则将视图创建代码放在视图控制器的 loadView方法中。 无论是以编程方式创建视图还是从nib文件加载视图，都可以在viewDidLoad方法中包含其他视图配置代码。 (ps: loadView 的官方介绍)。</p>
+<p><a href="https://developer.apple.com/library/ios/samplecode/UICatalog/Introduction/Intro.html#//apple_ref/doc/uid/DTS40007710">Sample Code -&gt; UIKit Catalog (iOS): Creating and Customizing UIKit Controls</a></p>
+<p>重要提示：父视图会自动保留持有其子视图，因此在嵌入子视图后，可以安全地释放该子视图。(ps: 我记得当时有一篇关于 addSubview 内存操作的博客<a href="http://codingtime.me/post/posts/leng-zhi-shi/viewcontrollerzhong-de-uiview_propertyyao-she-zhi-wei-weakhuan-shi-strong">VIEWCONTROLLER中的UIVIEW PROPERTY要设置为WEAK还是STRONG</a> 。原来 removeFromSuperview 在subview从superview remove之前会 autorelease)。</p>
+<p>当添加view到其他view上的时候，UIKit会通知子视图和父视图关于它们的变化。所以我们在自定义 view 的时候<strong>得充分利用</strong>  <code>willMoveToSuperview:</code>, <code>willMoveToWindow:</code>, <code>willRemoveSubview:</code>, <code>didAddSubview:</code>, <code>didMoveToSuperview</code>, or <code>didMoveToWindow</code> 方法。view还有一个window属性<br>用来表明view当前展示内容的window。由于视图层次结构中的根视图没有父视图，因此其 superview 属性设置为nil。 对于当前在屏幕上的视图，窗口对象是视图层次结构的根视图。</p>
+<h3 id="Hiding-Views"><a href="#Hiding-Views" class="headerlink" title="Hiding Views"></a>Hiding Views</h3><p>隐藏view，我们可以设置hidden属性为yes或者alpha属性为0.0。 hidden view<strong>不会接收系统touch event。但是它参与view的自动改变大小以及与当前view层级相关的布局操作</strong>。所以当你想移除view后在某个时候又想让它出现时 用hidden属性非常方便。(ps: 所以现在代码中 判断它是否有subview 然后又addSubview的代码 可以用hidden来处理?)。</p>
+<p>重要说明：如果隐藏当前是第一个响应者的视图，则视图<strong>不会自动 resign 其第一个响应者状态</strong>。 针对第一响应者的事件仍然被传递到隐藏视图，为防止这种情况发生，应该强制视图在隐藏第一个响应者状态时 resign 。</p>
+<p>hidden <strong>不是动画属性</strong>，如果想要动画隐藏/显示的话，请用 alpha 。</p>
+<h3 id="Locating-Views-in-a-View-Hierarchy"><a href="#Locating-Views-in-a-View-Hierarchy" class="headerlink" title="Locating Views in a View Hierarchy"></a>Locating Views in a View Hierarchy</h3><p>这里有两种方法从view的层级里面定位到某个view:</p>
+<ul>
+<li>定义一个指针指向相关的view，其实就是定义一个属性或者私有的成员变量。</li>
+<li>用 tag</li>
+</ul>
+<p>tag是减少硬编码以及更加动态、灵活的解决方案。这里还举例了：如果想要保存已经当前在App可见的view，可以将可见view的tag写进文件，这比archive归档要简单，尤其是在跟踪那些当前view是可见的。当App随后加载的时候，重新创建你的view，然后用保存的tag list来设置每个view的显示，这样App又返回到以前的层级状态了。(ps: 这里应该牵扯了 app 状态保存的情况)。</p>
+<h3 id="Translating-Scaling-and-Rotating-Views"><a href="#Translating-Scaling-and-Rotating-Views" class="headerlink" title="Translating, Scaling, and Rotating Views"></a>Translating, Scaling, and Rotating Views</h3><p>每个view都有一个相关联的仿射矩阵，你可以用于翻转、缩放、旋转view的内容。 view的transforms属性影响view的最终渲染效果，通常用于滚动、动画或者其他的视觉效果。</p>
+<p>当你给view添加多个转换，添加的顺序是非常重要的。比如：先旋转后翻转和先翻转后旋转 效果是不同的。rotation旋转跟中心点(center point)有关系，scaling会改变大小但是跟中心点没有关系。</p>
+<h3 id="Converting-Coordinates-in-the-View-Hierarchy"><a href="#Converting-Coordinates-in-the-View-Hierarchy" class="headerlink" title="Converting Coordinates in the View Hierarchy"></a>Converting Coordinates in the View Hierarchy</h3><ul>
+<li>convertPoint:fromView:</li>
+<li>convertRect:fromView:</li>
+<li>convertPoint:toView:</li>
+<li>convertRect:toView:</li>
+</ul>
+<p>这些方法提供了到或者从本地坐标系的转换。 convert…:FromView: 相关方法是从其他view的坐标系中转换到当前view坐标系中的方法；convert…:toView: 是从当前view的坐标系统的位置转换到其他view的坐标系统的位置。 如果指定某个view为nil，那么转换的时候处理的就是 contain 包含该 view 的 window 。</p>
+<p>当然window也有相应的转换方法：</p>
+<ul>
+<li>convertPoint:fromWindow:</li>
+<li>convertRect:fromWindow:</li>
+<li>convertPoint:toWindow:</li>
+<li>convertRect:toWindow:</li>
+</ul>
+<p>在旋转视图中转换坐标时，a view在旋转后view的坐标和 outer view（parent）的坐标是不同的。在parent的坐标是包含自己坐标的<strong>最小矩阵</strong>，从图可以看出相对于outer view的坐标轴的方向线是平行的。</p>
+<p><img src="https://sat02pap001files.storage.live.com/y4mGo9C1t2koREVcOXUvJdB2s6EvKMtrMdT5Ry_lsRodCdRihCb6nVMPBmeBfk8Xg7_0l7oAG-w02ARlPLhLMbxmQw58y4cPI8gQTr-F0_nH1aYtsU3VvZqfDwwL3hp2iJcecFUpHgZe67ZHX9bLjSY0iu5JwNlaeuop3rW_fPz1AEnSvDpnz8zukH7SaiJ4MNt?width=549&height=216&cropmode=none" alt="Converting values in a rotated view"></p>
+<h2 id="Adjusting-the-Size-and-Position-of-Views-at-Runtime"><a href="#Adjusting-the-Size-and-Position-of-Views-at-Runtime" class="headerlink" title="Adjusting the Size and Position of Views at Runtime"></a>Adjusting the Size and Position of Views at Runtime</h2><p>无论view的大小怎么改变，它的subview的大小位置必须相应的改变。</p>
+<h3 id="Being-Prepared-for-Layout-Changes"><a href="#Being-Prepared-for-Layout-Changes" class="headerlink" title="Being Prepared for Layout Changes"></a>Being Prepared for Layout Changes</h3><p>当下列事件发生时，布局会改变：</p>
+<ul>
+<li>The size of a view’s bounds rectangle changes. (当view的bounds发生改变时。)</li>
+<li>An interface orientation change occurs, which usually triggers a change in the root view’s bounds rectangle.(当界面方向发生变化时，它通常会触发root view的bounds发生变化。)</li>
+<li>The set of Core Animation sublayers associated with the view’s layer changes and requires layout.(与view layer相关的Core Animation sublayers发生改变 并且要求布局时。)</li>
+<li>Your application forces layout to occur by calling the setNeedsLayout or layoutIfNeeded method of a view.(调用view的 setNeedsLayout 或者 layoutIfNeeded 方法时，App会强制布局。)</li>
+<li>Your application forces layout by calling the setNeedsLayout method of the view’s underlying layer object.(当调用view下面layer的 layoutIfNeeded 方法时，App会强制布局。)</li>
+</ul>
+<h3 id="Handling-Layout-Changes-Automatically-Using-Autoresizing-Rules"><a href="#Handling-Layout-Changes-Automatically-Using-Autoresizing-Rules" class="headerlink" title="Handling Layout Changes Automatically Using Autoresizing Rules"></a>Handling Layout Changes Automatically Using Autoresizing Rules</h3><p>当view的大小发生变化时，它里面嵌入的subviews的大小位置一般会发生改变去适应view的新大小。view的 autoresizesSubviews 属性决定它的subview是否resize。当 autoresizesSubviews 为 YES时，并且每个subview的 autoresizingMask 会改变它们的大小位置。(即 parentview 的 autoresizesSubviews 属性和 subview 的 autoresizingMask 属性是相对应的。)<br>处理好 autoresizingMask 属性对于我们手动改变布局很重要。（如果不指定它的常量值时 当parentview的size发生变化时 它们始终维持着固定的值）</p>
+<p><img src="https://sat02pap001files.storage.live.com/y4mxd97sB0zTkOonWadF6pz0dxep_YtT54B6d5Jb1cWLXc63jeN8Po0OLxZlh6JogO8JP2Xsp1F8e2DIogiEwScyFfQsvNtHLShe_1UhLIMEIRePEvb3KgEZMA_KlgCyRa0F9HEwdpGie06f4Q1h01XhVoUxUVndpZ0st0B3Yqnp9UVBtcvNb0mpHkLeA9mWIpU?width=925&height=525&cropmode=none" alt="Figure 3-4  View autoresizing mask constants"></p>
+<p>Important: If a view’s transform property does not contain the identity transform, the frame of that view is undefined and so are the results of its autoresizing behaviors.（重要：如果view的 transform 属性不包含 identity transform，那么view的frame是不确定的，因为是它自动改变大小的结果。）</p>
+<p>当automatic autoresizing适应已经在view上面处理后，UIKit会返回然后给每个view一个机会手动做相应的调整去适应它的superview. 请看下一节 Tweaking the Layout of Your Views Manually。(ps: 这根 autolayout 是一样的原理，它也会调用 layoutsubviews 。)</p>
+<h3 id="Tweaking-the-Layout-of-Your-Views-Manually"><a href="#Tweaking-the-Layout-of-Your-Views-Manually" class="headerlink" title="Tweaking the Layout of Your Views Manually"></a>Tweaking the Layout of Your Views Manually</h3><p>当view的大小发生改变时，UIKit处理完subviews的autoresizing行为后，会调用 layoutSubviews 方法去做手动的处理。 你可以在自定义的view时做响应的处理当autoresizing行为不能产生你想要的结果时。实现这个方法 可以做下面的事情：</p>
+<ul>
+<li>Adjust the size and position of any immediate subviews.(改变任意直接子视图的大小位置)</li>
+<li>Add or remove subviews or Core Animation layers.(添加或移除 subviews 或 Core Animation layers)</li>
+<li>Force a subview to be redrawn by calling its setNeedsDisplay or setNeedsDisplayInRect: method. (通过调用 setNeedsDisplay 或者 setNeedsDisplayInRect 方法强制一个 subview 去重绘)</li>
+</ul>
+<p>app通常手动布局子视图的一个地方是实现大型可滚动区域。 因为为其可滚动内容提供单个大视图是不切实际的，所以应用程序通常实现包含许多较小的tile视图的根视图。 每个图块表示可滚动内容的一部分。 当滚动事件发生时，根视图调用其 setNeedsLayout 方法来启动布局更改。 然后，layoutSubviews 方法根据发生的滚动量重新定位切片视图。 当tile从视图的可见区域滚动出来时，layoutSubviews 方法会将tile移动到传入边缘(icoming edge)，替换其中的内容。<br>（这个跟tableview的处理方法差不多哈，可以处理用scrollView实现tableView的效果，详情可参看 Sample Code: <a href="https://developer.apple.com/legacy/library/samplecode/ScrollViewSuite/Introduction/Intro.html">ScorllViewSuite</a>）。</p>
+<p>当写布局代码时，务必根据下面途径来测试你的代码：</p>
+<ul>
+<li>手机方向发生变化。</li>
+<li><strong>打电话进来了</strong>，注意状态栏的变化。</li>
+</ul>
+<h2 id="Modifying-Views-at-Runtime"><a href="#Modifying-Views-at-Runtime" class="headerlink" title="Modifying Views at Runtime"></a>Modifying Views at Runtime</h2><p>App接受用户的输入，然后响应输入去调整用户界面。App可能会重新排列，改变大小位置，显示或隐藏它的view，或者重新加载一组新的view。会在一些地方或者相关的途径去执行一些操作：</p>
+<ul>
+<li>view controller: 在显示view之前创建view，在不需要的时候销毁它们；调整view的大小位置，显示或者隐藏一些views；管理可编辑的内容；</li>
+<li>animation blocks: 在不同组之间做动画转换时，你在某个动画的block里面显示或隐藏它们；改变view的各种属性以实现特殊的效果；  </li>
+<li>Other ways: touch event or gesture occur <a href="https://developer.apple.com/library/ios/documentation/EventHandling/Conceptual/EventHandlingiPhoneOS/Introduction/Introduction.html#//apple_ref/doc/uid/TP40009541">Event Handling Guide for iOS</a>; 用户与滚动视图交互时，一个大的滚动区域可能会隐藏显示相关的 tile subviews<a href="https://developer.apple.com/library/ios/documentation/WindowsViews/Conceptual/UIScrollView_pg/Introduction/Introduction.html#//apple_ref/doc/uid/TP40008179">Scroll View Programming Guide for iOS</a>;  键盘事件发生时，相应相关的变化 <a href="https://developer.apple.com/library/ios/documentation/StringsTextFonts/Conceptual/TextAndWebiPhoneOS/Introduction/Introduction.html#//apple_ref/doc/uid/TP40009542">Text Programming Guide for iOS</a> </li>
+</ul>
+<p>(ps: 这个guide里面有相关字体的知识，可以看看这篇文章<a href="https://www.raizlabs.com/dev/2015/08/advanced-ios-typography/">iOS Typography: Stop Saying “No” to Designers</a>)</p>
+<h2 id="Interacting-with-Core-Animation-Layers"><a href="#Interacting-with-Core-Animation-Layers" class="headerlink" title="Interacting with Core Animation Layers"></a>Interacting with Core Animation Layers</h2><p>每个view对象都有一个专门的Core Animation layer 管理view的呈现和动画在屏幕上。<strong>也就是说内容都是展示在layer上面的</strong>。尽管你能够操作 view 对象，当然你也可以在需要的时候直接操作相应的layer对象。</p>
+<h3 id="Changing-the-Layer-Class-Associated-with-a-View"><a href="#Changing-the-Layer-Class-Associated-with-a-View" class="headerlink" title="Changing the Layer Class Associated with a View"></a>Changing the Layer Class Associated with a View</h3><p>（view关联的layer类型，在view创建后不能更改）layer的默认类型是CALayer，而唯一的改变layer类型的途径是继承它，继承相应的方法，然后返回不同的值。例如：你想要在大的滚动区域中平铺内容，你可以使用 <a href="https://developer.apple.com/library/ios/documentation/GraphicsImaging/Reference/CATiledLayer_class/index.html#//apple_ref/occ/cl/CATiledLayer">CATiledLayer</a> (又是 tiling large scrollable area)。 </p>
+<p>每个 view 的 layerClass 方法是在 initialization 初始化方法之前返回类型去创建它layer对象。此外，<strong>view通常把自己作为它layer对象的代理</strong>。在这点上，view拥有它的layer，并且view和layer之间的<strong>关系一定不能改变</strong>。同样的，你不能将同一个view作为其他任何的layer对象的代理。改变拥有关系和view的代理关系会引起绘制问题以及潜在的崩溃。</p>
+<h3 id="Embedding-Layer-Objects-in-a-View"><a href="#Embedding-Layer-Objects-in-a-View" class="headerlink" title="Embedding Layer Objects in a View"></a>Embedding Layer Objects in a View</h3><p>如果更喜欢主要使用图层对象而不是视图，则可以根据需要将自定义图层对象合并到视图层次结构中。 <strong>自定义图层对象是不属于视图的CALayer的任何实例</strong>。 通常以编程方式创建自定义图层，并使用Core Animation例程(Core Animation routines)合并它们。 <strong>自定义图层不会接收事件或参与响应者链，但会根据核心动画规则自行绘制并响应其父视图或图层中的大小更改。</strong>(ps: 这就是 layer 和 view 的区别之一，不会响应事件)</p>
+<h2 id="Defining-a-Custom-View"><a href="#Defining-a-Custom-View" class="headerlink" title="Defining a Custom View"></a>Defining a Custom View</h2><p>如果标准系统视图不能完全满足我们的需要，我们可以自定义视图。 自定义视图可以完全控制应用程序内容的外观以及如何处理与该内容的交互。</p>
+<h3 id="Checklist-for-Implementing-a-Custom-View"><a href="#Checklist-for-Implementing-a-Custom-View" class="headerlink" title="Checklist for Implementing a Custom View"></a>Checklist for Implementing a Custom View</h3><p>自定义视图的<strong>工作是呈现内容并管理与该内容的交互</strong>。 但是，自定义视图的成功实现不仅仅涉及<strong>绘制和处理事件</strong>。 以下清单包括在实现自定义视图时可以覆盖的更重要的方法（以及我们可以提供的行为）：</p>
+<ul>
+<li>定义合适的初始化方法，<ul>
+<li>手动创建，重载 <code>initWithFrame:</code> 或者自定义一个初始化方法；</li>
+<li>打算从nib加载的话，重载 <code>initWithCoder:</code> 方法</li>
+</ul>
+</li>
+<li>实现 <code>dealloc</code> 方法来处理任何自定义数据的清理。</li>
+<li>处理自定义绘图的话，覆盖 <code>drawRect:</code> 方法并在那里进行绘制。</li>
+<li>设置视图的 autoresizingMask 属性以定义其自动调整行为。</li>
+<li>如果视图类管理一个或多个完整子视图，请执行以下操作：<ul>
+<li>在视图的初始化序列中创建这些子视图；</li>
+<li>在创建时设置每个子视图的 autoresizingMask 属性；</li>
+<li>如果子视图需要自定义布局，请覆盖 layoutSubviews 方法并在那里实现布局代码；</li>
+</ul>
+</li>
+<li>要处理基于触摸的事件，请执行以下操作：<ul>
+<li>使用 <code>addGestureRecognizer:</code> 方法将任何合适的手势识别器附加到视图。</li>
+<li>对于想自己处理触摸的情况，请覆盖 <code>touchesBegan:withEvent:</code>，<code>touchesMoved:withEvent:</code>，<code>touchesEnded:withEvent:</code> 和 <code>touchesCancelled:withEvent:</code> 方法。 （请记住，应该<strong>始终覆盖</strong> <code>touchesCancelled:withEvent:</code> 方法，无论覆盖哪些其他与触摸相关的方法。）</li>
+</ul>
+</li>
+<li>如果希望视图的打印版本与屏幕版本不同，请实现 <code>drawRect:forViewPrintFormatter:</code> 方法。</li>
+</ul>
+<p>还可以设置 UIView 已有的属性， contentMode contentStretch 来控制绘制操作。</p>
+<h3 id="Initializing-Your-Custom-View"><a href="#Initializing-Your-Custom-View" class="headerlink" title="Initializing Your Custom View"></a>Initializing Your Custom View</h3><p>nib 的话，用 NSCoding 协议中的 initWithCoder: 方法来处理的。即使你实现了NSCoding协议，<strong>IB 还是不知道你 custom view 的属性，所以不会 encode 这些属性到 nib 文件</strong>。所以，你需要在 <code>initWithCoder:</code> 方法里面执行各种初始化代码是视图它处于一个已知的状态。当然也可以事先 <code>awakeFromNib</code> 方法去执行一些额外的初始化工作。</p>
+<h3 id="Implementing-Your-Drawing-Code"><a href="#Implementing-Your-Drawing-Code" class="headerlink" title="Implementing Your Drawing Code"></a>Implementing Your Drawing Code</h3><p>如果你要实现自定义的绘制，你需要去重载 <code>drawRect:</code> 方法去绘制。<strong>自定义绘制是推荐的最后一种手段。通常情况下，推荐使用其他的views去展示内容</strong>。 </p>
+<p><code>drawRect:</code> 方法只做<strong>一件事：绘制内容</strong>。你不能在这个方法里面更新你APP的数据结构或者执行其他与绘制无关的任务。配置好环境后就开始绘制内容，尽可能快的退出该方法。如果你的 <code>drawRect:</code> 方法需要频繁的调用，你必须做任何能够优化绘制代码的事情并且每次尽可能的绘制一点点。<br>在调用<code>drawRect:</code>方法之前，<strong>UIKit 会配置 view 的基础绘制环境</strong>。明确来说，它会创建一个 graphics content, 并且自适应坐标系统，为了匹配 view 的可视化区域而裁剪相关区域。所以，当 <code>drawRect:</code> 方法调用后，你就可以开始绘制了。你可以用 UIGraphicsGetCurrentContext 方法获取 current graphics context 的指针。</p>
+<p><strong>要点</strong>：当前图形上下文(current graphics context)仅在对视图的<code>drawRect:</code>方法的<strong>一次调用期间有效</strong>。 UIKit可能会为每个后续调用此方法创建不同的图形上下文，因此不应尝试缓存该对象并在以后使用它。</p>
+<p>如果我们知道视图的绘图代码始终覆盖具有不透明内容的视图的整个表面，则可以通过<strong>将视图的opaque属性设置为YES来提高系统性能</strong>。 将视图标记为不透明时，UIKit会避免绘制位于视图后面的内容。 <strong>这不仅减少了绘图所花费的时间，而且最大限度地减少了将视图与其他内容合成所必须完成的工作</strong>。 但是，<strong>只有</strong>在知道视图的内容完全不透明时，才应将此属性设置为YES。 如果视图无法保证其内容始终不透明，则应将该属性设置为NO。 (ps: 自己确定完全不透明的情况下，将 opaque 置为 NO, 提升性能)</p>
+<p><strong>另一种提高绘图性能的方法，特别是在滚动期间，是将视图的 clearsContextBeforeDrawing 属性设置为NO</strong>。 当此属性设置为YES时，UIKit会在调用方法之前<strong>使用透明黑色自动填充要由 <code>drawRect:</code> 方法更新的区域</strong>。 将此属性设置为NO可消除该填充操作的开销，但会给应用程序带来负担，将填充传递给带有内容的 <code>drawRect:</code> 方法的更新矩形。(“Setting this property to NO eliminates the overhead for that fill operation but puts the burden on your application to fill the update rectangle passed to your drawRect: method with content.”) (ps: clearsContextBeforeDrawing 置为 NO, 避免填充带来的开销，但是会传递给 drawRect: 方法)</p>
+<h3 id="Responding-to-Events"><a href="#Responding-to-Events" class="headerlink" title="Responding to Events"></a>Responding to Events</h3><p>注意：UIView的动画方法通常<strong>在动画正在进行时禁用触摸事件</strong>。 可以通过适当地配置动画来覆盖此行为。 有关执行动画的更多信息，请参阅”#Animations#”。</p>
+<p>当你处理触摸事件的时候，UIKit用 <code>hitTest:withEvent:</code> 和 <code>pointInside:withEvent:</code> 方法去决定该触摸事件是否发生在指定view的边界内。虽然很少需要去重载这些方法，你仍然可以用它去实现某些自定义view的自定义触摸事件。例如：你可以重载该方法去防止某些subview去处理触摸事件。</p>
+<h3 id="Cleaning-Up-After-Your-View"><a href="#Cleaning-Up-After-Your-View" class="headerlink" title="Cleaning Up After Your View"></a>Cleaning Up After Your View</h3><p>不要在这个方法里面做其他事情，只做释放资源的事情。</p>
+<h1 id="Animations"><a href="#Animations" class="headerlink" title="Animations"></a>Animations</h1><p>动画在用户界面切换不同状态时提供<strong>流动的视觉转换效果</strong>。在iOS动画中，一般会重置view的位置，改变它的大小，从view曾经中移除，隐藏它们。你可能会用动画传达反馈给用户或者实施有趣的视觉效果。 在iOS中，创建复杂的动画不需要编写任何绘图代码。 本章中描述的所有动画技术都使用 Core Animation 提供的内置支持。 所要做的就是触发动画并让Core Animation处理各个帧的渲染。</p>
+<h2 id="What-Can-Be-Animated"><a href="#What-Can-Be-Animated" class="headerlink" title="What Can Be Animated?"></a>What Can Be Animated?</h2><p>在UIKit中，用UIView对象就能执行动画。<br>UIView支持animatable动画的属性有: frame、bounds、center、transform、alpha、backgroundcolor、contentstretch。<br>如果你想执行更加复杂的动画，可以使用Core Animation 用layer来创建动画。<strong>因为layer错综复杂联系在一起，改变view的layer能够改变view自己</strong>。使用Core Animation，你可以动画下面类型的改变：</p>
+<ul>
+<li>The size and position of the layer</li>
+<li>The center point used when performing transformations</li>
+<li>Transformations to the layer or its sublayers in 3D space</li>
+<li>The addition or removal of a layer from the layer hierarchy</li>
+<li>The layer’s Z-order relative to other sibling layers</li>
+<li>The layer’s shadow</li>
+<li>The layer’s border (including whether the layer’s corners are rounded)</li>
+<li>The portion of the layer that stretches during resizing operations</li>
+<li>The layer’s opacity</li>
+<li>The clipping behavior for sublayers that lie outside the layer’s bounds</li>
+<li>The current contents of the layer</li>
+<li>The rasterization behavior of the layer</li>
+</ul>
+<p><strong>注意</strong>：如果视图承载自定义图层对象（即没有关联视图的图层对象），则必须使用 Core Animation 对其进行动画处理。</p>
+<p>更多的核心动画，请看 <a href="https://developer.apple.com/library/archive/documentation/Cocoa/Conceptual/CoreAnimation_guide/Introduction/Introduction.html#//apple_ref/doc/uid/TP40004514">About Core Animation</a> 和 <a href="https://developer.apple.com/library/archive/documentation/GraphicsImaging/Conceptual/CoreAnimation_Cookbook/Introduction/Introduction.html#//apple_ref/doc/uid/TP40005406">Core Animation Cookbook</a></p>
+<h2 id="Animating-Property-Changes-in-a-View"><a href="#Animating-Property-Changes-in-a-View" class="headerlink" title="Animating Property Changes in a View"></a>Animating Property Changes in a View</h2><p>为了对UIView类的属性进行动画处理，必须将这些更改包装在动画块中。在iOS 4以及以后，用block-based来执行动画，在iOS3.2及以前用begining和end来处理，当然这两种技术支持同样的配置以前提供相同的动画执行，但是block-based更加优秀。 </p>
+<h3 id="Starting-Animations-Using-the-Block-Based-Methods"><a href="#Starting-Animations-Using-the-Block-Based-Methods" class="headerlink" title="Starting Animations Using the Block-Based Methods"></a>Starting Animations Using the Block-Based Methods</h3><p>所以这里只讲block-based类型的动画。主要是以下这三个方法：</p>
+<ul>
+<li>animateWithDuration:animations:</li>
+<li>animateWithDuration:animations:completion:</li>
+<li>animateWithDuration:delay:options:animations:completion:</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[UIView animateWithDuration:1.0 animations:^&#123;</span><br><span class="line">        firstView.alpha &#x3D; 0.0;</span><br><span class="line">        secondView.alpha &#x3D; 1.0;</span><br><span class="line">&#125;];</span><br></pre></td></tr></table></figure>
+<p>执行上述代码时，<strong>会立即在另一个线程上启动指定的动画，以避免阻塞当前线程或应用程序的主线程</strong>。</p>
+<p><strong>要点</strong>：当一个属性的动画正在进行时，更改该属性的值不会停止当前动画。<strong>相反</strong>，当前动画将继续并动画显示刚刚分配给属性的新值。</p>
+<p>“Whether touch events are delivered to views while the animations are in progress” (ps: 动画进行中，还能接受其他事件？如果真要这么处理，该怎么玩)</p>
+<h3 id="Nesting-Animation-Blocks"><a href="#Nesting-Animation-Blocks" class="headerlink" title="Nesting Animation Blocks"></a>Nesting Animation Blocks</h3><p>大部分内嵌动画用自己的配置选项与父类（外面）<strong>同时开始执行</strong>。默认情况下，nested animations继承parent animations的时间与动画选项，但是这些选项在必须情况下是可以重载的。例如(UIViewAnimationOptionOverrideInheritedCurve  UIViewAnimationOptionOverrideInheritedDuration)</p>
+<h3 id="Implementing-Animations-That-Reverse-Themselves"><a href="#Implementing-Animations-That-Reverse-Themselves" class="headerlink" title="Implementing Animations That Reverse Themselves"></a>Implementing Animations That Reverse Themselves</h3><p>可以用 repeat count 结合创建一个可逆的动画，考虑为了repeat count 指定一个非整形的值。对于autoreversing自动翻转的动画，某个完整的动画周期涉及到从原值到新值，然后再返回到原值。对于重复的动画，<strong>如果希望动画以新值结束</strong>，则向重复计数添加 0.5 会导致动画完成以新值结束所需的额外半周期。如果不包括此半步，则动画将设置为原始值的动画，然后快速捕捉到新值，这可能不是想要的视觉效果。</p>
+<h2 id="Creating-Animated-Transitions-Between-Views"><a href="#Creating-Animated-Transitions-Between-Views" class="headerlink" title="Creating Animated Transitions Between Views"></a>Creating Animated Transitions Between Views</h2><p>视图过渡(view transition)会帮助你在你的view的层级里面隐藏关于添加、移除、隐藏、显示views的突然操作。即这些操作方法时不会一下子就发生了，会有个一个过渡效果。 你会用view transtions实现下列类型的改变：</p>
+<ul>
+<li>改变 subview 是否可见</li>
+<li>将一个 subview 替换成另一个 subview </li>
+</ul>
+<p><strong>要点</strong>：视图过渡不应与视图控制器启动的过渡 混淆，例如模态视图控制器的显示或将新视图控制器推送到导航堆栈。 视图转换仅影响视图层次结构，而视图控制器转换也会更改活动视图控制器。因此，对于视图转换，在启动转换时处于活动状态的视图控制器在转换完成时也保持活动状态。</p>
+<h3 id="Changing-the-Subviews-of-a-View"><a href="#Changing-the-Subviews-of-a-View" class="headerlink" title="Changing the Subviews of a View"></a>Changing the Subviews of a View</h3><p>在iOS 4及更高版本中，使用 <code>transitionWithView:duration:options:animations:completion:</code> 方法来启动视图的过渡动画。 在传递给此方法的动画块中，通常设置为动画的唯一更改是与显示，隐藏，添加或删除子视图相关联的更改。 将动画限制到此集合中，允许视图创建视图前后两个版本的<strong>快照图像，并在两个图像之间设置动画，这样更有效</strong>。 但是，如果需要动画其他改变，则可以在调用方法时包含 UIViewAnimationOptionAllowAnimatedContent 选项。包含该选项可<strong>防止</strong>视图直接创建快照并直接动画所有更改。 (ps: 快照 snapshot)</p>
+<h3 id="Replacing-a-View-with-a-Different-View"><a href="#Replacing-a-View-with-a-Different-View" class="headerlink" title="Replacing a View with a Different View"></a>Replacing a View with a Different View</h3><p>这个技术能让你用一些标准的过渡效果快速的呈现一个新的内容。如果你不选择先移除后插入的方式，而是用隐藏的效果来处理，则可以用  UIViewAnimationOptionShowHideTransitionViews 关键字。</p>
+<h2 id="Linking-Multiple-Animations-Together"><a href="#Linking-Multiple-Animations-Together" class="headerlink" title="Linking Multiple Animations Together"></a>Linking Multiple Animations Together</h2><p>completion handler 可以将多个animation连接起来，它们是<strong>相继</strong>发生的，而不是同时发生。 当然你还可以用nested animations使用不同的delay延时因素，因为<strong>nested animation是同时发生的</strong>，只能控制它们的delay延时时间来达到相继发生的效果。</p>
+<h2 id="Animating-View-and-Layer-Changes-Together"><a href="#Animating-View-and-Layer-Changes-Together" class="headerlink" title="Animating View and Layer Changes Together"></a>Animating View and Layer Changes Together</h2><p>APP能够在需要的时候自由的混合 view-based 和 layer-based 的动画代码，但是配置动画属性的过程<strong>取决于谁拥有这个layer</strong>。改变 view-owned layer 跟改变 view 是同样的效果，并且你添加到 layer 属性的动画能够反应在当前 view-based animations 里面。同样的，<strong>它不适用于你自己创建的layer，custom layer会忽略掉view-based animations 参数，默认情况下适用 Core Animation 参数代替</strong>。 用 Core Animation 动画 layers 可以创建一个 CABasicAnimation 对象或者 CAAnimation 的子类。 用 Core Animation 做动画会更加容易，可以查看 <a href="https://developer.apple.com/library/ios/documentation/Cocoa/Conceptual/CoreAnimation_guide/Introduction/Introduction.html#//apple_ref/doc/uid/TP40004514">Core Animation Programming Guide</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/WWDC/" rel="tag"># WWDC</a>
+              <a href="/tags/AppleDocument/" rel="tag"># AppleDocument</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/03/18/Block-heap-stack/" rel="prev" title="从 Block 谈堆栈">
+      <i class="fa fa-chevron-left"></i> 从 Block 谈堆栈
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/02/24/wwdc-2011-421/" rel="next" title="Core Animation Essentials(Core Animation Programming Guide)">
+      Core Animation Essentials(Core Animation Programming Guide) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#WWDC"><span class="nav-number">1.</span> <span class="nav-text">WWDC</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#UIView-and-CALayer"><span class="nav-number">1.1.</span> <span class="nav-text">UIView and CALayer</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Geometry"><span class="nav-number">1.1.1.</span> <span class="nav-text">Geometry</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CATransaction-and-when-views-get-rendered"><span class="nav-number">1.2.</span> <span class="nav-text">CATransaction and when views get rendered</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Quality-and-Performance"><span class="nav-number">1.3.</span> <span class="nav-text">Quality and Performance</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Avoid-Offscreen-Rendering"><span class="nav-number">1.3.1.</span> <span class="nav-text">Avoid Offscreen Rendering</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Layer-Rasterization"><span class="nav-number">1.3.1.1.</span> <span class="nav-text">Layer Rasterization</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Clipping-and-masking"><span class="nav-number">1.3.2.</span> <span class="nav-text">Clipping and masking</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Group-opacity"><span class="nav-number">1.3.3.</span> <span class="nav-text">Group opacity</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Shadows"><span class="nav-number">1.3.4.</span> <span class="nav-text">Shadows</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Edge-anti-aliasing"><span class="nav-number">1.3.5.</span> <span class="nav-text">Edge anti-aliasing</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Apple-Document"><span class="nav-number">2.</span> <span class="nav-text">Apple Document</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#About-Windows-and-Views"><span class="nav-number">2.1.</span> <span class="nav-text">About Windows and Views</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#At-a-Glance"><span class="nav-number">2.1.1.</span> <span class="nav-text">At a Glance</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Views-Manage-Your-Application%E2%80%99s-Visual-Content"><span class="nav-number">2.1.1.1.</span> <span class="nav-text">Views Manage Your Application’s Visual Content</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Windows-Coordinate-the-Display-of-Your-Views"><span class="nav-number">2.1.1.2.</span> <span class="nav-text">Windows Coordinate the Display of Your Views</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Animations-Provide-the-User-with-Visible-Feedback-for-Interface-Changes"><span class="nav-number">2.1.1.3.</span> <span class="nav-text">Animations Provide the User with Visible Feedback for Interface Changes</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#The-Role-of-Interface-Builder"><span class="nav-number">2.1.1.4.</span> <span class="nav-text">The Role of Interface Builder</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#View-and-Window-Architecture"><span class="nav-number">2.2.</span> <span class="nav-text">View and Window Architecture</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#View-Architecture-Fundamentals"><span class="nav-number">2.2.1.</span> <span class="nav-text">View Architecture Fundamentals</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#View-Hierarchies-and-Subview-Management"><span class="nav-number">2.2.1.1.</span> <span class="nav-text">View Hierarchies and Subview Management</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#The-View-Drawing-Cycle"><span class="nav-number">2.2.1.2.</span> <span class="nav-text">The View Drawing Cycle</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Content-Modes"><span class="nav-number">2.2.2.</span> <span class="nav-text">Content Modes</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Stretchable-Views"><span class="nav-number">2.2.3.</span> <span class="nav-text">Stretchable Views</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Built-In-Animation-Support"><span class="nav-number">2.2.4.</span> <span class="nav-text">Built-In Animation Support</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#View-Geometry-and-Coordinate-Systems"><span class="nav-number">2.3.</span> <span class="nav-text">View Geometry and Coordinate Systems</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#The-Relationship-of-the-Frame-Bounds-and-Center-Properties"><span class="nav-number">2.3.1.</span> <span class="nav-text">The Relationship of the Frame, Bounds, and Center Properties</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Coordinate-System-Transformations"><span class="nav-number">2.3.2.</span> <span class="nav-text">Coordinate System Transformations</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Points-Versus-Pixels"><span class="nav-number">2.3.3.</span> <span class="nav-text">Points Versus Pixels</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#The-Runtime-Interaction-Model-for-Views"><span class="nav-number">2.3.4.</span> <span class="nav-text">The Runtime Interaction Model for Views</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Tips-for-Using-Views-Effectively"><span class="nav-number">2.4.</span> <span class="nav-text">Tips for Using Views Effectively</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Views-Do-Not-Always-Have-a-Corresponding-View-Controller"><span class="nav-number">2.4.1.</span> <span class="nav-text">Views Do Not Always Have a Corresponding View Controller</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Minimize-Custom-Drawing"><span class="nav-number">2.4.2.</span> <span class="nav-text">Minimize Custom Drawing</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Take-Advantage-of-Content-Modes"><span class="nav-number">2.4.3.</span> <span class="nav-text">Take Advantage of Content Modes</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Declare-Views-as-Opaque-Whenever-Possible"><span class="nav-number">2.4.4.</span> <span class="nav-text">Declare Views as Opaque Whenever Possible</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Adjust-Your-View%E2%80%99s-Drawing-Behavior-When-Scrolling"><span class="nav-number">2.4.5.</span> <span class="nav-text">Adjust Your View’s Drawing Behavior When Scrolling</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Do-Not-Customize-Controls-by-Embedding-Subviews"><span class="nav-number">2.4.6.</span> <span class="nav-text">Do Not Customize Controls by Embedding Subviews</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Windows"><span class="nav-number">3.</span> <span class="nav-text">Windows</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Tasks-That-Involve-Windows"><span class="nav-number">3.1.</span> <span class="nav-text">Tasks That Involve Windows</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Creating-and-Configuring-a-Window"><span class="nav-number">3.2.</span> <span class="nav-text">Creating and Configuring a Window</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Creating-Windows-in-Interface-Builder"><span class="nav-number">3.2.1.</span> <span class="nav-text">Creating Windows in Interface Builder</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Creating-a-Window-Programmatically"><span class="nav-number">3.2.2.</span> <span class="nav-text">Creating a Window Programmatically</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Adding-Content-to-Your-Window"><span class="nav-number">3.2.3.</span> <span class="nav-text">Adding Content to Your Window</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Changing-the-Window-Level"><span class="nav-number">3.2.4.</span> <span class="nav-text">Changing the Window Level</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Monitoring-Window-Changes"><span class="nav-number">3.3.</span> <span class="nav-text">Monitoring Window Changes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Displaying-Content-on-an-External-Display"><span class="nav-number">3.4.</span> <span class="nav-text">Displaying Content on an External Display</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Handling-Screen-Connection-and-Disconnection-Notifications"><span class="nav-number">3.4.1.</span> <span class="nav-text">Handling Screen Connection and Disconnection Notifications</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Configuring-a-Window-for-an-External-Display"><span class="nav-number">3.4.2.</span> <span class="nav-text">Configuring a Window for an External Display</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Configuring-the-Screen-Mode-of-an-External-Display"><span class="nav-number">3.4.3.</span> <span class="nav-text">Configuring the Screen Mode of an External Display</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Views"><span class="nav-number">4.</span> <span class="nav-text">Views</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Creating-and-Configuring-View-Objects"><span class="nav-number">4.1.</span> <span class="nav-text">Creating and Configuring View Objects</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Creating-View-Objects-Using-Interface-Builde"><span class="nav-number">4.1.1.</span> <span class="nav-text">Creating View Objects Using Interface Builde</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Creating-View-Objects-Programmatically"><span class="nav-number">4.1.2.</span> <span class="nav-text">Creating View Objects Programmatically</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Setting-the-Properties-of-a-View"><span class="nav-number">4.1.3.</span> <span class="nav-text">Setting the Properties of a View</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Tagging-Views-for-Future-Identification"><span class="nav-number">4.1.4.</span> <span class="nav-text">Tagging Views for Future Identification</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Creating-and-Managing-a-View-Hierarchy"><span class="nav-number">4.2.</span> <span class="nav-text">Creating and Managing a View Hierarchy</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Adding-and-Removing-Subviews"><span class="nav-number">4.2.1.</span> <span class="nav-text">Adding and Removing Subviews</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Hiding-Views"><span class="nav-number">4.2.2.</span> <span class="nav-text">Hiding Views</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Locating-Views-in-a-View-Hierarchy"><span class="nav-number">4.2.3.</span> <span class="nav-text">Locating Views in a View Hierarchy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Translating-Scaling-and-Rotating-Views"><span class="nav-number">4.2.4.</span> <span class="nav-text">Translating, Scaling, and Rotating Views</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Converting-Coordinates-in-the-View-Hierarchy"><span class="nav-number">4.2.5.</span> <span class="nav-text">Converting Coordinates in the View Hierarchy</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Adjusting-the-Size-and-Position-of-Views-at-Runtime"><span class="nav-number">4.3.</span> <span class="nav-text">Adjusting the Size and Position of Views at Runtime</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Being-Prepared-for-Layout-Changes"><span class="nav-number">4.3.1.</span> <span class="nav-text">Being Prepared for Layout Changes</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Handling-Layout-Changes-Automatically-Using-Autoresizing-Rules"><span class="nav-number">4.3.2.</span> <span class="nav-text">Handling Layout Changes Automatically Using Autoresizing Rules</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Tweaking-the-Layout-of-Your-Views-Manually"><span class="nav-number">4.3.3.</span> <span class="nav-text">Tweaking the Layout of Your Views Manually</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Modifying-Views-at-Runtime"><span class="nav-number">4.4.</span> <span class="nav-text">Modifying Views at Runtime</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Interacting-with-Core-Animation-Layers"><span class="nav-number">4.5.</span> <span class="nav-text">Interacting with Core Animation Layers</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Changing-the-Layer-Class-Associated-with-a-View"><span class="nav-number">4.5.1.</span> <span class="nav-text">Changing the Layer Class Associated with a View</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Embedding-Layer-Objects-in-a-View"><span class="nav-number">4.5.2.</span> <span class="nav-text">Embedding Layer Objects in a View</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Defining-a-Custom-View"><span class="nav-number">4.6.</span> <span class="nav-text">Defining a Custom View</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Checklist-for-Implementing-a-Custom-View"><span class="nav-number">4.6.1.</span> <span class="nav-text">Checklist for Implementing a Custom View</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Initializing-Your-Custom-View"><span class="nav-number">4.6.2.</span> <span class="nav-text">Initializing Your Custom View</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Implementing-Your-Drawing-Code"><span class="nav-number">4.6.3.</span> <span class="nav-text">Implementing Your Drawing Code</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Responding-to-Events"><span class="nav-number">4.6.4.</span> <span class="nav-text">Responding to Events</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cleaning-Up-After-Your-View"><span class="nav-number">4.6.5.</span> <span class="nav-text">Cleaning Up After Your View</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Animations"><span class="nav-number">5.</span> <span class="nav-text">Animations</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#What-Can-Be-Animated"><span class="nav-number">5.1.</span> <span class="nav-text">What Can Be Animated?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Animating-Property-Changes-in-a-View"><span class="nav-number">5.2.</span> <span class="nav-text">Animating Property Changes in a View</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Starting-Animations-Using-the-Block-Based-Methods"><span class="nav-number">5.2.1.</span> <span class="nav-text">Starting Animations Using the Block-Based Methods</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Nesting-Animation-Blocks"><span class="nav-number">5.2.2.</span> <span class="nav-text">Nesting Animation Blocks</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Implementing-Animations-That-Reverse-Themselves"><span class="nav-number">5.2.3.</span> <span class="nav-text">Implementing Animations That Reverse Themselves</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Creating-Animated-Transitions-Between-Views"><span class="nav-number">5.3.</span> <span class="nav-text">Creating Animated Transitions Between Views</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Changing-the-Subviews-of-a-View"><span class="nav-number">5.3.1.</span> <span class="nav-text">Changing the Subviews of a View</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Replacing-a-View-with-a-Different-View"><span class="nav-number">5.3.2.</span> <span class="nav-text">Replacing a View with a Different View</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Linking-Multiple-Animations-Together"><span class="nav-number">5.4.</span> <span class="nav-text">Linking Multiple Animations Together</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Animating-View-and-Layer-Changes-Together"><span class="nav-number">5.5.</span> <span class="nav-text">Animating View and Layer Changes Together</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">joakim.liu</p>
+  <div class="site-description" itemprop="description">你不解决问题，就会成为问题。iOS菜逗一枚。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/JoakimLiu" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://weibo.com/JoakimLiu" title="Weibo → https:&#x2F;&#x2F;weibo.com&#x2F;JoakimLiu" rel="noopener" target="_blank"><i class="fab fa-weibo fa-fw"></i>Weibo</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2015 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">joakim.liu</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://example.com/2019/02/24/wwdc-2011-121/";
+    this.page.identifier = "2019/02/24/wwdc-2011-121/";
+    this.page.title = "Understanding UIKit Rendering(View Programming Guide for iOS)";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://http-joakimliu-github-io.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
+
+</body>
+</html>
