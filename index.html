@@ -327,10 +327,9 @@
 <h3 id="symtab"><a href="#symtab" class="headerlink" title="symtab"></a>symtab</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(lldb) po symtab_index</span><br><span class="line">8656</span><br></pre></td></tr></table></figure>
 <p>在符号表里面找第 8656 个符号。<br>PS: 这里是以 <code>NSLog</code> 来跟踪的。</p>
 <p><img src="https://raw.githubusercontent.com/JoakimLiu/pic/master/fishhook/20220923161741.png"></p>
-<h3 id="strtab"><a href="#strtab" class="headerlink" title="strtab"></a>strtab</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(lldb) po 0x000031C5</span><br><span class="line">12741</span><br></pre></td></tr></table></figure>
-<p>在字符串表里面找第 12741 个符号。<br>12741/16=796.3125，在 第797行<br>16*796=12736 下标从0开始，</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(lldb) p&#x2F;x 12736</span><br><span class="line">(int) $50 &#x3D; 0x000031c0</span><br><span class="line">(lldb) p&#x2F;x 0x0005C8B0 + 0x000031c0</span><br><span class="line">(int) $51 &#x3D; 0x0005fa70</span><br></pre></td></tr></table></figure>
-<p><img src="https://raw.githubusercontent.com/JoakimLiu/pic/master/fishhook/20220923162233.png"><br>如上图，即 12736: m, 开始数到 12741: _, 遇到 .(12747) 就结束。这里的 Data 都是 ASCII 码来着，查看 <a href="https://www.asciitable.com/">asciitable</a>。</p>
+<h3 id="strtab"><a href="#strtab" class="headerlink" title="strtab"></a>strtab</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(lldb) p&#x2F;x 0x0005C8B0 + 0x000031C5</span><br><span class="line">0x5FA75</span><br></pre></td></tr></table></figure>
+<p><code>0005C8B0</code> 是前面 strtab 的起始地址。</p>
+<p><img src="https://raw.githubusercontent.com/JoakimLiu/pic/master/fishhook/20220923162233.png"><br>如上图，即 0x5FA70: m, 开始数到 0x5FA75: _, 遇到 .(0x5FA7B) 就结束。这里的 Data 都是 ASCII 码来着，查看 <a href="https://www.asciitable.com/">asciitable</a>。</p>
 <ul>
 <li>6D: m</li>
 <li>0(00): .</li>
