@@ -157,6 +157,80 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2016/03/04/NSDate%20Tips/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="joakim.liu">
+      <meta itemprop="description" content="你不解决问题，就会成为问题。iOS菜逗一枚。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="牛易疯先森的开发记录">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2016/03/04/NSDate%20Tips/" class="post-title-link" itemprop="url">NSDate读取相差31年的问题</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2016-03-04 22:18:32" itemprop="dateCreated datePublished" datetime="2016-03-04T22:18:32+08:00">2016-03-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%8A%80%E6%9C%AF%E7%A7%AF%E7%B4%AF/" itemprop="url" rel="index"><span itemprop="name">技术积累</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>这周在做数据库迁移（v1.sqlite to v2.sqlite，需求：更改数据库里面某个字段的值，数据库用的是coredata，在读取数据库、迁移是用的是FMDB）时，遇到一个比较奇怪的bug（其实一点都不奇怪，只怪自己图样图生破）。就是时间字段（coredata存储的是NSDate对象）迁移后的年份是1985年（比如：原数据库的时间是2016.2.26，而迁移后却是1985.2.26），百事不得其解……后面查到原因是因为Apple NSDate对象存储的时候不是以1970.1.1作为基准，而是以2001.1.1作为基准的，详情请看下面。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2016/03/04/NSDate%20Tips/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2015/11/15/Resolve-The-SourceCode-Of-SDWebImage/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -918,7 +992,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">39</span>
+          <span class="site-state-item-count">40</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
